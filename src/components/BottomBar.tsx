@@ -14,7 +14,7 @@ interface BottomBarProps {
 
 const TIMEZONES = [
   { label: 'UTC (UTC+0)', offset: 0 },
-  { label: 'İstanbul (UTC+3)', offset: 3 },
+  { label: 'Istanbul (UTC+3)', offset: 3 },
   { label: 'New York (UTC-4)', offset: -4 },
   { label: 'London (UTC+1)', offset: 1 },
   { label: 'Frankfurt (UTC+2)', offset: 2 },

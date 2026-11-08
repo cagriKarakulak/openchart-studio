@@ -189,7 +189,7 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
     } catch (_) {}
     return PYTHON_TEMPLATES.custom;
   });
-  const [pythonConsoleOutput, setPythonConsoleOutput] = useState<string>('Python Quant Editörü v3.11 Hazır. Vektörize kodunuzu yazıp "Grafiğe Ekle" butonuna basın.');
+  const [pythonConsoleOutput, setPythonConsoleOutput] = useState<string>('Python Quant Engine v3.11 Ready.');
   const [pythonStatus, setPythonStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
   // Extract live inputs from Python Code for visual customization
@@ -198,12 +198,12 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
   const groupedLiveInputs = useMemo(() => {
     const groups: Record<string, PythonInputDef[]> = {};
     for (const inp of liveInputs) {
-      const g = inp.group || 'Genel Ayarlar';
+      const g = inp.group || t.modals.chartSettingsTitle || 'General';
       if (!groups[g]) groups[g] = [];
       groups[g].push(inp);
     }
     return groups;
-  }, [liveInputs]);
+  }, [liveInputs, t]);
 
   // Dynamic pixel height state with mouse dragging
   const [customDockHeight, setCustomDockHeight] = useState<number | null>(() => {
@@ -319,7 +319,7 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
   const handleOpenTrade = () => {
     const qty = parseFloat(orderQty);
     if (isNaN(qty) || qty <= 0 || currentPrice <= 0) {
-      setTradeMessage('Geçersiz işlem miktarı veya fiyat.');
+      setTradeMessage(t.common.error);
       return;
     }
 
@@ -328,7 +328,7 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
     const totalCost = orderCost + fee;
 
     if (totalCost > balance) {
-      setTradeMessage('Yetersiz bakiye! İşlem açılamadı.');
+      setTradeMessage(t.common.error);
       return;
     }
 
@@ -345,7 +345,7 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
     const nextPositions = [newPos, ...positions];
     setBalance(nextBal);
     setPositions(nextPositions);
-    setTradeMessage(`${activeSymbol} için ${orderSide.toUpperCase()} ${qty} adet pozisyon açıldı.`);
+    setTradeMessage(`${activeSymbol} ${orderSide.toUpperCase()} ${qty} (${t.common.success})`);
     savePaperState(nextBal, nextPositions, history);
   };
 
@@ -387,7 +387,7 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
 
   // Reset Paper Trading Account
   const handleResetPaper = () => {
-    if (window.confirm('Sanal işlem hesabını sıfırlamak ve 100.000$ bakiyeyi geri yüklemek istiyor musunuz?')) {
+    if (window.confirm(`${t.bottomDock.resetAccount}?`)) {
       setBalance(100000);
       setPositions([]);
       setHistory([]);
@@ -432,7 +432,7 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
 
       if (!activeCandles || activeCandles.length === 0) {
         setPythonStatus('error');
-        setPythonConsoleOutput(`[${timeStr}] Veri Hatası: ${activeSymbol} için mum verisi bulunamadı. Lütfen grafiğin yüklenmesini bekleyin.`);
+        setPythonConsoleOutput(`[${timeStr}] Data Error: No candle data found for ${activeSymbol}.`);
         return;
       }
 
@@ -440,14 +440,14 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
 
       if (!result.success) {
         setPythonStatus('error');
-        setPythonConsoleOutput(`[${timeStr}] Python Derleme / Çalışma Hatası:\n${result.error || 'Bilinmeyen hata'}`);
+        setPythonConsoleOutput(`[${timeStr}] Python Compilation / Runtime Error:\n${result.error || 'Unknown error'}`);
         return;
       }
 
       const customIndicator: IndicatorConfig = {
         id: `py_custom_${Date.now()}`,
         type: 'CustomPython',
-        name: result.title || 'Python Quant Stratejisi',
+        name: result.title || 'Python Quant Strategy',
         pane: result.isOverlay ? 'overlay' : 'subpane',
         visible: true,
         params: { ...pythonInputOverrides },
@@ -468,12 +468,12 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
 
       const plotNames = result.plots.map(p => `"${p.title}" (${p.color})`).join(', ');
       setPythonConsoleOutput(
-        `[${timeStr}] Python Derleme Başarılı (${result.executionTimeMs} ms):\n` +
-        `• ${activeCandles.length} mum barı vektörize işlendi.\n` +
-        `• Yerleşim: ${result.isOverlay ? 'Grafik Üzeri (Overlay)' : 'Alt Panel (Subpane)'}\n` +
-        `• Çizilen Seriler (${result.plots.length}): ${plotNames || 'Kapanış'}\n` +
-        (result.hlines.length > 0 ? `• Seviye Çizgileri (${result.hlines.length}): ${result.hlines.map(h => h.price).join(', ')}\n` : '') +
-        (result.logs.length > 0 ? `• Log Çıktıları:\n  ${result.logs.join('\n  ')}` : '')
+        `[${timeStr}] Python Build Success (${result.executionTimeMs} ms):\n` +
+        `• ${activeCandles.length} bars vectorized.\n` +
+        `• Target: ${result.isOverlay ? 'Overlay' : 'Subpane'}\n` +
+        `• Plots (${result.plots.length}): ${plotNames || 'Close'}\n` +
+        (result.hlines.length > 0 ? `• H-Lines (${result.hlines.length}): ${result.hlines.map(h => h.price).join(', ')}\n` : '') +
+        (result.logs.length > 0 ? `• Logs:\n  ${result.logs.join('\n  ')}` : '')
       );
 
       try {
@@ -482,7 +482,7 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
     } catch (err: any) {
       const timeStr = new Date().toLocaleTimeString();
       setPythonStatus('error');
-      setPythonConsoleOutput(`[${timeStr}] Çalışma Zamanı Hatası:\n${err?.message || 'Bilinmeyen hata'}`);
+      setPythonConsoleOutput(`[${timeStr}] Runtime Error:\n${err?.message || 'Error'}`);
     }
   };
 
@@ -491,7 +491,7 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
       localStorage.setItem('openchart_python_code', pythonCode);
       soundService.playClickSound();
       const timeStr = new Date().toLocaleTimeString();
-      setPythonConsoleOutput(`[${timeStr}] Python komut dizisi yerel belleğe (localStorage) başarıyla kaydedildi.`);
+      setPythonConsoleOutput(`[${timeStr}] Python script saved to storage.`);
     } catch (_) {}
   };
 
@@ -516,10 +516,10 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
         executeBacktest();
       }, 50);
       soundService.playClickSound();
-      setPythonConsoleOutput(`[${timeStr}] Python stratejisi Strateji Test Cihazına aktarılarak çalıştırıldı.`);
+      setPythonConsoleOutput(`[${timeStr}] Strategy transferred to Strategy Tester.`);
     } catch (err: any) {
       const timeStr = new Date().toLocaleTimeString();
-      setPythonConsoleOutput(`[${timeStr}] Strateji Aktarım Hatası: ${err?.message || 'Hata'}`);
+      setPythonConsoleOutput(`[${timeStr}] Error: ${err?.message || 'Error'}`);
     }
   };
 
@@ -550,7 +550,7 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
           try { localStorage.removeItem('openchart_bottom_dock_height'); } catch (_) {}
         }}
         className="absolute -top-1 left-0 right-0 h-2.5 cursor-ns-resize z-40 group flex items-center justify-center hover:bg-tv-blue/60 active:bg-tv-blue transition-colors select-none"
-        title="Alt Paneli Boyutlandırmak İçin Sürükleyin (Çift tıkla varsayılana dön)"
+        title={t.subPane.resizeTooltip}
       >
         <div className="w-12 h-0.5 bg-tv-border/80 group-hover:bg-tv-blue rounded-full transition-colors" />
       </div>
@@ -606,7 +606,7 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
           <button
             onClick={() => setDockSize(s => s === 'normal' ? 'expanded' : s === 'expanded' ? 'fullscreen' : 'normal')}
             className="p-1.5 rounded hover:bg-tv-hover text-tv-muted hover:text-white transition-colors"
-            title={dockSize === 'fullscreen' ? 'Varsayılan Boyuta Dön' : 'Paneli Genişlet / Büyüt'}
+            title={dockSize === 'fullscreen' ? t.subPane.resizeTooltip : t.header.fullscreen}
           >
             {dockSize === 'fullscreen' ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
           </button>
@@ -936,12 +936,12 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
                     }}
                     className="bg-tv-surface border border-tv-border rounded px-2 py-1 text-[11px] text-white focus:outline-none focus:border-tv-blue font-medium max-w-[240px]"
                   >
-                    <option value="custom">Özel Quant Alpha (EMA 9/21 + RSI 14)</option>
+                    <option value="custom">Quant Alpha (EMA 9/21 + RSI 14)</option>
                     <option value="emaCross">EMA Golden Cross (9 / 21)</option>
                     <option value="rsiPullback">RSI Momentum & Mean Reversion (14)</option>
                     <option value="macdMomentum">MACD Momentum Squeeze</option>
-                    <option value="supertrend">Supertrend Volatilite Takipçisi</option>
-                    <option value="bollinger">Bollinger Bantları Squeeze</option>
+                    <option value="supertrend">Supertrend Trend Follower</option>
+                    <option value="bollinger">Bollinger Bands Squeeze</option>
                   </select>
                 </div>
 
@@ -1015,7 +1015,7 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
 
                     {liveInputs.length === 0 ? (
                       <div className="p-6 text-center text-tv-muted text-xs">
-                        Bu betikte tanımlı param() parametresi bulunamadı. Kod editöründen param("fast_ema", 14, label="Hızlı EMA") ekleyebilirsiniz.
+                        {t.common.none} - param("length", 14)
                       </div>
                     ) : (
                       <div className="space-y-3">
@@ -1023,7 +1023,7 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
                           <div key={groupName} className="bg-tv-surface/60 p-3 rounded border border-tv-border/80 space-y-2.5">
                             <div className="font-bold text-white text-xs uppercase tracking-wider border-b border-tv-border/60 pb-1.5 flex items-center justify-between">
                               <span className="text-tv-blue font-semibold">{groupName}</span>
-                              <span className="text-[10px] text-tv-muted font-mono">{inps.length} Parametre</span>
+                              <span className="text-[10px] text-tv-muted font-mono">{inps.length}</span>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 pt-1">

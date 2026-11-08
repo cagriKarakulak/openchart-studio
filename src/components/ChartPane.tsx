@@ -2163,8 +2163,8 @@ export const ChartPane: React.FC<ChartPaneProps> = React.memo(({
     }
 
     if (activeDrawingTool === 'text' || activeDrawingTool === 'anchoredText' || activeDrawingTool === 'callout') {
-      const promptText = activeDrawingTool === 'callout' ? 'Baloncuk notu girin:' : 'Not metnini girin:';
-      const text = prompt(promptText, 'Önemli Seviye');
+      const promptText = activeDrawingTool === 'callout' ? t.leftToolbar.callout : t.leftToolbar.note;
+      const text = prompt(promptText, 'Key Level');
       if (text) {
         const newElement: DrawingElement = {
           id: `draw_${Date.now()}`,
@@ -2640,7 +2640,7 @@ export const ChartPane: React.FC<ChartPaneProps> = React.memo(({
                     className={`px-1.5 py-0.5 rounded text-[10px] font-mono transition-colors ${
                       selectedElement.lineWidth === w ? 'bg-tv-blue text-white font-bold' : 'hover:bg-tv-hover text-tv-muted'
                     }`}
-                    title={`${w}px Kalınlık`}
+                    title={`${w}px`}
                   >
                     {w}px
                   </button>
@@ -2662,7 +2662,7 @@ export const ChartPane: React.FC<ChartPaneProps> = React.memo(({
                     className={`px-1.5 py-0.5 rounded text-[10px] font-mono transition-colors ${
                       (selectedElement.lineStyle || 'solid') === st ? 'bg-tv-blue text-white font-bold' : 'hover:bg-tv-hover text-tv-muted'
                     }`}
-                    title={`Stil: ${st}`}
+                    title={`${t.modals.styleLabel} ${st}`}
                   >
                     {st === 'solid' ? '—' : st === 'dashed' ? '- -' : '···'}
                   </button>
@@ -2791,7 +2791,7 @@ export const ChartPane: React.FC<ChartPaneProps> = React.memo(({
                 });
               }}
               className="w-5 h-5 rounded-full bg-tv-blue hover:bg-blue-600 text-white flex items-center justify-center shadow-lg font-bold text-xs transition-transform hover:scale-110"
-              title={`Hızlı İşlem / Alarm ($${hoverPriceScale.price.toFixed(2)})`}
+              title={`+ ($${hoverPriceScale.price.toFixed(2)})`}
             >
               +
             </button>

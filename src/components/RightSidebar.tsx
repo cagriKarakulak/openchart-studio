@@ -295,7 +295,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
   const technicalAnalysis = useMemo(() => {
     if (activeTab !== 'technical' || !candles || candles.length < 20) {
       return {
-        summary: 'NÖTR',
+        summary: t.rightSidebar.neutralSignal,
         score: 50,
         ma: { buy: 0, sell: 0, neutral: 0, items: [] },
         osc: { buy: 0, sell: 0, neutral: 0, items: [] },
@@ -773,7 +773,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
                             onRemoveWatchlistSymbol(item.symbol);
                           }}
                           className="opacity-0 group-hover:opacity-100 text-tv-muted hover:text-tv-red p-0.5 rounded transition-opacity"
-                          title="Bölümü Sil"
+                          title={t.common.delete}
                         >
                           <X className="w-3 h-3" />
                         </button>
@@ -802,7 +802,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
                             handleCycleFlag(item.symbol, item.flagColor);
                           }}
                           className="p-0.5 rounded hover:bg-tv-border/60 transition-colors flex-shrink-0"
-                          title="Renk Bayrağı (Değiştirmek için tıkla)"
+                          title={t.rightSidebar.flagColor}
                         >
                           <Flag
                             className="w-3 h-3"
@@ -849,7 +849,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
                             onRemoveWatchlistSymbol(item.symbol);
                           }}
                           className="absolute right-0 opacity-0 group-hover:opacity-100 p-1 hover:text-tv-red transition-opacity text-tv-muted"
-                          title="Listeden Kaldır"
+                          title={t.common.delete}
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -962,8 +962,8 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
                     <div className="flex items-center space-x-2">
                       <span className="font-mono text-tv-text">${it.value.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}</span>
                       <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold font-mono ${
-                        it.signal === 'Alış' ? 'bg-tv-green/15 text-tv-green' :
-                        it.signal === 'Satış' ? 'bg-tv-red/15 text-tv-red' : 'bg-tv-muted/15 text-tv-muted'
+                        it.signal === t.rightSidebar.buySignal ? 'bg-tv-green/15 text-tv-green' :
+                        it.signal === t.rightSidebar.sellSignal ? 'bg-tv-red/15 text-tv-red' : 'bg-tv-muted/15 text-tv-muted'
                       }`}>
                         {it.signal}
                       </span>
@@ -1085,7 +1085,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
             {isNewsLoading && newsItems.length === 0 && (
               <div className="py-8 text-center text-tv-muted space-y-2">
                 <RefreshCw className="w-6 h-6 animate-spin text-tv-blue mx-auto" />
-                <p className="text-xs">Canlı piyasa verileri alınıyor...</p>
+                <p className="text-xs">{t.common.loading}</p>
               </div>
             )}
 
@@ -1094,12 +1094,12 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
               <div className="space-y-2.5">
                 {filteredNews.length === 0 && !isNewsLoading ? (
                   <div className="py-8 text-center text-tv-muted">
-                    <p className="text-xs">Bu filtreye uygun haber bulunamadı.</p>
+                    <p className="text-xs">{t.rightSidebar.noNews}</p>
                     <button
                       onClick={() => setNewsFilter('all')}
                       className="mt-2 text-[11px] text-tv-blue underline hover:text-tv-blue-hover"
                     >
-                      Tüm haberleri göster
+                      {t.rightSidebar.allNews}
                     </button>
                   </div>
                 ) : (
@@ -1137,19 +1137,19 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
                           {n.sentiment === 'positive' && (
                             <span className="text-[9px] text-tv-green font-medium flex items-center space-x-0.5">
                               <TrendingUp className="w-2.5 h-2.5" />
-                              <span>Pozitif</span>
+                              <span>{t.rightSidebar.buySignal}</span>
                             </span>
                           )}
                           {n.sentiment === 'negative' && (
                             <span className="text-[9px] text-tv-red font-medium flex items-center space-x-0.5">
                               <TrendingDown className="w-2.5 h-2.5" />
-                              <span>Negatif</span>
+                              <span>{t.rightSidebar.sellSignal}</span>
                             </span>
                           )}
                           {n.sentiment === 'neutral' && (
                             <span className="text-[9px] text-tv-muted font-medium flex items-center space-x-0.5">
                               <Minus className="w-2.5 h-2.5" />
-                              <span>Nötr</span>
+                              <span>{t.rightSidebar.neutralSignal}</span>
                             </span>
                           )}
                         </div>
@@ -1165,12 +1165,12 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
               <div className="space-y-2">
                 {filteredEvents.length === 0 && !isNewsLoading ? (
                   <div className="py-8 text-center text-tv-muted">
-                    <p className="text-xs">Kayıtlı makro ekonomik takvim etkinliği bulunamadı.</p>
+                    <p className="text-xs">{t.rightSidebar.noNews}</p>
                     <button
                       onClick={() => setCalendarImpactFilter('all')}
                       className="mt-2 text-[11px] text-tv-blue underline hover:text-tv-blue-hover"
                     >
-                      Tüm etkinlikleri göster
+                      {t.rightSidebar.allNews}
                     </button>
                   </div>
                 ) : (
@@ -1200,7 +1200,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
                               ? 'bg-orange-500/15 text-[#ff9800] border-orange-500/30'
                               : 'bg-tv-bg text-tv-muted border-tv-border'
                           }`}>
-                            {ev.impact === 'High' ? 'YÜKSEK' : ev.impact === 'Medium' ? 'ORTA' : 'DÜŞÜK'}
+                            {ev.impact === 'High' ? t.rightSidebar.highImpact : ev.impact === 'Medium' ? t.rightSidebar.mediumImpact : t.rightSidebar.lowImpact}
                           </span>
                           {ev.url && (
                             <ExternalLink className="w-2.5 h-2.5 opacity-0 group-hover:opacity-100 text-tv-muted transition-opacity" />

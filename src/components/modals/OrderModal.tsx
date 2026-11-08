@@ -90,11 +90,11 @@ export const OrderModal: React.FC<OrderModalProps> = ({
     setErrorMsg(null);
 
     if (qty <= 0) {
-      setErrorMsg('Miktar 0\'dan büyük olmalıdır.');
+      setErrorMsg(t.common.error);
       return;
     }
     if (activeExecutionPrice <= 0) {
-      setErrorMsg('Geçerli bir emir fiyatı girin.');
+      setErrorMsg(t.common.error);
       return;
     }
 
