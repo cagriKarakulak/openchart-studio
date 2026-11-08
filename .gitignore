@@ -1,0 +1,72 @@
+# ========================================================
+# OpenChart Studio - Git Ignore Rules
+# ========================================================
+
+# 1. Personal User Data, Watchlists & Backups
+*watchlist*.json
+*watchlist*.csv
+watchlists/
+*settings*.json
+*preferences*.json
+*state*.json
+*backup*.json
+openchart_*_backup_*.json
+tradingview_*_backup_*.json
+backups/
+backup/
+exports/
+*.csv
+
+# 2. Private Strategies & Pine Script Codes
+*.pine
+*.pinescript
+*.ps
+*.strat
+strategies/custom/
+strategies/private/
+indicators/custom/
+
+# 3. Private Directories & Local Configs
+personal/
+private/
+secrets/
+*.local
+
+# 4. Environment Variables & API Keys
+.env
+.env.*
+!.env.example
+
+# 5. Dependencies & Build Outputs
+node_modules/
+dist/
+dist-ssr/
+
+# 6. Scratch & Temporary Files
+scratch/
+.gemini/
+temp/
+tmp/
+*.tmp
+*.bak
+
+# 7. Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# 8. Editor & Operating System Files
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
