@@ -4,6 +4,7 @@ import { IndicatorConfig, Timeframe } from '../../types';
 import { INDICATOR_DEFINITIONS } from '../../indicators/registry';
 import { extractPineInputs, PineInputDef } from '../../services/pineInputs';
 import { extractPythonInputs, PythonInputDef } from '../../services/pythonEngine';
+import { useTranslation } from '../../i18n';
 
 interface IndicatorSettingsModalProps {
   indicator: IndicatorConfig | null;
@@ -53,7 +54,7 @@ const IndicatorSettingsModalContent: React.FC<IndicatorSettingsModalContentProps
   onClose,
   onSave,
 }) => {
-
+  const { t } = useTranslation();
   const def = INDICATOR_DEFINITIONS.find(d => d.type === indicator.type);
   const [activeTab, setActiveTab] = useState<'inputs' | 'style'>('inputs');
   const [params, setParams] = useState<Record<string, any>>({ ...indicator.params });
@@ -75,12 +76,12 @@ const IndicatorSettingsModalContent: React.FC<IndicatorSettingsModalContentProps
   const groupedScriptInputs = useMemo(() => {
     const groups: Record<string, (PineInputDef | PythonInputDef)[]> = {};
     for (const inp of scriptInputs) {
-      const g = inp.group || 'Genel Ayarlar';
+      const g = inp.group || t.modals.chartSettingsTitle || 'Settings';
       if (!groups[g]) groups[g] = [];
       groups[g].push(inp);
     }
     return groups;
-  }, [scriptInputs]);
+  }, [scriptInputs, t]);
 
   useEffect(() => {
     if (indicator) {
@@ -214,7 +215,7 @@ const IndicatorSettingsModalContent: React.FC<IndicatorSettingsModalContentProps
             }`}
           >
             <Sliders className="w-3.5 h-3.5" />
-            <span>Girdiler (Inputs)</span>
+            <span>{t.modals.inputsTab}</span>
           </button>
           <button
             onClick={() => setActiveTab('style')}
@@ -223,7 +224,7 @@ const IndicatorSettingsModalContent: React.FC<IndicatorSettingsModalContentProps
             }`}
           >
             <Palette className="w-3.5 h-3.5" />
-            <span>Stil & Renkler</span>
+            <span>{t.modals.styleTab}</span>
           </button>
         </div>
 
@@ -235,21 +236,22 @@ const IndicatorSettingsModalContent: React.FC<IndicatorSettingsModalContentProps
               <div className="bg-tv-bg p-3 rounded border border-tv-border space-y-1.5">
                 <div className="flex items-center space-x-1.5 text-tv-blue font-bold text-[11px] uppercase tracking-wider">
                   <Clock className="w-3.5 h-3.5" />
-                  <span>Zaman Dilimi (Multi-Timeframe MTF)</span>
+                  <span>{t.modals.timeframeMtf}</span>
                 </div>
                 <select
                   value={timeframe}
                   onChange={(e) => setTimeframe(e.target.value as Timeframe | 'chart')}
                   className="w-full bg-tv-surface border border-tv-border rounded px-2.5 py-1.5 text-white focus:outline-none focus:border-tv-blue font-medium"
                 >
-                  {TIMEFRAME_OPTIONS.map(opt => (
+                  <option value="chart">{t.modals.timeframeMtfSame}</option>
+                  {TIMEFRAME_OPTIONS.filter(o => o.value !== 'chart').map(opt => (
                     <option key={opt.value} value={opt.value}>{opt.label}</option>
                   ))}
                 </select>
                 <p className="text-[10px] text-tv-muted">
                   {timeframe === 'chart' 
-                    ? 'Gösterge, grafiğin mevcut zaman periyodunda hesaplanır.' 
-                    : `Gösterge ${timeframe.toUpperCase()} periyodunda hesaplanıp grafiğe yansıtılır.`}
+                    ? t.modals.timeframeMtfSame
+                    : `${indicator.name} (${timeframe.toUpperCase()})`}
                 </p>
               </div>
 
@@ -257,7 +259,7 @@ const IndicatorSettingsModalContent: React.FC<IndicatorSettingsModalContentProps
               {def && def.paramSchema.length > 0 && (
                 <div className="bg-tv-bg p-3 rounded border border-tv-border space-y-3">
                   <div className="font-bold text-white uppercase text-[10px] tracking-wider border-b border-tv-border pb-1.5">
-                    Parametreler
+                    {t.modals.parametersHeader}
                   </div>
                   <div className="space-y-2.5">
                     {def.paramSchema.map(schema => (
@@ -370,8 +372,7 @@ const IndicatorSettingsModalContent: React.FC<IndicatorSettingsModalContentProps
             <div className="space-y-4">
               <div className="bg-tv-bg p-3 rounded border border-tv-border space-y-3">
                 <div className="font-bold text-white uppercase text-[10px] tracking-wider border-b border-tv-border pb-1.5 flex items-center justify-between">
-                  <span>Görsel Stil, Bant ve Çizgi Ayarları</span>
-                  <span className="text-[10px] text-tv-muted font-normal">Gelişmiş Stil</span>
+                  <span>{t.modals.visualStyleBands}</span>
                 </div>
                 <div className="space-y-2.5">
                   {Object.keys(styles).length > 0 ? (
@@ -388,7 +389,7 @@ const IndicatorSettingsModalContent: React.FC<IndicatorSettingsModalContentProps
                                 checked={styleObj.visible !== false}
                                 onChange={(e) => handleStyleChange(styleKey, 'visible', e.target.checked)}
                                 className="w-4 h-4 rounded border-tv-border text-tv-blue accent-tv-blue cursor-pointer"
-                                title="Görünürlüğü Aç / Kapat"
+                                title="Visible"
                               />
                               <label className="text-white font-medium text-xs">
                                 {getStyleLabel(styleKey)}
@@ -398,14 +399,13 @@ const IndicatorSettingsModalContent: React.FC<IndicatorSettingsModalContentProps
                             {/* Numeric Level value for bands (e.g. 70, 30, 50, 80, 20, 100, etc.) */}
                             {isBand && (
                               <div className="flex items-center space-x-1.5">
-                                <span className="text-[10px] text-tv-muted font-medium">Seviye:</span>
+                                <span className="text-[10px] text-tv-muted font-medium">{t.modals.levelLabel}</span>
                                 <input
                                   type="number"
                                   step="any"
                                   value={styleObj.value ?? ''}
                                   onChange={(e) => handleStyleChange(styleKey, 'value', parseFloat(e.target.value) || 0)}
-                                  className="w-16 bg-tv-bg border border-tv-border rounded px-2 py-0.5 text-white font-mono text-right text-xs focus:outline-none focus:border-tv-blue"
-                                  placeholder="Değer"
+                                  className="w-16 bg-tv-bg border border-tv-border rounded px-2.5 py-0.5 text-white font-mono text-right text-xs focus:outline-none focus:border-tv-blue"
                                 />
                               </div>
                             )}
@@ -419,7 +419,6 @@ const IndicatorSettingsModalContent: React.FC<IndicatorSettingsModalContentProps
                                 value={styleObj.color || '#2962ff'}
                                 onChange={(e) => handleStyleChange(styleKey, 'color', e.target.value)}
                                 className="w-6 h-6 rounded border border-tv-border cursor-pointer bg-transparent"
-                                title="Çizgi Rengi"
                               />
                               <span className="font-mono text-[10px] text-tv-muted uppercase">
                                 {styleObj.color || '#2962ff'}
@@ -429,7 +428,7 @@ const IndicatorSettingsModalContent: React.FC<IndicatorSettingsModalContentProps
                             <div className="flex items-center space-x-2">
                               {/* Line Width */}
                               <div className="flex items-center space-x-1">
-                                <span className="text-[10px] text-tv-muted">Kalınlık:</span>
+                                <span className="text-[10px] text-tv-muted">{t.modals.widthLabel}</span>
                                 <select
                                   value={styleObj.lineWidth ?? 1}
                                   onChange={(e) => handleStyleChange(styleKey, 'lineWidth', parseInt(e.target.value, 10))}
@@ -444,15 +443,15 @@ const IndicatorSettingsModalContent: React.FC<IndicatorSettingsModalContentProps
 
                               {/* Line Style (Solid, Dashed, Dotted) */}
                               <div className="flex items-center space-x-1">
-                                <span className="text-[10px] text-tv-muted">Stil:</span>
+                                <span className="text-[10px] text-tv-muted">{t.modals.styleLabel}</span>
                                 <select
                                   value={styleObj.lineStyle ?? (isBand ? 2 : 0)}
                                   onChange={(e) => handleStyleChange(styleKey, 'lineStyle', parseInt(e.target.value, 10))}
                                   className="bg-tv-bg border border-tv-border rounded px-1.5 py-0.5 text-white text-xs focus:outline-none focus:border-tv-blue font-mono"
                                 >
-                                  <option value={0}>Düz ───</option>
-                                  <option value={2}>Kesikli - - -</option>
-                                  <option value={1}>Noktalı ···</option>
+                                  <option value={0}>{t.modals.solid}</option>
+                                  <option value={2}>{t.modals.dashed}</option>
+                                  <option value={1}>{t.modals.dotted}</option>
                                 </select>
                               </div>
                             </div>
@@ -462,7 +461,7 @@ const IndicatorSettingsModalContent: React.FC<IndicatorSettingsModalContentProps
                     })
                   ) : (
                     <div className="text-tv-muted text-xs py-2">
-                      Bu göstergenin renkleri komut içerisindeki plot(...) tanımlarından otomatik yönetilmektedir.
+                      Auto
                     </div>
                   )}
                 </div>
@@ -485,7 +484,7 @@ const IndicatorSettingsModalContent: React.FC<IndicatorSettingsModalContentProps
             }}
             className="text-xs text-tv-muted hover:text-white transition-colors"
           >
-            Varsayılana Sıfırla
+            {t.modals.resetToDefaults}
           </button>
 
           <div className="flex items-center space-x-2">
@@ -493,14 +492,14 @@ const IndicatorSettingsModalContent: React.FC<IndicatorSettingsModalContentProps
               onClick={onClose}
               className="px-3 py-1.5 rounded hover:bg-tv-hover text-tv-muted hover:text-white transition-colors"
             >
-              İptal
+              {t.modals.cancelBtn}
             </button>
             <button
               onClick={handleSave}
               className="px-4 py-1.5 rounded bg-tv-blue text-white font-bold hover:bg-blue-600 shadow-sm transition-colors flex items-center space-x-1"
             >
               <Check className="w-3.5 h-3.5" />
-              <span>Tamam</span>
+              <span>{t.common.save}</span>
             </button>
           </div>
         </div>

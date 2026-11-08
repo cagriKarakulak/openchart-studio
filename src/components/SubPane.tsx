@@ -72,6 +72,7 @@ import {
   findFloorCandleByTime
 } from '../indicators/math';
 import { Eye, EyeOff, Settings, X } from 'lucide-react';
+import { useTranslation } from '../i18n';
 
 interface SubPaneProps {
   indicator: IndicatorConfig;
@@ -96,6 +97,7 @@ export const SubPane: React.FC<SubPaneProps> = React.memo(({
   onOpenSettings,
   onRemove,
 }) => {
+  const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const isSyncingRef = useRef(false);
@@ -1547,7 +1549,7 @@ export const SubPane: React.FC<SubPaneProps> = React.memo(({
           } catch (_) {}
         }}
         className="absolute -top-1 left-0 right-0 h-2.5 cursor-ns-resize z-20 group/handle flex items-center justify-center hover:bg-tv-blue/60 active:bg-tv-blue transition-colors select-none"
-        title="Alt Pencere Boyutunu Değiştirmek İçin Sürükleyin (Çift Tıkla Sıfırla)"
+        title={t.subPane.resizeTooltip}
       >
         <div className="w-12 h-0.5 bg-tv-border/80 group-hover/handle:bg-tv-blue rounded-full transition-colors" />
       </div>
@@ -1573,21 +1575,21 @@ export const SubPane: React.FC<SubPaneProps> = React.memo(({
           <button
             onClick={() => onToggleVisibility(indicator.id)}
             className="p-0.5 hover:text-white text-tv-muted"
-            title={indicator.visible ? 'Gizle' : 'Göster'}
+            title={indicator.visible ? t.subPane.hide : t.subPane.show}
           >
             {indicator.visible ? <Eye className="w-2.5 h-2.5 text-tv-blue" /> : <EyeOff className="w-2.5 h-2.5" />}
           </button>
           <button
             onClick={() => onOpenSettings(indicator)}
             className="p-0.5 hover:text-white text-tv-muted"
-            title="Ayarlar"
+            title={t.subPane.settings}
           >
             <Settings className="w-2.5 h-2.5" />
           </button>
           <button
             onClick={() => onRemove(indicator.id)}
             className="p-0.5 hover:text-tv-red text-tv-muted"
-            title="Alt Pencereyi Kapat"
+            title={t.subPane.close}
           >
             <X className="w-2.5 h-2.5" />
           </button>

@@ -43,8 +43,10 @@ import { executePineScript } from './services/pineEngine';
 import { executePythonScript } from './services/pythonEngine';
 import { findCandleByTime } from './indicators/math';
 import { BellRing, X } from 'lucide-react';
+import { useTranslation } from './i18n';
 
 export const App: React.FC = () => {
+  const { t } = useTranslation();
   // Global State
   const [appState, setAppState] = useState<AppState>(INITIAL_STATE);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -268,12 +270,12 @@ export const App: React.FC = () => {
 
   const handleSaveCurrentAsTemplate = () => {
     if (!activePane) return;
-    const name = prompt('Gösterge Şablonu İçin Bir İsim Girin:', `${activePane.symbol} Stratejisi`);
+    const name = prompt(t.app.promptTemplateName, `${activePane.symbol} Strategy`);
     if (name && name.trim()) {
       storageService.saveIndicatorTemplate(name.trim(), activePane.indicators);
       setTemplates(storageService.getIndicatorTemplates());
       soundService.playClickSound();
-      alert(`"${name.trim()}" şablonu başarıyla kaydedildi!`);
+      alert(`"${name.trim()}" ${t.app.templateSavedNotice}`);
     }
   };
 
@@ -690,7 +692,7 @@ export const App: React.FC = () => {
 
   // Drawing Tools
   const handleClearDrawings = () => {
-    if (confirm('Aktif grafikteki tüm çizimleri silmek istediğinize emin misiniz?')) {
+    if (confirm(t.app.clearDrawingsConfirm)) {
       updateActivePane({ drawings: [] });
     }
   };
@@ -742,7 +744,7 @@ export const App: React.FC = () => {
   // Export Candle Data to CSV
   const handleExportData = () => {
     if (!activeCandlesData || activeCandlesData.length === 0) {
-      alert('Dışa aktarılacak mum verisi bulunamadı.');
+      alert(t.app.noDataToExport);
       return;
     }
     const headers = ['Zaman (ISO)', 'Unix Timestamp', 'Acilis', 'Yuksek', 'Dusuk', 'Kapanis', 'Hacim'];
@@ -1368,12 +1370,12 @@ export const App: React.FC = () => {
       {/* Floating Quick Interval Change HUD */}
       {quickIntervalInput !== null && (
         <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 bg-[#1e222d] border-2 border-tv-blue rounded-2xl p-6 shadow-2xl flex flex-col items-center space-y-3 text-white min-w-[280px] animate-in fade-in zoom-in-95 duration-150 backdrop-blur-md">
-          <div className="text-[11px] text-tv-muted font-bold uppercase tracking-wider">Aralığı Değiştir</div>
+          <div className="text-[11px] text-tv-muted font-bold uppercase tracking-wider">{t.app.changeInterval}</div>
           <div className="text-4xl font-mono font-bold text-tv-blue tracking-tight">
             {quickIntervalInput.toUpperCase()}
           </div>
           <div className="text-[11px] text-tv-muted text-center">
-            Uygulamak için <strong className="text-white">Enter</strong>, iptal için <strong className="text-white">Esc</strong>
+            {t.app.quickIntervalNotice}
           </div>
         </div>
       )}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, RotateCcw, Check, Palette, Grid, Sliders, Stamp, Clock } from 'lucide-react';
 import { ChartVisualSettings } from '../../types';
+import { useTranslation } from '../../i18n';
 
 export const DEFAULT_VISUAL_SETTINGS: ChartVisualSettings = {
   upColor: '#089981',
@@ -30,6 +31,7 @@ export const ChartSettingsModal: React.FC<ChartSettingsModalProps> = ({
   currentSettings,
   onSave,
 }) => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<'candles' | 'canvas' | 'watermark'>('candles');
   const [settings, setSettings] = useState<ChartVisualSettings>(
     currentSettings || DEFAULT_VISUAL_SETTINGS
@@ -59,7 +61,7 @@ export const ChartSettingsModal: React.FC<ChartSettingsModalProps> = ({
         <div className="flex items-center justify-between px-4 py-3 border-b border-tv-border bg-tv-bg">
           <div className="flex items-center space-x-2">
             <Palette className="w-4 h-4 text-tv-blue" />
-            <h3 className="text-sm font-bold text-white">Grafik Görünümü Ayarları</h3>
+            <h3 className="text-sm font-bold text-white">{t.modals.chartSettingsTitle}</h3>
           </div>
           <button
             onClick={onClose}
@@ -80,7 +82,7 @@ export const ChartSettingsModal: React.FC<ChartSettingsModalProps> = ({
             }`}
           >
             <Sliders className="w-3.5 h-3.5" />
-            <span>Mumlar & Sembol</span>
+            <span>{t.modals.candlesSymbolTab}</span>
           </button>
           <button
             onClick={() => setActiveTab('canvas')}
@@ -91,7 +93,7 @@ export const ChartSettingsModal: React.FC<ChartSettingsModalProps> = ({
             }`}
           >
             <Grid className="w-3.5 h-3.5" />
-            <span>Tuval & Şebeke</span>
+            <span>{t.modals.canvasGridTab}</span>
           </button>
           <button
             onClick={() => setActiveTab('watermark')}
@@ -102,7 +104,7 @@ export const ChartSettingsModal: React.FC<ChartSettingsModalProps> = ({
             }`}
           >
             <Stamp className="w-3.5 h-3.5" />
-            <span>Filigran & Ölçek</span>
+            <span>{t.modals.watermarkScaleTab}</span>
           </button>
         </div>
 
@@ -111,17 +113,17 @@ export const ChartSettingsModal: React.FC<ChartSettingsModalProps> = ({
           {activeTab === 'candles' && (
             <div className="space-y-4">
               <div className="text-[11px] font-bold text-tv-muted uppercase tracking-wider">
-                Mum Gövde ve Kenarlık Renkleri
+                {t.modals.candleColorsGroup}
               </div>
 
               {/* Up Candle */}
               <div className="bg-tv-card p-3 rounded border border-tv-border space-y-3">
                 <span className="font-semibold text-tv-green flex items-center space-x-1">
-                  <span>Yükseliş Mumu (Bullish)</span>
+                  <span>{t.modals.bullishCandle}</span>
                 </span>
                 <div className="grid grid-cols-3 gap-3">
                   <div>
-                    <label className="block text-[11px] text-tv-muted mb-1">Gövde Rengi</label>
+                    <label className="block text-[11px] text-tv-muted mb-1">{t.modals.bodyColor}</label>
                     <div className="flex items-center space-x-2">
                       <input
                         type="color"
@@ -133,7 +135,7 @@ export const ChartSettingsModal: React.FC<ChartSettingsModalProps> = ({
                     </div>
                   </div>
                   <div>
-                    <label className="block text-[11px] text-tv-muted mb-1">Kenarlık</label>
+                    <label className="block text-[11px] text-tv-muted mb-1">{t.modals.borderLabel}</label>
                     <div className="flex items-center space-x-2">
                       <input
                         type="color"
@@ -145,7 +147,7 @@ export const ChartSettingsModal: React.FC<ChartSettingsModalProps> = ({
                     </div>
                   </div>
                   <div>
-                    <label className="block text-[11px] text-tv-muted mb-1">Fitil (Wick)</label>
+                    <label className="block text-[11px] text-tv-muted mb-1">{t.modals.wickLabel}</label>
                     <div className="flex items-center space-x-2">
                       <input
                         type="color"
@@ -162,11 +164,11 @@ export const ChartSettingsModal: React.FC<ChartSettingsModalProps> = ({
               {/* Down Candle */}
               <div className="bg-tv-card p-3 rounded border border-tv-border space-y-3">
                 <span className="font-semibold text-tv-red flex items-center space-x-1">
-                  <span>Düşüş Mumu (Bearish)</span>
+                  <span>{t.modals.bearishCandle}</span>
                 </span>
                 <div className="grid grid-cols-3 gap-3">
                   <div>
-                    <label className="block text-[11px] text-tv-muted mb-1">Gövde Rengi</label>
+                    <label className="block text-[11px] text-tv-muted mb-1">{t.modals.bodyColor}</label>
                     <div className="flex items-center space-x-2">
                       <input
                         type="color"
@@ -178,7 +180,7 @@ export const ChartSettingsModal: React.FC<ChartSettingsModalProps> = ({
                     </div>
                   </div>
                   <div>
-                    <label className="block text-[11px] text-tv-muted mb-1">Kenarlık</label>
+                    <label className="block text-[11px] text-tv-muted mb-1">{t.modals.borderLabel}</label>
                     <div className="flex items-center space-x-2">
                       <input
                         type="color"
@@ -190,7 +192,7 @@ export const ChartSettingsModal: React.FC<ChartSettingsModalProps> = ({
                     </div>
                   </div>
                   <div>
-                    <label className="block text-[11px] text-tv-muted mb-1">Fitil (Wick)</label>
+                    <label className="block text-[11px] text-tv-muted mb-1">{t.modals.wickLabel}</label>
                     <div className="flex items-center space-x-2">
                       <input
                         type="color"
@@ -209,12 +211,12 @@ export const ChartSettingsModal: React.FC<ChartSettingsModalProps> = ({
           {activeTab === 'canvas' && (
             <div className="space-y-4">
               <div className="text-[11px] font-bold text-tv-muted uppercase tracking-wider">
-                Arka Plan ve Şebeke Ayarları
+                {t.modals.canvasGridTab}
               </div>
 
-              {/* Background Color Presets */}
+              {/* Background Color */}
               <div className="bg-tv-card p-3 rounded border border-tv-border space-y-2">
-                <label className="block font-semibold text-white">Arka Plan Rengi</label>
+                <label className="block font-semibold text-white">{t.modals.backgroundColor}</label>
                 <div className="flex items-center space-x-2">
                   <input
                     type="color"
@@ -225,12 +227,12 @@ export const ChartSettingsModal: React.FC<ChartSettingsModalProps> = ({
                   <span className="font-mono text-xs">{settings.backgroundColor}</span>
                 </div>
                 <div className="flex items-center space-x-2 pt-2">
-                  <span className="text-[11px] text-tv-muted">Hazır Temalar:</span>
+                  <span className="text-[11px] text-tv-muted">Preset:</span>
                   {[
-                    { name: 'Koyu Lacivert', color: '#131722' },
-                    { name: 'Derin Siyah', color: '#0b0e14' },
-                    { name: 'Grafit Gri', color: '#1e222d' },
-                    { name: 'Açık Mod', color: '#ffffff' },
+                    { name: 'Dark Blue', color: '#131722' },
+                    { name: 'Black', color: '#0b0e14' },
+                    { name: 'Grey', color: '#1e222d' },
+                    { name: 'Light', color: '#ffffff' },
                   ].map((preset) => (
                     <button
                       key={preset.color}
@@ -246,7 +248,7 @@ export const ChartSettingsModal: React.FC<ChartSettingsModalProps> = ({
               {/* Grid Lines */}
               <div className="bg-tv-card p-3 rounded border border-tv-border space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="font-semibold text-white">Izgara Çizgileri</span>
+                  <span className="font-semibold text-white">{t.modals.showGrid}</span>
                   <input
                     type="checkbox"
                     checked={settings.showGrid}
@@ -256,7 +258,7 @@ export const ChartSettingsModal: React.FC<ChartSettingsModalProps> = ({
                 </div>
                 {settings.showGrid && (
                   <div className="pt-2 border-t border-tv-border/50">
-                    <label className="block text-[11px] text-tv-muted mb-1">Izgara Rengi ve Şeffaflığı</label>
+                    <label className="block text-[11px] text-tv-muted mb-1">{t.modals.gridColor}</label>
                     <div className="flex items-center space-x-2">
                       <input
                         type="color"
@@ -264,7 +266,7 @@ export const ChartSettingsModal: React.FC<ChartSettingsModalProps> = ({
                         onChange={(e) => setSettings({ ...settings, gridColor: e.target.value })}
                         className="w-7 h-7 rounded border border-tv-border cursor-pointer bg-transparent"
                       />
-                      <span className="font-mono text-[10px] text-tv-muted">Varsayılan: rgba(42, 46, 57, 0.4)</span>
+                      <span className="font-mono text-[10px] text-tv-muted">{settings.gridColor}</span>
                     </div>
                   </div>
                 )}
@@ -275,15 +277,14 @@ export const ChartSettingsModal: React.FC<ChartSettingsModalProps> = ({
           {activeTab === 'watermark' && (
             <div className="space-y-4">
               <div className="text-[11px] font-bold text-tv-muted uppercase tracking-wider">
-                Filigran ve Bar Kapanış Göstergeleri
+                {t.modals.watermarkScaleTab}
               </div>
 
               {/* Watermark Toggle */}
               <div className="bg-tv-card p-3 rounded border border-tv-border space-y-3">
                 <div className="flex items-center justify-between">
                   <div>
-                    <div className="font-semibold text-white">Sembol ve Periyot Filigranı</div>
-                    <div className="text-[11px] text-tv-muted">Grafik arka planında büyük sembol logosu / adı</div>
+                    <div className="font-semibold text-white">{t.modals.showWatermark}</div>
                   </div>
                   <input
                     type="checkbox"
@@ -296,7 +297,7 @@ export const ChartSettingsModal: React.FC<ChartSettingsModalProps> = ({
                 {settings.showWatermark !== false && (
                   <div className="pt-2 border-t border-tv-border/50 space-y-2">
                     <div className="flex justify-between items-center text-[11px]">
-                      <span className="text-tv-muted">Filigran Saydamlığı</span>
+                      <span className="text-tv-muted">{t.modals.watermarkOpacity}</span>
                       <span className="font-mono font-bold text-white">
                         {Math.round((settings.watermarkOpacity ?? 0.07) * 100)}%
                       </span>
@@ -319,9 +320,8 @@ export const ChartSettingsModal: React.FC<ChartSettingsModalProps> = ({
                 <div>
                   <div className="font-semibold text-white flex items-center space-x-1.5">
                     <Clock className="w-3.5 h-3.5 text-tv-yellow" />
-                    <span>Bar Kapanışına Geri Sayım</span>
+                    <span>{t.modals.showCountdown}</span>
                   </div>
-                  <div className="text-[11px] text-tv-muted">Mevcut mumun tamamlanmasına kalan canlı saniye/dakika sayacı</div>
                 </div>
                 <input
                   type="checkbox"
@@ -334,8 +334,7 @@ export const ChartSettingsModal: React.FC<ChartSettingsModalProps> = ({
               {/* Invert Scale Toggle */}
               <div className="bg-tv-card p-3 rounded border border-tv-border flex items-center justify-between">
                 <div>
-                  <div className="font-semibold text-white">Ölçeği Ters Çevir (Invert Scale)</div>
-                  <div className="text-[11px] text-tv-muted">Fiyat eksenini dikey olarak ters çevirerek ters perspektif analizi yapın</div>
+                  <div className="font-semibold text-white">{t.chart.invertScale}</div>
                 </div>
                 <input
                   type="checkbox"
@@ -355,7 +354,7 @@ export const ChartSettingsModal: React.FC<ChartSettingsModalProps> = ({
             className="flex items-center space-x-1.5 px-3 py-1.5 rounded text-tv-muted hover:text-white hover:bg-tv-hover transition-colors text-xs"
           >
             <RotateCcw className="w-3.5 h-3.5" />
-            <span>Varsayılana Sıfırla</span>
+            <span>{t.modals.resetToDefaults}</span>
           </button>
 
           <div className="flex items-center space-x-2">
@@ -363,14 +362,14 @@ export const ChartSettingsModal: React.FC<ChartSettingsModalProps> = ({
               onClick={onClose}
               className="px-3 py-1.5 rounded hover:bg-tv-hover text-tv-muted hover:text-white text-xs"
             >
-              İptal
+              {t.modals.cancelBtn}
             </button>
             <button
               onClick={handleApply}
               className="flex items-center space-x-1.5 px-4 py-1.5 bg-tv-blue text-white rounded font-medium hover:bg-tv-blue-hover text-xs transition-colors"
             >
               <Check className="w-3.5 h-3.5" />
-              <span>Ayarları Uygula</span>
+              <span>{t.modals.applyChangesBtn}</span>
             </button>
           </div>
         </div>

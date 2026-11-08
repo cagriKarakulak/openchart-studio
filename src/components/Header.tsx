@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { 
   Search, 
   CandlestickChart, 
@@ -22,9 +22,11 @@ import {
   LayoutTemplate,
   Sparkles,
   Star,
-  Plus
+  Plus,
+  Globe
 } from 'lucide-react';
 import { Timeframe, ChartType, LayoutType, IndicatorTemplate } from '../types';
+import { useTranslation } from '../i18n';
 
 interface TimeframeOption {
   label: string;
@@ -33,63 +35,63 @@ interface TimeframeOption {
 }
 
 interface TimeframeCategory {
-  category: string;
-  items: TimeframeOption[];
+  categoryKey: 'timeframeSeconds' | 'timeframeMinutes' | 'timeframeHours' | 'timeframeDays' | 'timeframeWeeksMonths';
+  items: { value: Timeframe; number: number; unit: string }[];
 }
 
-const TIMEFRAME_CATEGORIES: TimeframeCategory[] = [
+const BASE_CATEGORIES: TimeframeCategory[] = [
   {
-    category: 'SANİYELER',
+    categoryKey: 'timeframeSeconds',
     items: [
-      { label: '1 Saniye', value: '1s', shortLabel: '1sn' },
-      { label: '5 Saniye', value: '5s', shortLabel: '5sn' },
-      { label: '10 Saniye', value: '10s', shortLabel: '10sn' },
-      { label: '15 Saniye', value: '15s', shortLabel: '15sn' },
-      { label: '30 Saniye', value: '30s', shortLabel: '30sn' },
-      { label: '45 Saniye', value: '45s', shortLabel: '45sn' },
+      { value: '1s', number: 1, unit: 's' },
+      { value: '5s', number: 5, unit: 's' },
+      { value: '10s', number: 10, unit: 's' },
+      { value: '15s', number: 15, unit: 's' },
+      { value: '30s', number: 30, unit: 's' },
+      { value: '45s', number: 45, unit: 's' },
     ],
   },
   {
-    category: 'DAKİKALAR',
+    categoryKey: 'timeframeMinutes',
     items: [
-      { label: '1 Dakika', value: '1m', shortLabel: '1dk' },
-      { label: '2 Dakika', value: '2m', shortLabel: '2dk' },
-      { label: '3 Dakika', value: '3m', shortLabel: '3dk' },
-      { label: '5 Dakika', value: '5m', shortLabel: '5dk' },
-      { label: '10 Dakika', value: '10m', shortLabel: '10dk' },
-      { label: '15 Dakika', value: '15m', shortLabel: '15dk' },
-      { label: '30 Dakika', value: '30m', shortLabel: '30dk' },
-      { label: '45 Dakika', value: '45m', shortLabel: '45dk' },
+      { value: '1m', number: 1, unit: 'm' },
+      { value: '2m', number: 2, unit: 'm' },
+      { value: '3m', number: 3, unit: 'm' },
+      { value: '5m', number: 5, unit: 'm' },
+      { value: '10m', number: 10, unit: 'm' },
+      { value: '15m', number: 15, unit: 'm' },
+      { value: '30m', number: 30, unit: 'm' },
+      { value: '45m', number: 45, unit: 'm' },
     ],
   },
   {
-    category: 'SAATLER',
+    categoryKey: 'timeframeHours',
     items: [
-      { label: '1 Saat', value: '1h', shortLabel: '1sa' },
-      { label: '2 Saat', value: '2h', shortLabel: '2sa' },
-      { label: '3 Saat', value: '3h', shortLabel: '3sa' },
-      { label: '4 Saat', value: '4h', shortLabel: '4sa' },
-      { label: '6 Saat', value: '6h', shortLabel: '6sa' },
-      { label: '8 Saat', value: '8h', shortLabel: '8sa' },
-      { label: '12 Saat', value: '12h', shortLabel: '12sa' },
+      { value: '1h', number: 1, unit: 'h' },
+      { value: '2h', number: 2, unit: 'h' },
+      { value: '3h', number: 3, unit: 'h' },
+      { value: '4h', number: 4, unit: 'h' },
+      { value: '6h', number: 6, unit: 'h' },
+      { value: '8h', number: 8, unit: 'h' },
+      { value: '12h', number: 12, unit: 'h' },
     ],
   },
   {
-    category: 'GÜNLER',
+    categoryKey: 'timeframeDays',
     items: [
-      { label: '1 Gün', value: '1d', shortLabel: '1G' },
-      { label: '2 Gün', value: '2d', shortLabel: '2G' },
-      { label: '3 Gün', value: '3d', shortLabel: '3G' },
+      { value: '1d', number: 1, unit: 'd' },
+      { value: '2d', number: 2, unit: 'd' },
+      { value: '3d', number: 3, unit: 'd' },
     ],
   },
   {
-    category: 'HAFTALAR & AYLAR',
+    categoryKey: 'timeframeWeeksMonths',
     items: [
-      { label: '1 Hafta', value: '1w', shortLabel: '1H' },
-      { label: '1 Ay', value: '1M', shortLabel: '1A' },
-      { label: '3 Ay', value: '3M', shortLabel: '3A' },
-      { label: '6 Ay', value: '6M', shortLabel: '6A' },
-      { label: '12 Ay (1 Yıl)', value: '12M', shortLabel: '12A' },
+      { value: '1w', number: 1, unit: 'w' },
+      { value: '1M', number: 1, unit: 'M' },
+      { value: '3M', number: 3, unit: 'M' },
+      { value: '6M', number: 6, unit: 'M' },
+      { value: '12M', number: 12, unit: 'M' },
     ],
   },
 ];
@@ -177,10 +179,13 @@ export const Header: React.FC<HeaderProps> = React.memo(({
   onApplyIndicatorTemplate,
   onSaveCurrentAsTemplate,
 }) => {
+  const { t, language, setLanguage, languages, currentLanguageOption } = useTranslation();
+
   const [showTfMenu, setShowTfMenu] = useState(false);
   const [showChartTypeMenu, setShowChartTypeMenu] = useState(false);
   const [showLayoutMenu, setShowLayoutMenu] = useState(false);
   const [showTemplatesMenu, setShowTemplatesMenu] = useState(false);
+  const [showLangMenu, setShowLangMenu] = useState(false);
   const [savedBadge, setSavedBadge] = useState(false);
 
   // Timeframe starring & custom timeframe state
@@ -203,8 +208,33 @@ export const Header: React.FC<HeaderProps> = React.memo(({
   const [customNum, setCustomNum] = useState<string>('7');
   const [customUnit, setCustomUnit] = useState<'s' | 'm' | 'h' | 'd' | 'w' | 'M'>('m');
 
+  const unitLabels = useMemo(() => {
+    return {
+      s: { full: t.header.unitSecond, short: t.header.unitSecond.slice(0, 1).toLowerCase() },
+      m: { full: t.header.unitMinute, short: t.header.unitMinute.slice(0, 1).toLowerCase() },
+      h: { full: t.header.unitHour, short: t.header.unitHour.slice(0, 1).toLowerCase() },
+      d: { full: t.header.unitDay, short: t.header.unitDay.slice(0, 1).toUpperCase() },
+      w: { full: t.header.unitWeek, short: t.header.unitWeek.slice(0, 1).toUpperCase() },
+      M: { full: t.header.unitMonth, short: t.header.unitMonth.slice(0, 1).toUpperCase() },
+    };
+  }, [t]);
+
+  const categories = useMemo(() => {
+    return BASE_CATEGORIES.map(cat => ({
+      categoryName: t.header[cat.categoryKey],
+      items: cat.items.map(item => {
+        const u = unitLabels[item.unit as keyof typeof unitLabels] || { full: item.unit, short: item.unit };
+        return {
+          value: item.value,
+          label: `${item.number} ${u.full}`,
+          shortLabel: `${item.number}${u.short}`,
+        };
+      })
+    }));
+  }, [t, unitLabels]);
+
   const getTfShortLabel = (val: string): string => {
-    for (const cat of TIMEFRAME_CATEGORIES) {
+    for (const cat of categories) {
       const found = cat.items.find(i => i.value === val);
       if (found) return found.shortLabel;
     }
@@ -229,17 +259,9 @@ export const Header: React.FC<HeaderProps> = React.memo(({
     const n = parseInt(customNum, 10);
     if (isNaN(n) || n <= 0) return;
     const val = `${n}${customUnit}` as Timeframe;
-    const unitMap: Record<string, { label: string; short: string }> = {
-      s: { label: 'Saniye', short: 'sn' },
-      m: { label: 'Dakika', short: 'dk' },
-      h: { label: 'Saat', short: 'sa' },
-      d: { label: 'Gün', short: 'G' },
-      w: { label: 'Hafta', short: 'H' },
-      M: { label: 'Ay', short: 'A' },
-    };
-    const info = unitMap[customUnit] || { label: customUnit, short: customUnit };
-    const shortLabel = `${n}${info.short}`;
-    const label = `${n} ${info.label}`;
+    const u = unitLabels[customUnit] || { full: customUnit, short: customUnit };
+    const shortLabel = `${n}${u.short}`;
+    const label = `${n} ${u.full}`;
 
     const newOption: TimeframeOption = { label, value: val, shortLabel };
     if (!customTfs.some(c => c.value === val)) {
@@ -287,7 +309,7 @@ export const Header: React.FC<HeaderProps> = React.memo(({
         <button
           onClick={onSymbolClick}
           className="flex items-center space-x-2 px-2.5 py-1.5 rounded hover:bg-tv-hover transition-colors font-bold text-white text-sm"
-          title="Sembol Ara (Ctrl+K)"
+          title={t.header.symbolSearchPlaceholder}
         >
           <Search className="w-3.5 h-3.5 text-tv-muted" />
           <span>{symbol}</span>
@@ -308,10 +330,10 @@ export const Header: React.FC<HeaderProps> = React.memo(({
           <button
             onClick={onOpenCommandPalette}
             className="hidden xl:flex items-center space-x-1.5 px-2.5 py-1 rounded bg-tv-card hover:bg-tv-hover border border-tv-border text-[11px] text-tv-muted hover:text-white transition-colors"
-            title="Komut Paletini Aç (Ctrl + K)"
+            title={t.header.commandPalette}
           >
             <Search className="w-3 h-3 text-tv-blue" />
-            <span>Komutlar</span>
+            <span>{t.header.commandPalette.split(' ')[0]}</span>
             <kbd className="px-1 py-0.2 rounded bg-tv-surface border border-tv-border/80 text-[9px] font-mono font-bold text-tv-blue">
               Ctrl+K
             </kbd>
@@ -325,10 +347,10 @@ export const Header: React.FC<HeaderProps> = React.memo(({
             className={`px-2 py-1 rounded flex items-center space-x-1 transition-colors text-xs font-semibold ${
               overlaySymbol ? 'bg-orange-500/20 text-[#ff9800] border border-orange-500/40' : 'hover:bg-tv-hover text-tv-muted hover:text-white'
             }`}
-            title="Sembol Karşılaştır (Overlay Symbol)"
+            title={t.header.compare}
           >
             <span className="text-sm font-bold leading-none">+</span>
-            <span className="hidden lg:inline text-[11px]">{overlaySymbol ? overlaySymbol : 'Karşılaştır'}</span>
+            <span className="hidden lg:inline text-[11px]">{overlaySymbol ? overlaySymbol : t.header.compare}</span>
           </button>
         )}
 
@@ -348,7 +370,7 @@ export const Header: React.FC<HeaderProps> = React.memo(({
                     ? 'bg-tv-blue text-white shadow-sm'
                     : 'text-tv-muted hover:text-tv-text hover:bg-tv-hover'
                 }`}
-                title={`Zaman Dilimi: ${tfVal}`}
+                title={`${t.header.timeframes}: ${tfVal}`}
               >
                 {short}
               </button>
@@ -360,7 +382,7 @@ export const Header: React.FC<HeaderProps> = React.memo(({
             <button
               onClick={() => onTimeframeChange(timeframe)}
               className="px-2 py-1 rounded text-[11px] font-semibold bg-tv-blue text-white shadow-sm"
-              title={`Aktif Zaman Dilimi: ${timeframe}`}
+              title={`${t.header.timeframes}: ${timeframe}`}
             >
               {getTfShortLabel(timeframe)}
             </button>
@@ -373,7 +395,7 @@ export const Header: React.FC<HeaderProps> = React.memo(({
               className={`p-1 rounded transition-colors ${
                 showTfMenu ? 'bg-tv-hover text-white' : 'text-tv-muted hover:text-tv-text hover:bg-tv-hover'
               }`}
-              title="Tüm Zaman Dilimleri & Favoriler"
+              title={t.header.timeframes}
             >
               <ChevronDown className="w-3.5 h-3.5" />
             </button>
@@ -385,10 +407,10 @@ export const Header: React.FC<HeaderProps> = React.memo(({
               >
                 {/* Scrollable list of categories */}
                 <div className="flex-1 overflow-y-auto divide-y divide-tv-border/40 py-1">
-                  {TIMEFRAME_CATEGORIES.map(category => (
-                    <div key={category.category} className="py-1">
-                      <div className="px-3 py-1 text-[10px] font-bold text-tv-muted tracking-wider">
-                        {category.category}
+                  {categories.map(category => (
+                    <div key={category.categoryName} className="py-1">
+                      <div className="px-3 py-1 text-[10px] font-bold text-tv-muted tracking-wider uppercase">
+                        {category.categoryName}
                       </div>
                       {category.items.map(item => {
                         const isCurrent = timeframe === item.value;
@@ -422,7 +444,7 @@ export const Header: React.FC<HeaderProps> = React.memo(({
                                     ? 'text-yellow-400' 
                                     : 'text-tv-border group-hover:text-tv-muted hover:!text-yellow-400'
                                 }`}
-                                title={isStarred ? 'Favorilerden Çıkar' : 'Favorilere Ekle (Üst Çubukta Göster)'}
+                                title={isStarred ? t.common.delete : t.common.confirm}
                               >
                                 <Star className={`w-3.5 h-3.5 ${isStarred ? 'fill-yellow-400' : ''}`} />
                               </button>
@@ -436,8 +458,8 @@ export const Header: React.FC<HeaderProps> = React.memo(({
                   {/* Custom timeframes group (if any) */}
                   {customTfs.length > 0 && (
                     <div className="py-1">
-                      <div className="px-3 py-1 text-[10px] font-bold text-tv-muted tracking-wider">
-                        ÖZEL ZAMAN DİLİMLERİ
+                      <div className="px-3 py-1 text-[10px] font-bold text-tv-muted tracking-wider uppercase">
+                        {t.header.customTimeframes}
                       </div>
                       {customTfs.map(item => {
                         const isCurrent = timeframe === item.value;
@@ -471,7 +493,6 @@ export const Header: React.FC<HeaderProps> = React.memo(({
                                     ? 'text-yellow-400' 
                                     : 'text-tv-border group-hover:text-tv-muted hover:!text-yellow-400'
                                 }`}
-                                title={isStarred ? 'Favorilerden Çıkar' : 'Favorilere Ekle'}
                               >
                                 <Star className={`w-3.5 h-3.5 ${isStarred ? 'fill-yellow-400' : ''}`} />
                               </button>
@@ -502,20 +523,20 @@ export const Header: React.FC<HeaderProps> = React.memo(({
                     onChange={(e) => setCustomUnit(e.target.value as any)}
                     className="bg-tv-surface border border-tv-border rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-tv-blue flex-1"
                   >
-                    <option value="s">Saniye (sn)</option>
-                    <option value="m">Dakika (dk)</option>
-                    <option value="h">Saat (sa)</option>
-                    <option value="d">Gün (G)</option>
-                    <option value="w">Hafta (H)</option>
-                    <option value="M">Ay (A)</option>
+                    <option value="s">{t.header.unitSecond} (s)</option>
+                    <option value="m">{t.header.unitMinute} (m)</option>
+                    <option value="h">{t.header.unitHour} (h)</option>
+                    <option value="d">{t.header.unitDay} (d)</option>
+                    <option value="w">{t.header.unitWeek} (w)</option>
+                    <option value="M">{t.header.unitMonth} (M)</option>
                   </select>
                   <button
                     type="submit"
                     className="px-2.5 py-1 rounded bg-tv-blue hover:bg-blue-600 text-white text-xs font-semibold flex items-center space-x-1 shadow-sm transition-colors"
-                    title="Özel Zaman Dilimi Ekle"
+                    title={t.header.addCustomTimeframe}
                   >
                     <Plus className="w-3.5 h-3.5" />
-                    <span>Ekle</span>
+                    <span>{t.common.apply}</span>
                   </button>
                 </form>
               </div>
@@ -530,7 +551,7 @@ export const Header: React.FC<HeaderProps> = React.memo(({
           <button
             onClick={() => setShowChartTypeMenu(!showChartTypeMenu)}
             className="flex items-center space-x-1 px-2 py-1 rounded hover:bg-tv-hover text-tv-text"
-            title="Bar / Grafik Türü"
+            title={t.header.chartType}
           >
             {chartType === 'candlestick' && <CandlestickChart className="w-4 h-4 text-tv-blue" />}
             {chartType === 'hollow-candlestick' && <CandlestickChart className="w-4 h-4 text-tv-green" />}
@@ -556,7 +577,7 @@ export const Header: React.FC<HeaderProps> = React.memo(({
               onMouseLeave={() => setShowChartTypeMenu(false)}
             >
               <div className="px-3 py-1 text-[10px] font-bold text-tv-muted uppercase tracking-wider bg-tv-bg/50">
-                Sipariş Akışı & Hacim Profili
+                {t.chart.orderFlowBidAsk}
               </div>
               <button
                 onClick={() => { onChartTypeChange('volume-footprint'); setShowChartTypeMenu(false); }}
@@ -564,7 +585,7 @@ export const Header: React.FC<HeaderProps> = React.memo(({
               >
                 <div className="flex items-center space-x-2">
                   <SlidersHorizontal className="w-4 h-4 text-[#ff9800]" />
-                  <span>Hacim Ayak İzi (Volume Footprint)</span>
+                  <span>{t.header.volumeFootprint}</span>
                 </div>
                 <span className="text-[9px] font-mono px-1 rounded bg-orange-500/20 text-[#ff9800] font-bold">Orderflow</span>
               </button>
@@ -574,112 +595,111 @@ export const Header: React.FC<HeaderProps> = React.memo(({
               >
                 <div className="flex items-center space-x-2">
                   <BarChart2 className="w-4 h-4 text-tv-green" />
-                  <span>Hacimli Mumlar (Volume Candles)</span>
+                  <span>{t.header.volumeCandle}</span>
                 </div>
-                <span className="text-[9px] font-mono px-1 rounded bg-tv-green/20 text-tv-green">Ağırlıklı</span>
               </button>
 
               <div className="px-3 py-1 text-[10px] font-bold text-tv-muted uppercase tracking-wider bg-tv-bg/50 mt-1">
-                Standart Mum & Çubuklar
+                {t.modals.candlesGroup}
               </div>
               <button
                 onClick={() => { onChartTypeChange('candlestick'); setShowChartTypeMenu(false); }}
                 className={`w-full px-3 py-1.5 text-left flex items-center space-x-2 hover:bg-tv-hover ${chartType === 'candlestick' ? 'text-tv-blue font-bold bg-tv-blue/10' : ''}`}
               >
                 <CandlestickChart className="w-4 h-4 text-tv-blue" />
-                <span>Mum Grafiği (Candles)</span>
+                <span>{t.header.candlestick}</span>
               </button>
               <button
                 onClick={() => { onChartTypeChange('hollow-candlestick'); setShowChartTypeMenu(false); }}
                 className={`w-full px-3 py-1.5 text-left flex items-center space-x-2 hover:bg-tv-hover ${chartType === 'hollow-candlestick' ? 'text-tv-blue font-bold bg-tv-blue/10' : ''}`}
               >
                 <CandlestickChart className="w-4 h-4 text-tv-green" />
-                <span>İçi Boş Mumlar (Hollow)</span>
+                <span>{t.header.hollowCandle}</span>
               </button>
               <button
                 onClick={() => { onChartTypeChange('bar'); setShowChartTypeMenu(false); }}
                 className={`w-full px-3 py-1.5 text-left flex items-center space-x-2 hover:bg-tv-hover ${chartType === 'bar' ? 'text-tv-blue font-bold bg-tv-blue/10' : ''}`}
               >
                 <BarChart2 className="w-4 h-4 text-tv-blue" />
-                <span>Çubuk Grafik (OHLC Bars)</span>
+                <span>{t.header.bar}</span>
               </button>
 
               <div className="px-3 py-1 text-[10px] font-bold text-tv-muted uppercase tracking-wider bg-tv-bg/50 mt-1">
-                Çizgi ve Alanlar
+                {t.header.line} & {t.header.area}
               </div>
               <button
                 onClick={() => { onChartTypeChange('line'); setShowChartTypeMenu(false); }}
                 className={`w-full px-3 py-1.5 text-left flex items-center space-x-2 hover:bg-tv-hover ${chartType === 'line' ? 'text-tv-blue font-bold bg-tv-blue/10' : ''}`}
               >
                 <TrendingUp className="w-4 h-4 text-tv-blue" />
-                <span>Çizgi Grafik (Line)</span>
+                <span>{t.header.line}</span>
               </button>
               <button
                 onClick={() => { onChartTypeChange('area'); setShowChartTypeMenu(false); }}
                 className={`w-full px-3 py-1.5 text-left flex items-center space-x-2 hover:bg-tv-hover ${chartType === 'area' ? 'text-tv-blue font-bold bg-tv-blue/10' : ''}`}
               >
                 <Activity className="w-4 h-4 text-tv-blue" />
-                <span>Alan Grafiği (Area)</span>
+                <span>{t.header.area}</span>
               </button>
               <button
                 onClick={() => { onChartTypeChange('baseline'); setShowChartTypeMenu(false); }}
                 className={`w-full px-3 py-1.5 text-left flex items-center space-x-2 hover:bg-tv-hover ${chartType === 'baseline' ? 'text-tv-blue font-bold bg-tv-blue/10' : ''}`}
               >
                 <TrendingUp className="w-4 h-4 text-tv-yellow" />
-                <span>Taban Çizgisi (Baseline)</span>
+                <span>{t.header.baseline}</span>
               </button>
               <button
                 onClick={() => { onChartTypeChange('step-line'); setShowChartTypeMenu(false); }}
                 className={`w-full px-3 py-1.5 text-left flex items-center space-x-2 hover:bg-tv-hover ${chartType === 'step-line' ? 'text-tv-blue font-bold bg-tv-blue/10' : ''}`}
               >
                 <TrendingUp className="w-4 h-4 text-tv-blue" />
-                <span>Adım Çizgisi (Step Line)</span>
+                <span>{t.header.stepLine}</span>
               </button>
               <button
                 onClick={() => { onChartTypeChange('line-with-markers'); setShowChartTypeMenu(false); }}
                 className={`w-full px-3 py-1.5 text-left flex items-center space-x-2 hover:bg-tv-hover ${chartType === 'line-with-markers' ? 'text-tv-blue font-bold bg-tv-blue/10' : ''}`}
               >
                 <Activity className="w-4 h-4 text-tv-green" />
-                <span>Noktalı Çizgi (Line With Markers)</span>
+                <span>{t.header.lineWithMarkers}</span>
               </button>
               <button
                 onClick={() => { onChartTypeChange('columns'); setShowChartTypeMenu(false); }}
                 className={`w-full px-3 py-1.5 text-left flex items-center space-x-2 hover:bg-tv-hover ${chartType === 'columns' ? 'text-tv-blue font-bold bg-tv-blue/10' : ''}`}
               >
                 <Grid className="w-4 h-4 text-tv-blue" />
-                <span>Sütunlar (Columns)</span>
+                <span>{t.header.columns}</span>
               </button>
               <button
                 onClick={() => { onChartTypeChange('high-low'); setShowChartTypeMenu(false); }}
                 className={`w-full px-3 py-1.5 text-left flex items-center space-x-2 hover:bg-tv-hover ${chartType === 'high-low' ? 'text-tv-blue font-bold bg-tv-blue/10' : ''}`}
               >
                 <Activity className="w-4 h-4 text-tv-blue" />
-                <span>Yüksek - Düşük (High-Low)</span>
+                <span>{t.header.highLow}</span>
               </button>
 
               <div className="px-3 py-1 text-[10px] font-bold text-tv-muted uppercase tracking-wider bg-tv-bg/50 mt-1">
-                Fiyat Hareketi & Trend Filtreleme
+                {t.header.heikinAshi} & {t.header.renko}
               </div>
               <button
                 onClick={() => { onChartTypeChange('heikin-ashi'); setShowChartTypeMenu(false); }}
                 className={`w-full px-3 py-1.5 text-left flex items-center space-x-2 hover:bg-tv-hover ${chartType === 'heikin-ashi' ? 'text-tv-blue font-bold bg-tv-blue/10' : ''}`}
               >
                 <CandlestickChart className="w-4 h-4 text-tv-purple" />
-                <span>Heikin Ashi</span>
+                <span>{t.header.heikinAshi}</span>
               </button>
               <button
                 onClick={() => { onChartTypeChange('renko'); setShowChartTypeMenu(false); }}
                 className={`w-full px-3 py-1.5 text-left flex items-center space-x-2 hover:bg-tv-hover ${chartType === 'renko' ? 'text-tv-blue font-bold bg-tv-blue/10' : ''}`}
               >
                 <Grid className="w-4 h-4 text-tv-purple" />
-                <span>Renko Barları</span>
+                <span>{t.header.renko}</span>
               </button>
               <button
                 onClick={() => { onChartTypeChange('line-break'); setShowChartTypeMenu(false); }}
                 className={`w-full px-3 py-1.5 text-left flex items-center space-x-2 hover:bg-tv-hover ${chartType === 'line-break' ? 'text-tv-blue font-bold bg-tv-blue/10' : ''}`}
               >
                 <BarChart2 className="w-4 h-4 text-tv-yellow" />
-                <span>Çizgi Sonu (Three Line Break)</span>
+                <span>{t.header.threeLineBreak}</span>
               </button>
             </div>
           )}
@@ -691,10 +711,10 @@ export const Header: React.FC<HeaderProps> = React.memo(({
         <button
           onClick={onOpenIndicators}
           className="flex items-center space-x-1.5 px-2.5 py-1 rounded bg-tv-card hover:bg-tv-hover border border-tv-border transition-colors text-white font-medium"
-          title="Göstergeler ve İndikatörler (Sınırsız)"
+          title={t.header.unlimitedIndicators}
         >
           <span className="font-serif italic font-bold text-tv-blue">fx</span>
-          <span>Göstergeler</span>
+          <span>{t.header.indicators}</span>
           {indicatorCount > 0 && (
             <span className="bg-tv-blue text-white text-[10px] px-1.5 py-0.2 rounded-full font-bold">
               {indicatorCount}
@@ -709,10 +729,10 @@ export const Header: React.FC<HeaderProps> = React.memo(({
             className={`flex items-center space-x-1 px-2 py-1 rounded border transition-colors ${
               showTemplatesMenu ? 'bg-tv-hover border-tv-blue text-tv-blue' : 'bg-tv-card hover:bg-tv-hover border-tv-border text-tv-muted hover:text-white'
             }`}
-            title="Gösterge Şablonları (Hazır Paketler)"
+            title={t.header.templates}
           >
             <LayoutTemplate className="w-3.5 h-3.5 text-tv-blue" />
-            <span className="hidden lg:inline text-xs">Şablonlar</span>
+            <span className="hidden lg:inline text-xs">{t.header.templates}</span>
             <ChevronDown className="w-3 h-3" />
           </button>
 
@@ -722,7 +742,7 @@ export const Header: React.FC<HeaderProps> = React.memo(({
               onMouseLeave={() => setShowTemplatesMenu(false)}
             >
               <div className="px-3 py-1 text-[10px] font-bold text-tv-muted uppercase tracking-wider border-b border-tv-border/50">
-                Gösterge Şablonları
+                {t.header.templates}
               </div>
               <div className="py-1 max-h-64 overflow-y-auto divide-y divide-tv-border/20">
                 {templates.map(tmpl => (
@@ -737,7 +757,7 @@ export const Header: React.FC<HeaderProps> = React.memo(({
                     <div className="flex items-center justify-between">
                       <span className="font-semibold text-white group-hover:text-tv-blue">{tmpl.name}</span>
                       {tmpl.isBuiltin && (
-                        <span className="text-[9px] bg-tv-card border border-tv-border/60 text-tv-muted px-1.5 rounded">Hazır</span>
+                        <span className="text-[9px] bg-tv-card border border-tv-border/60 text-tv-muted px-1.5 rounded">Ready</span>
                       )}
                     </div>
                     {tmpl.description && (
@@ -755,7 +775,7 @@ export const Header: React.FC<HeaderProps> = React.memo(({
                   className="w-full px-2 py-1.5 rounded bg-tv-blue text-white text-center hover:bg-tv-blue-hover font-semibold transition-colors flex items-center justify-center space-x-1"
                 >
                   <Sparkles className="w-3.5 h-3.5" />
-                  <span>Şablon Olarak Kaydet</span>
+                  <span>{t.header.saveTemplate}</span>
                 </button>
               </div>
             </div>
@@ -766,10 +786,10 @@ export const Header: React.FC<HeaderProps> = React.memo(({
         <button
           onClick={onOpenBacktest}
           className="hidden md:flex items-center space-x-1 px-2.5 py-1 rounded bg-tv-card hover:bg-tv-hover border border-tv-border transition-colors text-white font-medium"
-          title="Strateji & Backtest Simülatörü"
+          title={t.header.strategyBacktest}
         >
           <Zap className="w-3.5 h-3.5 text-tv-yellow" />
-          <span>Strateji Testi</span>
+          <span>{t.header.strategyBacktest}</span>
         </button>
 
         {/* Bar Replay Button */}
@@ -780,21 +800,21 @@ export const Header: React.FC<HeaderProps> = React.memo(({
               ? 'bg-tv-blue border-tv-blue text-white'
               : 'bg-tv-card hover:bg-tv-hover border-tv-border text-white'
           }`}
-          title="Bar Replay: Geçmiş Mumları Canlandır"
+          title={t.header.barReplay}
         >
           <RotateCcw className="w-3.5 h-3.5 text-tv-blue" />
-          <span className="hidden sm:inline">Yeniden Oynat</span>
+          <span className="hidden sm:inline">{t.header.barReplay}</span>
         </button>
       </div>
 
-      {/* Right side: Layout, Alerts, Screenshot, Save, Watchlist */}
+      {/* Right side: Layout, Alerts, Screenshot, Save, Language, Watchlist */}
       <div className="flex items-center space-x-1 sm:space-x-2">
         {/* Multi-chart Layout Selector */}
         <div className="relative">
           <button
             onClick={() => setShowLayoutMenu(!showLayoutMenu)}
             className="flex items-center space-x-1 px-2 py-1 rounded hover:bg-tv-hover text-tv-text"
-            title="Çoklu Grafik Düzeni (Bölünmüş Ekran)"
+            title={t.header.layouts}
           >
             <Grid className="w-4 h-4" />
             <span className="text-[11px] font-mono">{layout}</span>
@@ -803,78 +823,70 @@ export const Header: React.FC<HeaderProps> = React.memo(({
 
           {showLayoutMenu && (
             <div 
-              className="absolute top-8 right-0 w-44 bg-tv-surface border border-tv-border rounded shadow-xl py-1.5 z-50 text-xs"
+              className="absolute top-8 right-0 w-48 bg-tv-surface border border-tv-border rounded shadow-xl py-1.5 z-50 text-xs"
               onMouseLeave={() => setShowLayoutMenu(false)}
             >
               <div className="px-3 py-1 text-[10px] text-tv-muted uppercase font-bold tracking-wider">
-                Bölünmüş Pencereler
+                {t.header.layouts}
               </div>
               <button
                 onClick={() => { onLayoutChange('1x1'); setShowLayoutMenu(false); }}
                 className={`w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-tv-hover ${layout === '1x1' ? 'text-tv-blue font-bold' : ''}`}
               >
-                <span>Tek Grafik (1x1)</span>
-                <span className="text-[10px] font-mono text-tv-muted">Tam Ekran</span>
+                <span>{t.header.layout1x1}</span>
               </button>
               <button
                 onClick={() => { onLayoutChange('1x2'); setShowLayoutMenu(false); }}
                 className={`w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-tv-hover ${layout === '1x2' ? 'text-tv-blue font-bold' : ''}`}
               >
-                <span>2 Grafik Yan Yana (1x2)</span>
-                <span className="text-[10px] font-mono text-tv-muted">Dikey Bölme</span>
+                <span>{t.header.layout1x2}</span>
               </button>
               <button
                 onClick={() => { onLayoutChange('2x1'); setShowLayoutMenu(false); }}
                 className={`w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-tv-hover ${layout === '2x1' ? 'text-tv-blue font-bold' : ''}`}
               >
-                <span>2 Grafik Alt Alta (2x1)</span>
-                <span className="text-[10px] font-mono text-tv-muted">Yatay Bölme</span>
+                <span>{t.header.layout2x1}</span>
               </button>
               <button
                 onClick={() => { onLayoutChange('2x2'); setShowLayoutMenu(false); }}
                 className={`w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-tv-hover ${layout === '2x2' ? 'text-tv-blue font-bold' : ''}`}
               >
-                <span>4 Grafik Grid (2x2)</span>
-                <span className="text-[10px] font-mono text-tv-muted">Dörtlü Ekran</span>
+                <span>{t.header.layout2x2}</span>
               </button>
               <button
                 onClick={() => { onLayoutChange('1x3'); setShowLayoutMenu(false); }}
                 className={`w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-tv-hover ${layout === '1x3' ? 'text-tv-blue font-bold' : ''}`}
               >
-                <span>3 Grafik Yan Yana (1x3)</span>
-                <span className="text-[10px] font-mono text-tv-muted">Üçlü Sütun</span>
+                <span>{t.header.layout1x3}</span>
               </button>
               <button
                 onClick={() => { onLayoutChange('3x1'); setShowLayoutMenu(false); }}
                 className={`w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-tv-hover ${layout === '3x1' ? 'text-tv-blue font-bold' : ''}`}
               >
-                <span>3 Grafik Alt Alta (3x1)</span>
-                <span className="text-[10px] font-mono text-tv-muted">Üçlü Satır</span>
+                <span>{t.header.layout3x1}</span>
               </button>
               <button
                 onClick={() => { onLayoutChange('1left-2right'); setShowLayoutMenu(false); }}
                 className={`w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-tv-hover ${layout === '1left-2right' ? 'text-tv-blue font-bold' : ''}`}
               >
-                <span>1 Büyük Sol + 2 Sağ</span>
-                <span className="text-[10px] font-mono text-tv-muted">Asimetrik</span>
+                <span>{t.header.layout1left2right}</span>
               </button>
               <button
                 onClick={() => { onLayoutChange('3x2'); setShowLayoutMenu(false); }}
                 className={`w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-tv-hover ${layout === '3x2' ? 'text-tv-blue font-bold' : ''}`}
               >
-                <span>6 Grafik Grid (3x2)</span>
-                <span className="text-[10px] font-mono text-tv-muted">Altılı Ekran</span>
+                <span>{t.header.layout3x2}</span>
               </button>
 
               <div className="border-t border-tv-border my-1" />
               <div className="px-3 py-1 text-[10px] text-tv-muted uppercase font-bold tracking-wider">
-                Tüm Grafiklerde Eşitle
+                {t.header.syncAllCharts}
               </div>
               <button
                 onClick={(e) => { e.stopPropagation(); onToggleSyncSymbol?.(); }}
                 className="w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-tv-hover cursor-pointer"
               >
-                <span>Sembol Senkronizasyonu</span>
+                <span>{t.header.syncSymbol}</span>
                 <input 
                   type="checkbox" 
                   checked={Boolean(syncSymbol)} 
@@ -886,7 +898,7 @@ export const Header: React.FC<HeaderProps> = React.memo(({
                 onClick={(e) => { e.stopPropagation(); onToggleSyncTimeframe?.(); }}
                 className="w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-tv-hover cursor-pointer"
               >
-                <span>Zaman Dilimi</span>
+                <span>{t.header.syncTimeframe}</span>
                 <input 
                   type="checkbox" 
                   checked={Boolean(syncTimeframe)} 
@@ -898,7 +910,7 @@ export const Header: React.FC<HeaderProps> = React.memo(({
                 onClick={(e) => { e.stopPropagation(); onToggleSyncCrosshair?.(); }}
                 className="w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-tv-hover cursor-pointer"
               >
-                <span>İmleç / Artı Gösterge</span>
+                <span>{t.header.syncCrosshair}</span>
                 <input 
                   type="checkbox" 
                   checked={Boolean(syncCrosshair)} 
@@ -910,7 +922,7 @@ export const Header: React.FC<HeaderProps> = React.memo(({
                 onClick={(e) => { e.stopPropagation(); onToggleSyncTime?.(); }}
                 className="w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-tv-hover cursor-pointer"
               >
-                <span>Zaman / Kaydırma</span>
+                <span>{t.header.syncTime}</span>
                 <input 
                   type="checkbox" 
                   checked={Boolean(syncTime)} 
@@ -929,17 +941,17 @@ export const Header: React.FC<HeaderProps> = React.memo(({
           <button
             onClick={handleSaveClick}
             className="flex items-center space-x-1 px-2 py-1 rounded hover:bg-tv-hover text-tv-text"
-            title="Ayarları ve Çizimleri Kaydet"
+            title={t.header.saveLayout}
           >
             {savedBadge ? (
               <>
                 <Check className="w-3.5 h-3.5 text-tv-green" />
-                <span className="text-tv-green font-medium text-[11px]">Kaydedildi!</span>
+                <span className="text-tv-green font-medium text-[11px]">{t.header.saved}</span>
               </>
             ) : (
               <>
                 <Save className="w-3.5 h-3.5" />
-                <span className="text-[11px] hidden md:inline">Kaydet</span>
+                <span className="text-[11px] hidden md:inline">{t.header.saveLayout}</span>
               </>
             )}
           </button>
@@ -947,7 +959,7 @@ export const Header: React.FC<HeaderProps> = React.memo(({
           <button
             onClick={onOpenLayouts}
             className="p-1 rounded hover:bg-tv-hover text-tv-muted hover:text-tv-text"
-            title="Kayıtlı Düzenler Şablonları"
+            title={t.header.layouts}
           >
             <FolderOpen className="w-3.5 h-3.5" />
           </button>
@@ -957,7 +969,7 @@ export const Header: React.FC<HeaderProps> = React.memo(({
         <button
           onClick={onOpenAlerts}
           className="p-1.5 rounded hover:bg-tv-hover text-tv-text"
-          title="Fiyat Alarmları"
+          title={t.rightSidebar.alertsTab}
         >
           <Bell className="w-4 h-4" />
         </button>
@@ -966,7 +978,7 @@ export const Header: React.FC<HeaderProps> = React.memo(({
         <button
           onClick={onTakeScreenshot}
           className="p-1.5 rounded hover:bg-tv-hover text-tv-text hidden sm:block"
-          title="Grafik Ekran Görüntüsü Al"
+          title={t.header.screenshot}
         >
           <Camera className="w-4 h-4" />
         </button>
@@ -976,7 +988,7 @@ export const Header: React.FC<HeaderProps> = React.memo(({
           <button
             onClick={onExportData}
             className="p-1.5 rounded hover:bg-tv-hover text-tv-text hidden sm:block"
-            title="Grafik Mum Verilerini İndir (CSV)"
+            title={t.header.exportCsv}
           >
             <Download className="w-4 h-4" />
           </button>
@@ -987,7 +999,7 @@ export const Header: React.FC<HeaderProps> = React.memo(({
           <button
             onClick={onOpenChartSettings}
             className="p-1.5 rounded hover:bg-tv-hover text-tv-text"
-            title="Grafik Görünümü Ayarları (Mumlar, Tuval, Şebeke)"
+            title={t.header.chartSettings}
           >
             <Settings className="w-4 h-4" />
           </button>
@@ -997,7 +1009,7 @@ export const Header: React.FC<HeaderProps> = React.memo(({
         <button
           onClick={toggleFullScreen}
           className="p-1.5 rounded hover:bg-tv-hover text-tv-text hidden sm:block"
-          title="Tam Ekran"
+          title={t.header.fullscreen}
         >
           <Maximize2 className="w-4 h-4" />
         </button>
@@ -1006,10 +1018,55 @@ export const Header: React.FC<HeaderProps> = React.memo(({
         <button
           onClick={onOpenHotkeys}
           className="p-1.5 rounded hover:bg-tv-hover text-tv-text"
-          title="Klavye Kısayolları (Hotkeys)"
+          title={t.header.hotkeys}
         >
           <Keyboard className="w-4 h-4" />
         </button>
+
+        {/* Language Selector Dropdown */}
+        <div className="relative">
+          <button
+            onClick={() => setShowLangMenu(!showLangMenu)}
+            className="flex items-center space-x-1 px-1.5 py-1 rounded hover:bg-tv-hover text-tv-text transition-colors border border-tv-border/50 bg-tv-card/60"
+            title={t.header.language}
+          >
+            <span className="text-sm leading-none">{currentLanguageOption.flag}</span>
+            <span className="text-[11px] font-bold uppercase hidden md:inline ml-0.5">{currentLanguageOption.code}</span>
+            <ChevronDown className="w-3 h-3 text-tv-muted" />
+          </button>
+
+          {showLangMenu && (
+            <div 
+              className="absolute top-8 right-0 w-44 bg-tv-surface border border-tv-border rounded shadow-2xl py-1.5 z-50 text-xs animate-in fade-in-50 zoom-in-95 duration-100"
+              onMouseLeave={() => setShowLangMenu(false)}
+            >
+              <div className="px-3 py-1 text-[10px] text-tv-muted uppercase font-bold tracking-wider border-b border-tv-border/40 mb-1">
+                {t.header.language}
+              </div>
+              {languages.map((lang) => {
+                const isSelected = lang.code === language;
+                return (
+                  <button
+                    key={lang.code}
+                    onClick={() => {
+                      setLanguage(lang.code);
+                      setShowLangMenu(false);
+                    }}
+                    className={`w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-tv-hover transition-colors ${
+                      isSelected ? 'text-tv-blue font-bold bg-tv-blue/10' : 'text-tv-text'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-2">
+                      <span className="text-base">{lang.flag}</span>
+                      <span className="text-xs">{lang.nativeName}</span>
+                    </div>
+                    {isSelected && <Check className="w-3.5 h-3.5 text-tv-blue" />}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
 
         <div className="h-4 w-[1px] bg-tv-border" />
 
@@ -1019,13 +1076,12 @@ export const Header: React.FC<HeaderProps> = React.memo(({
           className={`px-2 py-1 rounded flex items-center space-x-1 transition-colors ${
             isWatchlistOpen ? 'bg-tv-blue text-white' : 'hover:bg-tv-hover text-tv-text'
           }`}
-          title="İzleme Listesi (Watchlist)"
+          title={t.header.watchlist}
         >
           <SlidersHorizontal className="w-3.5 h-3.5" />
-          <span className="text-[11px] font-medium hidden md:inline">İzleme Listesi</span>
+          <span className="text-[11px] font-medium hidden md:inline">{t.header.watchlist}</span>
         </button>
       </div>
     </header>
   );
 });
-

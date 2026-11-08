@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { soundService } from '../../services/sound';
 import { WatchlistItem } from '../../types';
+import { useTranslation } from '../../i18n';
 
 export interface SymbolOption {
   symbol: string;
@@ -153,8 +154,9 @@ export const SymbolSearchModal: React.FC<SymbolSearchModalProps> = ({
   onToggleWatchlistSymbol,
   mode = 'select',
 }) => {
+  const { t } = useTranslation();
   const [search, setSearch] = useState(initialSearch);
-  const [category, setCategory] = useState<string>('Tümü');
+  const [category, setCategory] = useState<string>('all');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -172,19 +174,25 @@ export const SymbolSearchModal: React.FC<SymbolSearchModalProps> = ({
   }, [isOpen, initialSearch]);
 
   const categories = useMemo(() => [
-    'Tümü', 'Kripto', 'BIST', 'Hisse', 'Forex', 'Emtia', 'Endeksler'
-  ], []);
+    { id: 'all', label: t.modals.allMarkets },
+    { id: 'Kripto', label: t.modals.crypto },
+    { id: 'BIST', label: t.modals.bist },
+    { id: 'Hisse', label: t.modals.stocks },
+    { id: 'Forex', label: t.modals.forex },
+    { id: 'Emtia', label: t.modals.commodities },
+    { id: 'Endeksler', label: t.modals.indices },
+  ], [t]);
 
   const filtered = useMemo(() => {
     const q = search.toUpperCase().trim();
     const inCurrentCategory = ALL_TRADING_SYMBOLS.filter(s => {
       const matchQuery = !q || s.symbol.includes(q) || s.name.toUpperCase().includes(q) || (s.description && s.description.toUpperCase().includes(q));
-      const matchCat = category === 'Tümü' || s.category === category;
+      const matchCat = category === 'all' || s.category === category;
       return matchQuery && matchCat;
     });
 
     // If query was typed and current tab has 0 matches, fallback to searching all categories
-    if (inCurrentCategory.length === 0 && category !== 'Tümü' && q) {
+    if (inCurrentCategory.length === 0 && category !== 'all' && q) {
       return ALL_TRADING_SYMBOLS.filter(s => {
         return s.symbol.includes(q) || s.name.toUpperCase().includes(q) || (s.description && s.description.toUpperCase().includes(q));
       });
@@ -255,17 +263,17 @@ export const SymbolSearchModal: React.FC<SymbolSearchModalProps> = ({
         <div className="h-11 px-4 border-b border-tv-border flex items-center justify-between bg-tv-bg select-none">
           <div className="flex items-center space-x-2">
             <span className="font-bold text-white text-sm">
-              {mode === 'watchlist' ? 'İzleme Listesine Sembol Ekle' : 'Sembol Arama'}
+              {mode === 'watchlist' ? t.rightSidebar.addSymbol : t.modals.symbolSearchTitle}
             </span>
             <span className="text-[10px] bg-tv-blue/20 text-tv-blue font-mono font-bold px-1.5 py-0.5 rounded">
-              {mode === 'watchlist' ? `Listede ${watchlistSymbols.length} Sembol` : 'OpenChart Global'}
+              {mode === 'watchlist' ? `${watchlistSymbols.length} ${t.header.watchlist}` : 'OpenChart Studio'}
             </span>
           </div>
 
           <button 
             onClick={onClose} 
             className="p-1 rounded hover:bg-tv-hover text-tv-muted hover:text-white transition-colors"
-            title="Kapat (ESC)"
+            title={`${t.common.close} (ESC)`}
           >
             <X className="w-4 h-4" />
           </button>
@@ -277,7 +285,7 @@ export const SymbolSearchModal: React.FC<SymbolSearchModalProps> = ({
           <input
             ref={inputRef}
             type="text"
-            placeholder="Sembol veya şirket ara (Örn: BTCUSDT, SOL, THYAO, NVDA, EURUSD, XAUUSD...)"
+            placeholder={t.modals.symbolSearchPlaceholder}
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
@@ -304,18 +312,18 @@ export const SymbolSearchModal: React.FC<SymbolSearchModalProps> = ({
         <div className="px-3 py-2 border-b border-tv-border flex items-center space-x-1.5 bg-tv-card/50 select-none overflow-x-auto">
           {categories.map(cat => (
             <button
-              key={cat}
+              key={cat.id}
               onClick={() => {
-                setCategory(cat);
+                setCategory(cat.id);
                 setSelectedIndex(0);
               }}
               className={`px-3 py-1 rounded-full text-[11px] font-semibold whitespace-nowrap transition-colors flex items-center space-x-1 ${
-                category === cat 
+                category === cat.id 
                   ? 'bg-tv-blue text-white shadow-sm' 
                   : 'bg-tv-surface text-tv-muted hover:text-white hover:bg-tv-hover'
               }`}
             >
-              <span>{cat}</span>
+              <span>{cat.label}</span>
             </button>
           ))}
         </div>
@@ -326,7 +334,7 @@ export const SymbolSearchModal: React.FC<SymbolSearchModalProps> = ({
             <div className="flex items-center space-x-2">
               <span className="w-2 h-2 rounded-full bg-tv-blue animate-ping" />
               <span className="text-white text-xs font-semibold">
-                "{search.trim().toUpperCase()}" özel sembol olarak eklenebilir
+                "{search.trim().toUpperCase()}"
               </span>
             </div>
             <button
@@ -334,7 +342,7 @@ export const SymbolSearchModal: React.FC<SymbolSearchModalProps> = ({
               className="px-3 py-1 rounded bg-tv-blue hover:bg-blue-600 text-white font-bold text-xs flex items-center space-x-1 shadow-sm transition-colors"
             >
               <Plus className="w-3.5 h-3.5" />
-              <span>Listeye Ekle</span>
+              <span>{t.rightSidebar.addSymbol}</span>
             </button>
           </div>
         )}
@@ -343,14 +351,14 @@ export const SymbolSearchModal: React.FC<SymbolSearchModalProps> = ({
         <div className="flex-1 overflow-y-auto divide-y divide-tv-border/20 p-2 space-y-0.5">
           {filtered.length === 0 ? (
             <div className="text-center py-16 text-tv-muted flex flex-col items-center space-y-3">
-              <span className="text-sm">Eşleşen standart sembol bulunamadı.</span>
+              <span className="text-sm">{t.common.none}</span>
               {search.trim() && (
                 <button 
                   onClick={() => handleToggle(search.trim().toUpperCase())}
                   className="px-4 py-2 bg-tv-blue hover:bg-blue-600 text-white rounded-lg font-bold text-xs shadow-md transition-colors flex items-center space-x-1.5"
                 >
                   <Plus className="w-4 h-4" />
-                  <span>"{search.trim().toUpperCase()}" Sembolünü İzleme Listesine Ekle</span>
+                  <span>"{search.trim().toUpperCase()}" {t.rightSidebar.addSymbol}</span>
                 </button>
               )}
             </div>
@@ -417,17 +425,17 @@ export const SymbolSearchModal: React.FC<SymbolSearchModalProps> = ({
                             ? 'bg-tv-green/15 text-tv-green hover:bg-tv-red/20 hover:text-tv-red border border-tv-green/30 hover:border-tv-red/40'
                             : 'bg-tv-blue text-white hover:bg-blue-600 shadow-sm'
                         }`}
-                        title={isInWatchlist ? 'İzleme Listesinden Kaldır' : 'İzleme Listesine Ekle'}
+                        title={isInWatchlist ? t.common.delete : t.rightSidebar.addSymbol}
                       >
                         {isInWatchlist ? (
                           <>
                             <Check className="w-3.5 h-3.5" />
-                            <span>Listede</span>
+                            <span>{t.modals.addedBadge}</span>
                           </>
                         ) : (
                           <>
                             <Plus className="w-3.5 h-3.5" />
-                            <span>Ekle</span>
+                            <span>+</span>
                           </>
                         )}
                       </button>
@@ -437,10 +445,9 @@ export const SymbolSearchModal: React.FC<SymbolSearchModalProps> = ({
                     <button
                       onClick={() => handleOpenOnChart(s.symbol)}
                       className="px-2 py-1 rounded bg-tv-surface hover:bg-tv-hover border border-tv-border text-tv-muted hover:text-white text-xs flex items-center space-x-1 transition-colors"
-                      title="Bu Sembolün Grafiğini Aç"
+                      title={t.header.chartTypes}
                     >
                       <ExternalLink className="w-3 h-3" />
-                      <span className="hidden sm:inline">Grafik</span>
                     </button>
                   </div>
                 </div>
@@ -452,11 +459,11 @@ export const SymbolSearchModal: React.FC<SymbolSearchModalProps> = ({
         {/* Footer Navigation Tips */}
         <div className="h-9 border-t border-tv-border px-4 bg-tv-bg flex items-center justify-between text-[11px] text-tv-muted select-none">
           <div className="flex items-center space-x-3">
-            <span><strong className="text-white">↑↓</strong> Gezin</span>
-            <span><strong className="text-white">Enter</strong> {mode === 'watchlist' ? 'Ekle/Çıkar' : 'Grafiği Aç'}</span>
-            <span><strong className="text-white">ESC</strong> Kapat</span>
+            <span><strong className="text-white">↑↓</strong> Navigate</span>
+            <span><strong className="text-white">Enter</strong> {mode === 'watchlist' ? '+/-' : 'Open'}</span>
+            <span><strong className="text-white">ESC</strong> {t.common.close}</span>
           </div>
-          <span>OpenChart Akıllı Sembol Kataloğu</span>
+          <span>OpenChart Studio</span>
         </div>
       </div>
     </div>

@@ -69,6 +69,18 @@ Built with **React 19**, **TypeScript**, **Lightweight Charts v5**, and **Tailwi
 ### ⏰ Bar Replay Simulator
 * **Market Replay**: Rewind historical market data to any past candle and step forward bar-by-bar or play automatically with adjustable speed.
 
+### 🌐 Native Multilingual Internationalization (7 Languages)
+* Full platform localization across the 7 most popular global trading languages:
+  * 🇹🇷 **Türkçe** (Default)
+  * 🇺🇸 **English**
+  * 🇪🇸 **Español**
+  * 🇩🇪 **Deutsch**
+  * 🇫🇷 **Français**
+  * 🇷🇺 **Русский**
+  * 🇨🇳 **简体中文**
+* **Instant Dynamic Switching**: Zero-latency O(1) in-memory dictionary access with persistent language preference storage (`openchart_language`).
+* **100% Comprehensive Coverage**: Header menus, sidebars, indicator settings, drawing suite, all 10 modal dialogues, paper trading engine, and quantitative backtester.
+
 ---
 
 ## 🚀 Quick Start (Run Locally)

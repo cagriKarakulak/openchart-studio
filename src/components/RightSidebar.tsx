@@ -42,6 +42,7 @@ import {
   calculateSupertrend,
   calculateATR
 } from '../indicators/math';
+import { useTranslation } from '../i18n';
 
 interface RightSidebarProps {
   watchlist: WatchlistItem[];
@@ -90,6 +91,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
   onToggleIndicatorVisibility,
   onClose,
 }) => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<TabType>('watchlist');
   const [newSymbolInput, setNewSymbolInput] = useState('');
   const [isAdding, setIsAdding] = useState(false);
@@ -316,18 +318,18 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
     let maBuy = 0;
     let maSell = 0;
     let maNeutral = 0;
-    const maItems: { name: string; value: number; signal: 'Alış' | 'Satış' | 'Nötr' }[] = [];
+    const maItems: { name: string; value: number; signal: string }[] = [];
 
     for (const conf of maConfigs) {
       const res = conf.fn();
       if (res && res.length > 0) {
         const lastVal = res[res.length - 1].value;
-        let signal: 'Alış' | 'Satış' | 'Nötr' = 'Nötr';
+        let signal: string = t.rightSidebar.neutralSignal;
         if (currentPrice > lastVal * 1.0005) {
-          signal = 'Alış';
+          signal = t.rightSidebar.buySignal;
           maBuy++;
         } else if (currentPrice < lastVal * 0.9995) {
-          signal = 'Satış';
+          signal = t.rightSidebar.sellSignal;
           maSell++;
         } else {
           maNeutral++;
@@ -340,15 +342,15 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
     let oscBuy = 0;
     let oscSell = 0;
     let oscNeutral = 0;
-    const oscItems: { name: string; value: number; signal: 'Alış' | 'Satış' | 'Nötr' }[] = [];
+    const oscItems: { name: string; value: number; signal: string }[] = [];
 
     // 1. RSI
     const rsiRes = calculateRSI(candles, 14);
     if (rsiRes && rsiRes.length > 0) {
       const rsiVal = rsiRes[rsiRes.length - 1].value;
-      let sig: 'Alış' | 'Satış' | 'Nötr' = 'Nötr';
-      if (rsiVal < 30) { sig = 'Alış'; oscBuy++; }
-      else if (rsiVal > 70) { sig = 'Satış'; oscSell++; }
+      let sig: string = t.rightSidebar.neutralSignal;
+      if (rsiVal < 30) { sig = t.rightSidebar.buySignal; oscBuy++; }
+      else if (rsiVal > 70) { sig = t.rightSidebar.sellSignal; oscSell++; }
       else { oscNeutral++; }
       oscItems.push({ name: 'RSI (14)', value: rsiVal, signal: sig });
     }
@@ -357,9 +359,9 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
     const stochRes = calculateStochastic(candles, 14, 3, 3);
     if (stochRes && stochRes.length > 0) {
       const kVal = stochRes[stochRes.length - 1].k;
-      let sig: 'Alış' | 'Satış' | 'Nötr' = 'Nötr';
-      if (kVal < 20) { sig = 'Alış'; oscBuy++; }
-      else if (kVal > 80) { sig = 'Satış'; oscSell++; }
+      let sig: string = t.rightSidebar.neutralSignal;
+      if (kVal < 20) { sig = t.rightSidebar.buySignal; oscBuy++; }
+      else if (kVal > 80) { sig = t.rightSidebar.sellSignal; oscSell++; }
       else { oscNeutral++; }
       oscItems.push({ name: 'Stochastic %K', value: kVal, signal: sig });
     }
@@ -368,9 +370,9 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
     const cciRes = calculateCCI(candles, 20);
     if (cciRes && cciRes.length > 0) {
       const cciVal = cciRes[cciRes.length - 1].value;
-      let sig: 'Alış' | 'Satış' | 'Nötr' = 'Nötr';
-      if (cciVal < -100) { sig = 'Alış'; oscBuy++; }
-      else if (cciVal > 100) { sig = 'Satış'; oscSell++; }
+      let sig: string = t.rightSidebar.neutralSignal;
+      if (cciVal < -100) { sig = t.rightSidebar.buySignal; oscBuy++; }
+      else if (cciVal > 100) { sig = t.rightSidebar.sellSignal; oscSell++; }
       else { oscNeutral++; }
       oscItems.push({ name: 'CCI (20)', value: cciVal, signal: sig });
     }
@@ -379,9 +381,9 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
     const macdRes = calculateMACD(candles, 12, 26, 9);
     if (macdRes && macdRes.length > 0) {
       const histVal = macdRes[macdRes.length - 1].histogram;
-      let sig: 'Alış' | 'Satış' | 'Nötr' = 'Nötr';
-      if (histVal > 0) { sig = 'Alış'; oscBuy++; }
-      else if (histVal < 0) { sig = 'Satış'; oscSell++; }
+      let sig: string = t.rightSidebar.neutralSignal;
+      if (histVal > 0) { sig = t.rightSidebar.buySignal; oscBuy++; }
+      else if (histVal < 0) { sig = t.rightSidebar.sellSignal; oscSell++; }
       else { oscNeutral++; }
       oscItems.push({ name: 'MACD Hist', value: histVal, signal: sig });
     }
@@ -390,9 +392,9 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
     const aoRes = calculateAwesomeOscillator(candles);
     if (aoRes && aoRes.length > 0) {
       const aoVal = aoRes[aoRes.length - 1].value;
-      let sig: 'Alış' | 'Satış' | 'Nötr' = 'Nötr';
-      if (aoVal > 0) { sig = 'Alış'; oscBuy++; }
-      else if (aoVal < 0) { sig = 'Satış'; oscSell++; }
+      let sig: string = t.rightSidebar.neutralSignal;
+      if (aoVal > 0) { sig = t.rightSidebar.buySignal; oscBuy++; }
+      else if (aoVal < 0) { sig = t.rightSidebar.sellSignal; oscSell++; }
       else { oscNeutral++; }
       oscItems.push({ name: 'Awesome Osc', value: aoVal, signal: sig });
     }
@@ -402,12 +404,12 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
     const totalSell = maSell + oscSell;
     const totalSignals = totalBuy + totalSell + maNeutral + oscNeutral || 1;
 
-    let summary: string = 'NÖTR';
-    if (totalBuy >= totalSell + 4) summary = 'GÜÇLÜ ALIŞ';
-    else if (totalBuy > totalSell) summary = 'ALIŞ';
-    else if (totalSell >= totalBuy + 4) summary = 'GÜÇLÜ SATIŞ';
-    else if (totalSell > totalBuy) summary = 'SATIŞ';
-    else summary = 'NÖTR';
+    let summary: string = t.rightSidebar.neutralSignal;
+    if (totalBuy >= totalSell + 4) summary = t.rightSidebar.strongBuy;
+    else if (totalBuy > totalSell) summary = t.rightSidebar.buySignal;
+    else if (totalSell >= totalBuy + 4) summary = t.rightSidebar.strongSell;
+    else if (totalSell > totalBuy) summary = t.rightSidebar.sellSignal;
+    else summary = t.rightSidebar.neutralSignal;
 
     // Gauge Score (0 - 100)
     const score = Math.min(100, Math.max(0, Math.round(((totalBuy - totalSell) / totalSignals) * 50 + 50)));
@@ -418,7 +420,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
       ma: { buy: maBuy, sell: maSell, neutral: maNeutral, items: maItems },
       osc: { buy: oscBuy, sell: oscSell, neutral: oscNeutral, items: oscItems },
     };
-  }, [candles, activeTab]);
+  }, [candles, activeTab, t]);
 
 
   return (
@@ -434,7 +436,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
           try { localStorage.setItem('openchart_right_sidebar_width', '288'); } catch (_) {}
         }}
         className="absolute -left-1.5 top-0 bottom-0 w-3 cursor-ew-resize hover:bg-tv-blue/70 active:bg-tv-blue transition-colors z-30 select-none flex items-center justify-center group"
-        title="İzleme Listesi Genişliğini Ayarlamak İçin Sürükleyin (Çift tıkla sıfırla)"
+        title={t.subPane.resizeTooltip}
       >
         <div className="w-0.5 h-8 bg-tv-border/80 group-hover:bg-tv-blue rounded-full transition-colors" />
       </div>
@@ -451,7 +453,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
             className={`p-1.5 rounded transition-colors ${
               activeTab === 'watchlist' ? 'bg-tv-hover text-tv-blue' : 'text-tv-muted hover:text-tv-text'
             }`}
-            title="İzleme Listesi"
+            title={t.rightSidebar.watchlistTab}
           >
             <SlidersHorizontal className="w-4 h-4" />
           </button>
@@ -460,7 +462,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
             className={`p-1.5 rounded transition-colors relative ${
               activeTab === 'alerts' ? 'bg-tv-hover text-tv-blue' : 'text-tv-muted hover:text-tv-text'
             }`}
-            title="Fiyat Alarmları"
+            title={t.rightSidebar.alertsTab}
           >
             <Bell className="w-4 h-4" />
             {alerts.filter(a => !a.triggered).length > 0 && (
@@ -474,7 +476,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
             className={`p-1.5 rounded transition-colors ${
               activeTab === 'dataWindow' ? 'bg-tv-hover text-tv-blue' : 'text-tv-muted hover:text-tv-text'
             }`}
-            title="Veri Penceresi (Data Window)"
+            title={t.rightSidebar.dataWindowTab}
           >
             <TableProperties className="w-4 h-4" />
           </button>
@@ -483,7 +485,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
             className={`p-1.5 rounded transition-colors ${
               activeTab === 'technical' ? 'bg-tv-hover text-tv-blue' : 'text-tv-muted hover:text-tv-text'
             }`}
-            title="Teknik Analiz Göstergesi"
+            title={t.rightSidebar.technicalTab}
           >
             <Compass className="w-4 h-4" />
           </button>
@@ -492,7 +494,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
             className={`p-1.5 rounded transition-colors ${
               activeTab === 'depth' ? 'bg-tv-hover text-tv-blue' : 'text-tv-muted hover:text-tv-text'
             }`}
-            title="Piyasa Derinliği (DOM)"
+            title={t.rightSidebar.depthTab}
           >
             <Volume2 className="w-4 h-4" />
           </button>
@@ -501,7 +503,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
             className={`p-1.5 rounded transition-colors ${
               activeTab === 'news' ? 'bg-tv-hover text-tv-blue' : 'text-tv-muted hover:text-tv-text'
             }`}
-            title="Haberler & Takvim"
+            title={t.rightSidebar.newsCalendarTab}
           >
             <Newspaper className="w-4 h-4" />
           </button>
@@ -510,7 +512,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
             className={`p-1.5 rounded transition-colors ${
               activeTab === 'objects' ? 'bg-tv-hover text-tv-blue' : 'text-tv-muted hover:text-tv-text'
             }`}
-            title="Nesne Ağacı (Çizimler & Göstergeler)"
+            title={t.rightSidebar.objectTreeTab}
           >
             <Layers className="w-4 h-4" />
           </button>
@@ -519,7 +521,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
         <button
           onClick={onClose}
           className="p-1 rounded hover:bg-tv-hover text-tv-muted hover:text-tv-text"
-          title="Paneli Kapat"
+          title={t.common.close}
         >
           <X className="w-4 h-4" />
         </button>
@@ -534,7 +536,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
             <div className="p-2 border-b border-tv-border flex items-center justify-between bg-tv-panel">
               <div className="flex items-center space-x-1.5">
                 <span className="text-[11px] font-bold text-tv-muted uppercase tracking-wider">
-                  İzleme Listesi ({watchlist.filter(w => !w.isSectionHeader).length})
+                  {t.rightSidebar.watchlistTab} ({watchlist.filter(w => !w.isSectionHeader).length})
                 </span>
               </div>
 
@@ -549,10 +551,10 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
                     }
                   }}
                   className="px-2 py-1 bg-tv-blue hover:bg-tv-blue-hover text-white rounded text-[11px] font-medium flex items-center space-x-1 transition-colors shadow-sm"
-                  title="Sembol Ekle (+)"
+                  title={t.rightSidebar.addSymbol}
                 >
                   <Plus className="w-3.5 h-3.5" />
-                  <span>Sembol Ekle</span>
+                  <span>{t.rightSidebar.addSymbol}</span>
                 </button>
 
                 {/* Bölüm Ekle */}
@@ -565,7 +567,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
                     className={`p-1 rounded hover:bg-tv-hover transition-colors ${
                       isAddingSection ? 'text-tv-blue bg-tv-hover' : 'text-tv-muted hover:text-tv-text'
                     }`}
-                    title="Bölüm Başlığı Ekle"
+                    title={t.common.custom}
                   >
                     <FolderPlus className="w-3.5 h-3.5" />
                   </button>
@@ -580,7 +582,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
                   className={`p-1 rounded hover:bg-tv-hover transition-colors ${
                     showSearchInput || watchlistSearch ? 'text-tv-blue bg-tv-hover' : 'text-tv-muted hover:text-tv-text'
                   }`}
-                  title="Listede Ara"
+                  title={t.common.search}
                 >
                   <Search className="w-3.5 h-3.5" />
                 </button>
@@ -592,7 +594,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
                     className={`p-1 rounded hover:bg-tv-hover transition-colors ${
                       sortMode !== 'default' ? 'text-tv-blue bg-tv-hover' : 'text-tv-muted hover:text-tv-text'
                     }`}
-                    title="Sırala"
+                    title={t.common.type}
                   >
                     <ArrowUpDown className="w-3.5 h-3.5" />
                   </button>
@@ -605,7 +607,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
                           sortMode === 'default' ? 'text-tv-blue font-bold' : 'text-tv-text'
                         }`}
                       >
-                        <span>Varsayılan Sıra</span>
+                        <span>{t.common.reset}</span>
                         {sortMode === 'default' && <Check className="w-3.5 h-3.5" />}
                       </button>
                       <button
@@ -614,7 +616,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
                           sortMode === 'symbol-asc' ? 'text-tv-blue font-bold' : 'text-tv-text'
                         }`}
                       >
-                        <span>Sembol (A - Z)</span>
+                        <span>{t.rightSidebar.symbol} (A - Z)</span>
                         {sortMode === 'symbol-asc' && <Check className="w-3.5 h-3.5" />}
                       </button>
                       <button
@@ -623,7 +625,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
                           sortMode === 'symbol-desc' ? 'text-tv-blue font-bold' : 'text-tv-text'
                         }`}
                       >
-                        <span>Sembol (Z - A)</span>
+                        <span>{t.rightSidebar.symbol} (Z - A)</span>
                         {sortMode === 'symbol-desc' && <Check className="w-3.5 h-3.5" />}
                       </button>
                       <button
@@ -632,7 +634,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
                           sortMode === 'change-desc' ? 'text-tv-blue font-bold' : 'text-tv-text'
                         }`}
                       >
-                        <span>% Değişim (Azalan)</span>
+                        <span>{t.rightSidebar.changePct} (↓)</span>
                         {sortMode === 'change-desc' && <Check className="w-3.5 h-3.5" />}
                       </button>
                       <button
@@ -641,7 +643,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
                           sortMode === 'change-asc' ? 'text-tv-blue font-bold' : 'text-tv-text'
                         }`}
                       >
-                        <span>% Değişim (Artan)</span>
+                        <span>{t.rightSidebar.changePct} (↑)</span>
                         {sortMode === 'change-asc' && <Check className="w-3.5 h-3.5" />}
                       </button>
                       <button
@@ -650,7 +652,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
                           sortMode === 'price-desc' ? 'text-tv-blue font-bold' : 'text-tv-text'
                         }`}
                       >
-                        <span>Fiyat (Azalan)</span>
+                        <span>{t.rightSidebar.lastPrice} (↓)</span>
                         {sortMode === 'price-desc' && <Check className="w-3.5 h-3.5" />}
                       </button>
                     </div>
@@ -665,7 +667,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
                 <Search className="w-3.5 h-3.5 text-tv-muted flex-shrink-0" />
                 <input
                   type="text"
-                  placeholder="İzleme listesinde ara..."
+                  placeholder={t.common.search}
                   value={watchlistSearch}
                   onChange={(e) => setWatchlistSearch(e.target.value)}
                   className="flex-1 bg-transparent text-xs text-white placeholder-tv-muted focus:outline-none"
@@ -684,7 +686,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
               <form onSubmit={handleAddSection} className="p-2 border-b border-tv-border bg-tv-card flex gap-1">
                 <input
                   type="text"
-                  placeholder="Bölüm Adı (Örn: Kripto, BIST 100, Favoriler)"
+                  placeholder={t.common.custom}
                   value={newSectionTitle}
                   onChange={(e) => setNewSectionTitle(e.target.value)}
                   className="flex-1 bg-tv-bg border border-tv-border rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-tv-blue"
@@ -694,14 +696,14 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
                   type="submit"
                   className="bg-tv-blue text-white px-2.5 py-1 rounded text-xs hover:bg-tv-blue-hover font-medium"
                 >
-                  Ekle
+                  {t.common.apply}
                 </button>
                 <button
                   type="button"
                   onClick={() => setIsAddingSection(false)}
                   className="px-2 py-1 rounded text-xs text-tv-muted hover:text-white"
                 >
-                  İptal
+                  {t.common.cancel}
                 </button>
               </form>
             )}
@@ -711,7 +713,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
               <form onSubmit={handleAddSubmit} className="p-2 border-b border-tv-border bg-tv-card flex gap-1">
                 <input
                   type="text"
-                  placeholder="Örn: SOLUSDT, AVAXUSDT"
+                  placeholder="SOLUSDT..."
                   value={newSymbolInput}
                   onChange={(e) => setNewSymbolInput(e.target.value)}
                   className="flex-1 bg-tv-bg border border-tv-border rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-tv-blue uppercase"
@@ -721,16 +723,16 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
                   type="submit"
                   className="bg-tv-blue text-white px-2 py-1 rounded text-xs hover:bg-tv-blue-hover"
                 >
-                  Ekle
+                  {t.common.apply}
                 </button>
               </form>
             )}
 
             {/* Watchlist Table Headers */}
             <div className="grid grid-cols-12 px-2.5 py-1 text-[10px] text-tv-muted font-semibold uppercase tracking-wider bg-tv-bg/50 border-b border-tv-border/50">
-              <span className="col-span-7">Sembol</span>
-              <span className="col-span-3 text-right">Son Fiyat</span>
-              <span className="col-span-2 text-right">Değ. %</span>
+              <span className="col-span-7">{t.rightSidebar.symbol}</span>
+              <span className="col-span-3 text-right">{t.rightSidebar.lastPrice}</span>
+              <span className="col-span-2 text-right">{t.rightSidebar.changePct}</span>
             </div>
 
             {/* Items List */}
@@ -738,7 +740,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
               {processedWatchlist.length === 0 ? (
                 <div className="p-6 text-center text-tv-muted space-y-2">
                   <p className="text-xs">
-                    {watchlistSearch ? 'Eşleşen sembol bulunamadı.' : 'İzleme listeniz boş.'}
+                    {t.rightSidebar.noWatchlist}
                   </p>
                   <button
                     onClick={() => {
@@ -748,7 +750,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
                     className="text-xs text-tv-blue hover:underline inline-flex items-center space-x-1"
                   >
                     <Plus className="w-3 h-3" />
-                    <span>Sembol Ekle</span>
+                    <span>{t.rightSidebar.addSymbol}</span>
                   </button>
                 </div>
               ) : (
@@ -865,18 +867,18 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
           <div className="p-3 space-y-4">
             <div className="border-b border-tv-border pb-2">
               <span className="text-[11px] font-bold text-tv-muted uppercase tracking-wider">
-                {currentSymbol} Teknik Analiz Göstergesi
+                {currentSymbol} {t.rightSidebar.technicalTab}
               </span>
             </div>
 
             {/* Gauge Dial / Bar Meter */}
             <div className="bg-tv-card p-3 rounded border border-tv-border flex flex-col items-center">
               <span className="text-[10px] text-tv-muted uppercase font-bold tracking-wider mb-1">
-                Özet Konsensüs
+                {t.rightSidebar.summary}
               </span>
               <div className={`text-base font-bold ${
-                technicalAnalysis.summary.includes('ALIŞ') ? 'text-tv-green' :
-                technicalAnalysis.summary.includes('SATIŞ') ? 'text-tv-red' : 'text-tv-blue'
+                technicalAnalysis.summary === t.rightSidebar.buySignal || technicalAnalysis.summary === t.rightSidebar.strongBuy ? 'text-tv-green' :
+                technicalAnalysis.summary === t.rightSidebar.sellSignal || technicalAnalysis.summary === t.rightSidebar.strongSell ? 'text-tv-red' : 'text-tv-blue'
               }`}>
                 {technicalAnalysis.summary}
               </div>
@@ -890,9 +892,9 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
                   />
                 </div>
                 <div className="flex justify-between text-[9px] text-tv-muted mt-1 font-mono">
-                  <span>Güçlü Satış</span>
-                  <span>Nötr</span>
-                  <span>Güçlü Alış</span>
+                  <span>{t.rightSidebar.strongSell}</span>
+                  <span>{t.rightSidebar.neutralSignal}</span>
+                  <span>{t.rightSidebar.strongBuy}</span>
                 </div>
               </div>
 
@@ -902,19 +904,19 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
                   <div className="text-tv-red font-bold text-sm font-mono">
                     {technicalAnalysis.ma.sell + technicalAnalysis.osc.sell}
                   </div>
-                  <div className="text-[9px] text-tv-muted">Satış</div>
+                  <div className="text-[9px] text-tv-muted">{t.rightSidebar.sellSignal}</div>
                 </div>
                 <div className="bg-tv-bg/50 p-1 rounded">
                   <div className="text-tv-muted font-bold text-sm font-mono">
                     {technicalAnalysis.ma.neutral + technicalAnalysis.osc.neutral}
                   </div>
-                  <div className="text-[9px] text-tv-muted">Nötr</div>
+                  <div className="text-[9px] text-tv-muted">{t.rightSidebar.neutralSignal}</div>
                 </div>
                 <div className="bg-tv-bg/50 p-1 rounded">
                   <div className="text-tv-green font-bold text-sm font-mono">
                     {technicalAnalysis.ma.buy + technicalAnalysis.osc.buy}
                   </div>
-                  <div className="text-[9px] text-tv-muted">Alış</div>
+                  <div className="text-[9px] text-tv-muted">{t.rightSidebar.buySignal}</div>
                 </div>
               </div>
             </div>
@@ -922,9 +924,9 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
             {/* Oscillators Breakdown */}
             <div className="space-y-1.5">
               <div className="flex justify-between items-center text-[10px] font-bold text-tv-muted uppercase tracking-wider">
-                <span>Osilatörler</span>
+                <span>{t.rightSidebar.oscillators}</span>
                 <span className="font-mono text-white">
-                  {technicalAnalysis.osc.buy} Alış / {technicalAnalysis.osc.sell} Satış
+                  {technicalAnalysis.osc.buy} {t.rightSidebar.buySignal} / {technicalAnalysis.osc.sell} {t.rightSidebar.sellSignal}
                 </span>
               </div>
               <div className="bg-tv-card rounded border border-tv-border divide-y divide-tv-border/40 text-[11px]">
@@ -934,8 +936,8 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
                     <div className="flex items-center space-x-2">
                       <span className="font-mono text-tv-text">{it.value.toFixed(2)}</span>
                       <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold font-mono ${
-                        it.signal === 'Alış' ? 'bg-tv-green/15 text-tv-green' :
-                        it.signal === 'Satış' ? 'bg-tv-red/15 text-tv-red' : 'bg-tv-muted/15 text-tv-muted'
+                        it.signal === t.rightSidebar.buySignal ? 'bg-tv-green/15 text-tv-green' :
+                        it.signal === t.rightSidebar.sellSignal ? 'bg-tv-red/15 text-tv-red' : 'bg-tv-muted/15 text-tv-muted'
                       }`}>
                         {it.signal}
                       </span>
@@ -948,9 +950,9 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
             {/* Moving Averages Breakdown */}
             <div className="space-y-1.5">
               <div className="flex justify-between items-center text-[10px] font-bold text-tv-muted uppercase tracking-wider">
-                <span>Hareketli Ortalamalar</span>
+                <span>{t.rightSidebar.movingAverages}</span>
                 <span className="font-mono text-white">
-                  {technicalAnalysis.ma.buy} Alış / {technicalAnalysis.ma.sell} Satış
+                  {technicalAnalysis.ma.buy} {t.rightSidebar.buySignal} / {technicalAnalysis.ma.sell} {t.rightSidebar.sellSignal}
                 </span>
               </div>
               <div className="bg-tv-card rounded border border-tv-border divide-y divide-tv-border/40 text-[11px]">
@@ -988,7 +990,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
                   }`}
                 >
                   <Newspaper className="w-3 h-3" />
-                  <span>Haberler</span>
+                  <span>{t.rightSidebar.newsTitle}</span>
                 </button>
                 <button
                   onClick={() => setNewsSubTab('calendar')}
@@ -999,13 +1001,13 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
                   }`}
                 >
                   <Calendar className="w-3 h-3" />
-                  <span>Ekonomik Takvim</span>
+                  <span>{t.rightSidebar.calendarTitle}</span>
                 </button>
               </div>
 
               <div className="flex items-center space-x-1.5">
                 {newsLastFetchTime && (
-                  <span className="text-[9px] text-tv-muted font-mono hidden sm:inline" title="Son Güncelleme">
+                  <span className="text-[9px] text-tv-muted font-mono hidden sm:inline">
                     {newsLastFetchTime}
                   </span>
                 )}
@@ -1013,7 +1015,6 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
                   onClick={() => loadNewsAndCalendar(true)}
                   disabled={isNewsLoading}
                   className="p-1 rounded hover:bg-tv-hover text-tv-muted hover:text-white transition-colors disabled:opacity-50"
-                  title="Şimdi Yenile (Canlı Akış)"
                 >
                   <RefreshCw className={`w-3.5 h-3.5 ${isNewsLoading ? 'animate-spin text-tv-blue' : ''}`} />
                 </button>
@@ -1024,7 +1025,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
             {newsSubTab === 'news' ? (
               <div className="flex items-center justify-between text-[11px]">
                 <span className="text-[10px] font-bold text-tv-muted uppercase tracking-wider">
-                  Canlı Akış ({filteredNews.length})
+                  {t.rightSidebar.newsTitle} ({filteredNews.length})
                 </span>
                 <div className="flex items-center space-x-1">
                   <button
@@ -1035,7 +1036,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
                         : 'text-tv-muted hover:text-white'
                     }`}
                   >
-                    Tümü
+                    {t.common.all}
                   </button>
                   <button
                     onClick={() => setNewsFilter('symbol')}
@@ -1052,7 +1053,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
             ) : (
               <div className="flex items-center justify-between text-[11px]">
                 <span className="text-[10px] font-bold text-tv-muted uppercase tracking-wider">
-                  Makro Takvim ({filteredEvents.length})
+                  {t.rightSidebar.calendarTitle} ({filteredEvents.length})
                 </span>
                 <div className="flex items-center space-x-1">
                   <button
@@ -1063,7 +1064,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
                         : 'text-tv-muted hover:text-white'
                     }`}
                   >
-                    Tümü
+                    {t.common.all}
                   </button>
                   <button
                     onClick={() => setCalendarImpactFilter('high')}
@@ -1074,7 +1075,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
                     }`}
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-tv-red" />
-                    <span>Yüksek Etki</span>
+                    <span>{t.rightSidebar.highImpact}</span>
                   </button>
                 </div>
               </div>
@@ -1213,15 +1214,15 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
 
                       <div className="mt-2 grid grid-cols-3 gap-1 bg-tv-bg/70 p-1.5 rounded border border-tv-border/50 text-center font-mono text-[9px]">
                         <div>
-                          <span className="text-tv-muted block font-sans text-[8px]">Beklenti</span>
+                          <span className="text-tv-muted block font-sans text-[8px]">{t.rightSidebar.forecast}</span>
                           <span className="font-bold text-white">{ev.forecast || '-'}</span>
                         </div>
                         <div>
-                          <span className="text-tv-muted block font-sans text-[8px]">Önceki</span>
+                          <span className="text-tv-muted block font-sans text-[8px]">{t.rightSidebar.previous}</span>
                           <span className="text-tv-muted">{ev.previous || '-'}</span>
                         </div>
                         <div>
-                          <span className="text-tv-muted block font-sans text-[8px]">Açıklanan</span>
+                          <span className="text-tv-muted block font-sans text-[8px]">{t.rightSidebar.actual}</span>
                           <span className={ev.actual ? 'font-bold text-tv-green' : 'text-tv-muted'}>
                             {ev.actual || '-'}
                           </span>
@@ -1240,22 +1241,22 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
           <div className="p-3 space-y-3">
             <div className="flex items-center justify-between border-b border-tv-border pb-2">
               <span className="text-[11px] font-bold text-tv-muted uppercase tracking-wider">
-                Fiyat Alarmları ({alerts.length})
+                {t.rightSidebar.priceAlerts} ({alerts.length})
               </span>
               <button
                 onClick={onOpenCreateAlert}
                 className="px-2 py-1 bg-tv-blue text-white rounded text-[11px] hover:bg-tv-blue-hover flex items-center space-x-1"
               >
                 <Plus className="w-3 h-3" />
-                <span>Alarm Kur</span>
+                <span>{t.rightSidebar.createAlert}</span>
               </button>
             </div>
 
             {alerts.length === 0 ? (
               <div className="text-center py-8 text-tv-muted">
                 <Bell className="w-8 h-8 mx-auto mb-2 opacity-30" />
-                <p>Henüz aktif bir fiyat alarmı bulunmuyor.</p>
-                <p className="text-[10px] mt-1">Belirlediğiniz fiyat seviyelerine ulaşıldığında sesli uyarı verilir.</p>
+                <p>{t.rightSidebar.noAlertsDesc}</p>
+                <p className="text-[10px] mt-1">{t.rightSidebar.alertAudioDesc}</p>
               </div>
             ) : (
               <div className="space-y-2">
@@ -1273,7 +1274,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
                       <button
                         onClick={() => onDeleteAlert(alert.id)}
                         className="text-tv-muted hover:text-tv-red p-1"
-                        title="Alarmı Sil"
+                        title={t.rightSidebar.deleteAlert}
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -1281,9 +1282,9 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
 
                     <div className="flex items-center justify-between mt-1 text-[11px]">
                       <span className="text-tv-muted">
-                        {alert.condition === 'cross_up' && 'Yukarı Kestiğinde (>=)'}
-                        {alert.condition === 'cross_down' && 'Aşağı Kestiğinde (<=)'}
-                        {alert.condition === 'crossing' && 'Fiyata Ulaştığında'}
+                        {alert.condition === 'cross_up' && t.rightSidebar.crossingUp}
+                        {alert.condition === 'cross_down' && t.rightSidebar.crossingDown}
+                        {alert.condition === 'crossing' && t.rightSidebar.crossingPrice}
                       </span>
                       <span className="font-mono font-bold text-white">
                         ${alert.targetPrice.toLocaleString()}
@@ -1299,7 +1300,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
                     <div className="mt-2 text-[9px] text-tv-muted flex items-center justify-between">
                       <span>{new Date(alert.createdAt).toLocaleTimeString()}</span>
                       <span className={alert.triggered ? 'text-tv-yellow' : 'text-tv-green'}>
-                        {alert.triggered ? 'Tetiklendi' : 'Aktif Bekliyor'}
+                        {alert.triggered ? t.rightSidebar.triggered : t.rightSidebar.activeWaiting}
                       </span>
                     </div>
                   </div>
@@ -1316,7 +1317,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
             return (
               <div className="p-6 text-center text-tv-muted">
                 <TableProperties className="w-8 h-8 mx-auto mb-2 opacity-30" />
-                <p>Mum verisi bulunamadı.</p>
+                <p>{t.rightSidebar.noCandleData}</p>
               </div>
             );
           }
@@ -1347,36 +1348,36 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
               {/* OHLCV Metrics */}
               <div className="p-3 space-y-2">
                 <div className="text-[10px] font-bold text-tv-muted uppercase tracking-wider">
-                  Bar Değerleri
+                  {t.rightSidebar.barValues}
                 </div>
                 <div className="grid grid-cols-2 gap-2 font-mono text-xs">
                   <div className="bg-tv-bg p-2 rounded border border-tv-border/40">
-                    <span className="text-[10px] text-tv-muted block font-sans">Açılış (Open)</span>
+                    <span className="text-[10px] text-tv-muted block font-sans">{t.rightSidebar.openPrice}</span>
                     <span className="font-bold text-white">${activeCandle.open.toFixed(2)}</span>
                   </div>
                   <div className="bg-tv-bg p-2 rounded border border-tv-border/40">
-                    <span className="text-[10px] text-tv-muted block font-sans">Kapanış (Close)</span>
+                    <span className="text-[10px] text-tv-muted block font-sans">{t.rightSidebar.closePrice}</span>
                     <span className={`font-bold ${colorClass}`}>${activeCandle.close.toFixed(2)}</span>
                   </div>
                   <div className="bg-tv-bg p-2 rounded border border-tv-border/40">
-                    <span className="text-[10px] text-tv-muted block font-sans">En Yüksek (High)</span>
+                    <span className="text-[10px] text-tv-muted block font-sans">{t.rightSidebar.highPrice}</span>
                     <span className="font-bold text-tv-green">${activeCandle.high.toFixed(2)}</span>
                   </div>
                   <div className="bg-tv-bg p-2 rounded border border-tv-border/40">
-                    <span className="text-[10px] text-tv-muted block font-sans">En Düşük (Low)</span>
+                    <span className="text-[10px] text-tv-muted block font-sans">{t.rightSidebar.lowPrice}</span>
                     <span className="font-bold text-tv-red">${activeCandle.low.toFixed(2)}</span>
                   </div>
                   <div className="bg-tv-bg p-2 rounded border border-tv-border/40">
-                    <span className="text-[10px] text-tv-muted block font-sans">Değişim (PnL)</span>
+                    <span className="text-[10px] text-tv-muted block font-sans">{t.rightSidebar.pnlChange}</span>
                     <span className={`font-bold ${colorClass}`}>{sign}{diff.toFixed(2)} ({sign}{pct.toFixed(2)}%)</span>
                   </div>
                   <div className="bg-tv-bg p-2 rounded border border-tv-border/40">
-                    <span className="text-[10px] text-tv-muted block font-sans">Hacim (Volume)</span>
+                    <span className="text-[10px] text-tv-muted block font-sans">{t.rightSidebar.volume}</span>
                     <span className="font-bold text-white">{activeCandle.volume.toLocaleString()}</span>
                   </div>
                 </div>
                 <div className="bg-tv-bg p-2 rounded border border-tv-border/40 flex justify-between items-center text-[11px] font-mono">
-                  <span className="text-tv-muted font-sans">Bar Aralığı (High - Low):</span>
+                  <span className="text-tv-muted font-sans">{t.rightSidebar.barRange}:</span>
                   <span className="text-white font-bold">${barRange.toFixed(2)}</span>
                 </div>
               </div>
@@ -1384,13 +1385,13 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
               {/* Active Indicators */}
               <div className="p-3 space-y-2 flex-1 overflow-y-auto">
                 <div className="text-[10px] font-bold text-tv-muted uppercase tracking-wider flex items-center justify-between">
-                  <span>Aktif Göstergeler ({indicators.length})</span>
-                  <span className="text-[9px] text-tv-muted font-normal">Canlı Değerler</span>
+                  <span>{t.rightSidebar.activeIndicators} ({indicators.length})</span>
+                  <span className="text-[9px] text-tv-muted font-normal">{t.rightSidebar.liveValues}</span>
                 </div>
 
                 {indicators.length === 0 ? (
                   <div className="text-[11px] text-tv-muted text-center py-4">
-                    Grafikte aktif gösterge yok.
+                    {t.rightSidebar.noIndicators}
                   </div>
                 ) : (
                   <div className="space-y-1.5">
@@ -1403,9 +1404,9 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
                             <span className="font-semibold text-white text-[11px]">{ind.name}</span>
                           </div>
                           <div className="flex items-center justify-between font-mono text-[11px] pt-0.5">
-                            <span className="text-[10px] text-tv-muted">{ind.pane === 'overlay' ? 'Grafik Üzeri' : 'Alt Panel'}</span>
+                            <span className="text-[10px] text-tv-muted">{ind.pane === 'overlay' ? t.rightSidebar.overlay : t.rightSidebar.subPanel}</span>
                             <span className="text-tv-blue font-bold">
-                              {ind.visible ? 'Hesaplandı / Aktif' : 'Gizli'}
+                              {ind.visible ? t.rightSidebar.calculatedActive : t.rightSidebar.hidden}
                             </span>
                           </div>
                         </div>
@@ -1423,17 +1424,17 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
           <div className="p-3 space-y-4">
             <div className="border-b border-tv-border pb-2">
               <span className="text-[11px] font-bold text-tv-muted uppercase tracking-wider">
-                Nesne Ağacı & Katmanlar
+                {t.rightSidebar.objectTreeLayers}
               </span>
             </div>
 
             {/* Active Indicators */}
             <div className="space-y-1.5">
               <div className="text-[10px] font-bold text-tv-muted uppercase tracking-wider">
-                Göstergeler ({indicators.length})
+                {t.rightSidebar.indicatorsHeader} ({indicators.length})
               </div>
               {indicators.length === 0 ? (
-                <div className="text-tv-muted text-[11px] italic">Aktif gösterge yok</div>
+                <div className="text-tv-muted text-[11px] italic">{t.rightSidebar.noIndicators}</div>
               ) : (
                 <div className="space-y-1">
                   {indicators.map((ind) => (
@@ -1447,14 +1448,14 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
                         <button
                           onClick={() => onToggleIndicatorVisibility(ind.id)}
                           className="p-1 hover:text-white text-tv-muted"
-                          title={ind.visible ? "Gizle" : "Göster"}
+                          title={ind.visible ? t.rightSidebar.hide : t.rightSidebar.show}
                         >
                           {ind.visible ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5 text-tv-red" />}
                         </button>
                         <button
                           onClick={() => onDeleteIndicator(ind.id)}
                           className="p-1 hover:text-tv-red text-tv-muted"
-                          title="Sil"
+                          title={t.common.delete}
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -1468,10 +1469,10 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
             {/* Active Drawings */}
             <div className="space-y-1.5">
               <div className="text-[10px] font-bold text-tv-muted uppercase tracking-wider">
-                Çizimler ({drawings.length})
+                {t.rightSidebar.drawingsHeader} ({drawings.length})
               </div>
               {drawings.length === 0 ? (
-                <div className="text-tv-muted text-[11px] italic">Aktif çizim yok</div>
+                <div className="text-tv-muted text-[11px] italic">{t.rightSidebar.noDrawings}</div>
               ) : (
                 <div className="space-y-1">
                   {drawings.map((draw) => (
@@ -1485,14 +1486,14 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
                         <button
                           onClick={() => onToggleDrawingVisibility(draw.id)}
                           className="p-1 hover:text-white text-tv-muted"
-                          title={draw.visible !== false ? "Gizle" : "Göster"}
+                          title={draw.visible !== false ? t.rightSidebar.hide : t.rightSidebar.show}
                         >
                           {draw.visible !== false ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5 text-tv-red" />}
                         </button>
                         <button
                           onClick={() => onDeleteDrawing(draw.id)}
                           className="p-1 hover:text-tv-red text-tv-muted"
-                          title="Sil"
+                          title={t.common.delete}
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -1510,9 +1511,9 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
           <div className="p-3 space-y-3">
             <div className="border-b border-tv-border pb-2 flex justify-between items-center">
               <span className="text-[11px] font-bold text-tv-muted uppercase tracking-wider">
-                {currentSymbol} Derinlik & Order Book
+                {currentSymbol} {t.rightSidebar.depthOrderBook}
               </span>
-              <span className="text-[10px] text-tv-green font-mono">Canlı Seviye 2</span>
+              <span className="text-[10px] text-tv-green font-mono">{t.rightSidebar.liveLevel2}</span>
             </div>
 
             {/* Asks (Sell orders - red) */}
@@ -1546,7 +1547,7 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
               return (
                 <div className="py-2 px-1 border-y border-tv-border/80 flex items-center justify-between font-mono bg-tv-card rounded">
                   <span className="text-base font-bold text-white">${price.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
-                  <span className="text-[10px] text-tv-muted">Spread: ~0.01%</span>
+                  <span className="text-[10px] text-tv-muted">{t.rightSidebar.spread}: ~0.01%</span>
                 </div>
               );
             })()}
@@ -1582,18 +1583,18 @@ export const RightSidebar: React.FC<RightSidebarProps> = React.memo(({
               return (
                 <div className="border-t border-tv-border pt-2 space-y-1.5 text-[11px]">
                   <div className="text-[10px] font-bold text-tv-muted uppercase tracking-wider">
-                    24s Piyasa İstatistikleri
+                    {t.rightSidebar.stats24h}
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-tv-muted">24s En Yüksek</span>
+                    <span className="text-tv-muted">{t.rightSidebar.high24h}</span>
                     <span className="font-mono text-white">${item.high24h.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-tv-muted">24s En Düşük</span>
+                    <span className="text-tv-muted">{t.rightSidebar.low24h}</span>
                     <span className="font-mono text-white">${item.low24h.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-tv-muted">24s Hacim</span>
+                    <span className="text-tv-muted">{t.rightSidebar.volume24h}</span>
                     <span className="font-mono text-white">{item.volume24h.toLocaleString()} {currentSymbol.replace('USDT', '')}</span>
                   </div>
                 </div>

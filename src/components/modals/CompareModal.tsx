@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Search, X, Plus, Check } from 'lucide-react';
+import { useTranslation } from '../../i18n';
 
 interface CompareModalProps {
   isOpen: boolean;
@@ -27,6 +28,7 @@ export const CompareModal: React.FC<CompareModalProps> = ({
   onClose,
   onSelectOverlay,
 }) => {
+  const { t } = useTranslation();
   const [search, setSearch] = useState('');
 
   if (!isOpen) return null;
@@ -46,7 +48,7 @@ export const CompareModal: React.FC<CompareModalProps> = ({
         <div className="h-11 border-b border-tv-border px-4 flex items-center justify-between">
           <div className="flex items-center space-x-1.5 font-bold text-white text-sm">
             <Plus className="w-4 h-4 text-tv-blue" />
-            <span>Sembol Karşılaştır ({currentSymbol} ile)</span>
+            <span>{t.modals.compareTitle} ({currentSymbol} {t.modals.compareWith})</span>
           </div>
           <button onClick={onClose} className="p-1 rounded hover:bg-tv-hover text-tv-muted hover:text-white">
             <X className="w-4 h-4" />
@@ -57,7 +59,7 @@ export const CompareModal: React.FC<CompareModalProps> = ({
           <Search className="w-4 h-4 text-tv-muted" />
           <input
             type="text"
-            placeholder="Karşılaştırmak için sembol ara (ETHUSDT, SOLUSDT...)"
+            placeholder={t.modals.compareSearchPlaceholder}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="flex-1 bg-transparent text-xs text-white focus:outline-none placeholder-tv-muted uppercase"
@@ -68,7 +70,7 @@ export const CompareModal: React.FC<CompareModalProps> = ({
         <div className="max-h-[300px] overflow-y-auto divide-y divide-tv-border/30 p-2">
           {activeOverlay && (
             <div className="p-2 mb-2 bg-tv-card rounded border border-tv-border flex items-center justify-between">
-              <span className="text-white font-medium">Aktif Karşılaştırma: <strong className="text-tv-blue">{activeOverlay}</strong></span>
+              <span className="text-white font-medium">{t.modals.activeCompare} <strong className="text-tv-blue">{activeOverlay}</strong></span>
               <button
                 onClick={() => {
                   onSelectOverlay(null);
@@ -76,7 +78,7 @@ export const CompareModal: React.FC<CompareModalProps> = ({
                 }}
                 className="px-2 py-0.5 rounded bg-tv-red/20 text-tv-red hover:bg-tv-red hover:text-white text-[11px]"
               >
-                Kaldır
+                {t.modals.removeCompareBtn}
               </button>
             </div>
           )}
@@ -102,7 +104,7 @@ export const CompareModal: React.FC<CompareModalProps> = ({
                   <Check className="w-4 h-4 text-tv-blue" />
                 ) : (
                   <span className="text-tv-blue text-xs font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
-                    Grafiğe Ekle +
+                    {t.modals.addToChartCompare}
                   </span>
                 )}
               </div>

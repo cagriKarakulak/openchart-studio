@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Play, TrendingUp, AlertTriangle, CheckCircle2, ShieldAlert } from 'lucide-react';
 import { CandleData } from '../../types';
 import { runBacktest, BacktestReport, StrategyConfig, StrategyType } from '../../services/backtestEngine';
+import { useTranslation } from '../../i18n';
 
 interface StrategyBacktestModalProps {
   isOpen: boolean;
@@ -18,6 +19,7 @@ export const StrategyBacktestModal: React.FC<StrategyBacktestModalProps> = ({
   candles,
   onClose,
 }) => {
+  const { t, language } = useTranslation();
   const [strategyType, setStrategyType] = useState<StrategyType>('EMA_CROSS');
   const [initialCapital, setInitialCapital] = useState<number>(10000);
   const [report, setReport] = useState<BacktestReport | null>(null);
@@ -66,12 +68,12 @@ export const StrategyBacktestModal: React.FC<StrategyBacktestModalProps> = ({
         {/* Header */}
         <div className="h-12 border-b border-tv-border px-4 flex items-center justify-between bg-tv-surface">
           <div className="flex items-center space-x-2">
-            <span className="font-bold text-white text-sm">Strateji & Backtest Simülatörü</span>
+            <span className="font-bold text-white text-sm">{t.modals.backtestSimulatorTitle}</span>
             <span className="text-[10px] bg-tv-blue/20 text-tv-blue px-2 py-0.5 rounded font-mono font-bold">
               {symbol} ({timeframe})
             </span>
             <span className="text-[10px] bg-tv-green/20 text-tv-green px-2 py-0.5 rounded font-mono">
-              Sıfır Veri Sızıntısı & Komisyon Dahil
+              {t.modals.zeroLeakageNotice}
             </span>
           </div>
           <button onClick={onClose} className="p-1 rounded hover:bg-tv-hover text-tv-muted hover:text-white">
@@ -83,22 +85,22 @@ export const StrategyBacktestModal: React.FC<StrategyBacktestModalProps> = ({
         <div className="p-3 border-b border-tv-border bg-tv-bg flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center space-x-3">
             <div>
-              <label className="text-[10px] text-tv-muted block mb-0.5">Strateji Modeli</label>
+              <label className="text-[10px] text-tv-muted block mb-0.5">{t.modals.strategyModel}</label>
               <select
                 value={strategyType}
                 onChange={(e: any) => setStrategyType(e.target.value)}
                 className="bg-tv-surface border border-tv-border rounded px-2.5 py-1 text-white text-xs focus:outline-none focus:border-tv-blue"
               >
-                <option value="EMA_CROSS">EMA Kesişimi (Golden / Death Cross 9-21)</option>
-                <option value="RSI_REVERSAL">RSI Aşırı Satım Dönüşü (Oversold 30-70)</option>
-                <option value="SUPERTREND_FOLLOW">Supertrend Trend Takip Stratejisi</option>
-                <option value="MACD_CROSS">MACD Sinyal Kesişimi (12, 26, 9)</option>
-                <option value="BOLLINGER_REVERSAL">Bollinger Bantları Ortalama Dönüş</option>
+                <option value="EMA_CROSS">EMA Cross (9-21)</option>
+                <option value="RSI_REVERSAL">RSI Reversal (30-70)</option>
+                <option value="SUPERTREND_FOLLOW">Supertrend Following</option>
+                <option value="MACD_CROSS">MACD Cross (12, 26, 9)</option>
+                <option value="BOLLINGER_REVERSAL">Bollinger Bands Mean Reversion</option>
               </select>
             </div>
 
             <div>
-              <label className="text-[10px] text-tv-muted block mb-0.5">Başlangıç Bakiyesi ($)</label>
+              <label className="text-[10px] text-tv-muted block mb-0.5">{t.modals.initialCapitalLabel}</label>
               <input
                 type="number"
                 value={initialCapital}
@@ -114,7 +116,7 @@ export const StrategyBacktestModal: React.FC<StrategyBacktestModalProps> = ({
             className="px-3 py-1.5 bg-tv-blue hover:bg-tv-blue/90 text-white font-medium rounded flex items-center space-x-1.5 transition-colors"
           >
             <Play className="w-3.5 h-3.5 fill-current" />
-            <span>{isCalculating ? 'Hesaplanıyor...' : 'Yeniden Simüle Et'}</span>
+            <span>{isCalculating ? t.modals.calculating : t.modals.reSimulateBtn}</span>
           </button>
         </div>
 
@@ -122,35 +124,35 @@ export const StrategyBacktestModal: React.FC<StrategyBacktestModalProps> = ({
         {report && (
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 p-3 border-b border-tv-border bg-tv-surface/40">
             <div className="p-2 rounded bg-tv-card border border-tv-border">
-              <div className="text-[10px] text-tv-muted">Net Getiri</div>
+              <div className="text-[10px] text-tv-muted">{t.bottomDock.netProfit}</div>
               <div className={`text-base font-bold font-mono ${report.netProfitPercent >= 0 ? 'text-tv-green' : 'text-tv-red'}`}>
                 {report.netProfitPercent >= 0 ? '+' : ''}{report.netProfitPercent}%
               </div>
             </div>
 
             <div className="p-2 rounded bg-tv-card border border-tv-border">
-              <div className="text-[10px] text-tv-muted">Kazanma Oranı (Win Rate)</div>
+              <div className="text-[10px] text-tv-muted">{t.bottomDock.winRate}</div>
               <div className="text-base font-bold font-mono text-white">
                 %{report.winRate}
               </div>
             </div>
 
             <div className="p-2 rounded bg-tv-card border border-tv-border">
-              <div className="text-[10px] text-tv-muted">Kar Faktörü (Profit Factor)</div>
+              <div className="text-[10px] text-tv-muted">{t.bottomDock.profitFactor}</div>
               <div className="text-base font-bold font-mono text-tv-blue">
                 {report.profitFactor}
               </div>
             </div>
 
             <div className="p-2 rounded bg-tv-card border border-tv-border">
-              <div className="text-[10px] text-tv-muted">Maks. Düşüş (Max DD)</div>
+              <div className="text-[10px] text-tv-muted">{t.bottomDock.maxDrawdown}</div>
               <div className="text-base font-bold font-mono text-tv-red">
                 %{report.maxDrawdown}
               </div>
             </div>
 
             <div className="p-2 rounded bg-tv-card border border-tv-border">
-              <div className="text-[10px] text-tv-muted">Toplam İşlem</div>
+              <div className="text-[10px] text-tv-muted">{t.bottomDock.totalTrades}</div>
               <div className="text-base font-bold font-mono text-white">
                 {report.totalTrades}
               </div>
@@ -161,27 +163,27 @@ export const StrategyBacktestModal: React.FC<StrategyBacktestModalProps> = ({
         {/* Trade Logs Table */}
         <div className="flex-1 overflow-y-auto p-3">
           <div className="text-[11px] font-bold text-tv-muted uppercase tracking-wider mb-2 flex items-center justify-between">
-            <span>Geçmiş İşlem Kayıtları ({report?.trades.length || 0})</span>
+            <span>{t.bottomDock.tradeList} ({report?.trades.length || 0})</span>
             <span className="text-[10px] font-normal normal-case text-tv-muted">
-              Giriş/Çıkışlar komisyon ve likidite kayması (slippage) düşülerek hesaplanmıştır.
+              {t.bottomDock.takerFeeNotice}
             </span>
           </div>
 
           {report && report.trades.length === 0 ? (
             <div className="text-center py-12 text-tv-muted">
-              Seçilen periyotta sinyal üreten işlem gerçekleşmedi.
+              {t.bottomDock.noTrades}
             </div>
           ) : (
             <div className="border border-tv-border rounded overflow-hidden">
               <table className="w-full text-left border-collapse text-xs">
                 <thead>
                   <tr className="bg-tv-card border-b border-tv-border text-tv-muted font-mono text-[10px]">
-                    <th className="p-2">Giriş Zamanı</th>
-                    <th className="p-2">Yön</th>
-                    <th className="p-2">Giriş Fiyatı</th>
-                    <th className="p-2">Çıkış Fiyatı</th>
-                    <th className="p-2">Net Kar (%)</th>
-                    <th className="p-2 text-right">Net Getiri ($)</th>
+                    <th className="p-2">{t.bottomDock.entryTimeCol}</th>
+                    <th className="p-2">{t.bottomDock.side}</th>
+                    <th className="p-2">{t.bottomDock.entryPrice}</th>
+                    <th className="p-2">{t.bottomDock.exitTimeCol}</th>
+                    <th className="p-2">{t.bottomDock.netPnlCol} (%)</th>
+                    <th className="p-2 text-right">{t.bottomDock.netPnlCol} ($)</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-tv-border/40 font-mono">
@@ -190,7 +192,7 @@ export const StrategyBacktestModal: React.FC<StrategyBacktestModalProps> = ({
                     return (
                       <tr key={idx} className="hover:bg-tv-hover/40 transition-colors">
                         <td className="p-2 text-tv-text">
-                          {new Date(trade.entryTime * 1000).toLocaleString('tr-TR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                          {new Date(trade.entryTime * 1000).toLocaleString(language === 'tr' ? 'tr-TR' : 'en-US', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                         </td>
                         <td className="p-2">
                           <span className="px-1.5 py-0.2 rounded text-[10px] font-bold bg-tv-green/20 text-tv-green">

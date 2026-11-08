@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Clock, BarChart2, Terminal, Play, Wallet, ChevronUp, ChevronDown, Globe } from 'lucide-react';
+import { Clock, BarChart2, Terminal, Play, Wallet, ChevronUp, ChevronDown } from 'lucide-react';
 import { BottomTabType } from './BottomDock';
+import { useTranslation } from '../i18n';
 
 interface BottomBarProps {
   connectionStatus: 'connected' | 'reconnecting' | 'simulated';
@@ -15,10 +16,10 @@ const TIMEZONES = [
   { label: 'UTC (UTC+0)', offset: 0 },
   { label: 'İstanbul (UTC+3)', offset: 3 },
   { label: 'New York (UTC-4)', offset: -4 },
-  { label: 'Londra (UTC+1)', offset: 1 },
+  { label: 'London (UTC+1)', offset: 1 },
   { label: 'Frankfurt (UTC+2)', offset: 2 },
   { label: 'Tokyo (UTC+9)', offset: 9 },
-  { label: 'Singapur (UTC+8)', offset: 8 },
+  { label: 'Singapore (UTC+8)', offset: 8 },
 ];
 
 export const BottomBar: React.FC<BottomBarProps> = ({
@@ -29,6 +30,7 @@ export const BottomBar: React.FC<BottomBarProps> = ({
   onSelectDockTab,
   onToggleDock,
 }) => {
+  const { t } = useTranslation();
   const [selectedTz, setSelectedTz] = useState(TIMEZONES[1]);
   const [showTzMenu, setShowTzMenu] = useState(false);
   const [currentTimeStr, setCurrentTimeStr] = useState('');
@@ -47,17 +49,28 @@ export const BottomBar: React.FC<BottomBarProps> = ({
     const interval = setInterval(updateTime, 1000);
     return () => clearInterval(interval);
   }, [selectedTz]);
+
+  const ranges = [
+    { key: '1D', label: t.bottomBar.range1D },
+    { key: '5D', label: t.bottomBar.range5D },
+    { key: '1M', label: t.bottomBar.range1M },
+    { key: '3M', label: t.bottomBar.range3M },
+    { key: '6M', label: t.bottomBar.range6M },
+    { key: '1Y', label: t.bottomBar.range1Y },
+    { key: 'ALL', label: t.bottomBar.rangeAll },
+  ];
+
   return (
     <footer className="h-7 bg-tv-surface border-t border-tv-border flex items-center justify-between px-3 text-[11px] text-tv-muted select-none z-20">
       {/* Left: Quick Time Ranges */}
       <div className="flex items-center space-x-1">
-        {['1G', '5G', '1A', '3A', '6A', '1Y', 'TÜMÜ'].map((range) => (
+        {ranges.map(({ key, label }) => (
           <button
-            key={range}
-            onClick={() => onTimeRangeSelect(range)}
+            key={key}
+            onClick={() => onTimeRangeSelect(key)}
             className="px-1.5 py-0.5 rounded hover:text-white hover:bg-tv-hover transition-colors font-medium text-[10px]"
           >
-            {range}
+            {label}
           </button>
         ))}
       </div>
@@ -79,10 +92,10 @@ export const BottomBar: React.FC<BottomBarProps> = ({
               ? 'text-tv-blue bg-tv-hover font-bold border border-tv-border'
               : 'hover:text-white hover:bg-tv-hover'
           }`}
-          title="Piyasa Tarayıcısı (Screener)"
+          title={t.bottomDock.screener}
         >
           <BarChart2 className="w-3 h-3" />
-          <span>Takipçi</span>
+          <span>{t.bottomBar.screenerTab}</span>
         </button>
 
         <button
@@ -100,10 +113,10 @@ export const BottomBar: React.FC<BottomBarProps> = ({
               ? 'text-tv-blue bg-tv-hover font-bold border border-tv-border'
               : 'hover:text-white hover:bg-tv-hover'
           }`}
-          title="Python Quant Düzenleyici"
+          title={t.bottomDock.pythonEditor}
         >
           <Terminal className="w-3 h-3" />
-          <span>Python Düzenleyici</span>
+          <span>{t.bottomBar.pineEditorTab}</span>
         </button>
 
         <button
@@ -121,10 +134,10 @@ export const BottomBar: React.FC<BottomBarProps> = ({
               ? 'text-tv-blue bg-tv-hover font-bold border border-tv-border'
               : 'hover:text-white hover:bg-tv-hover'
           }`}
-          title="Strateji Test Edici"
+          title={t.bottomDock.strategyTester}
         >
           <Play className="w-3 h-3" />
-          <span>Strateji Test Edici</span>
+          <span>{t.bottomBar.strategyTesterTab}</span>
         </button>
 
         <button
@@ -142,17 +155,17 @@ export const BottomBar: React.FC<BottomBarProps> = ({
               ? 'text-tv-blue bg-tv-hover font-bold border border-tv-border'
               : 'hover:text-white hover:bg-tv-hover'
           }`}
-          title="Sanal İşlem Paneli (Paper Trading)"
+          title={t.bottomDock.paperTrading}
         >
           <Wallet className="w-3 h-3" />
-          <span>İşlem Paneli</span>
+          <span>{t.bottomBar.paperTradingTab}</span>
         </button>
 
         {onToggleDock && (
           <button
             onClick={onToggleDock}
             className="p-1 rounded hover:bg-tv-hover text-tv-muted hover:text-white transition-colors"
-            title={isDockOpen ? "Alt Paneli Kapat" : "Alt Paneli Aç"}
+            title={isDockOpen ? t.common.close : t.common.edit}
           >
             {isDockOpen ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronUp className="w-3.5 h-3.5" />}
           </button>
@@ -166,7 +179,7 @@ export const BottomBar: React.FC<BottomBarProps> = ({
           <button
             onClick={() => setShowTzMenu(!showTzMenu)}
             className="flex items-center space-x-1 text-tv-text font-mono hover:bg-tv-hover px-1.5 py-0.5 rounded transition-colors"
-            title="Saat Dilimini Değiştir"
+            title={t.bottomBar.timezone}
           >
             <Clock className="w-3 h-3 text-tv-muted" />
             <span>{currentTimeStr || '12:00:00'}</span>
@@ -179,7 +192,7 @@ export const BottomBar: React.FC<BottomBarProps> = ({
               onMouseLeave={() => setShowTzMenu(false)}
             >
               <div className="px-3 py-1 text-[10px] font-bold text-tv-muted uppercase tracking-wider border-b border-tv-border/50">
-                Saat Dilimi Seçin
+                {t.bottomBar.timezone}
               </div>
               {TIMEZONES.map(tz => (
                 <button
@@ -212,9 +225,9 @@ export const BottomBar: React.FC<BottomBarProps> = ({
             }`} 
           />
           <span className="font-medium text-tv-text">
-            {connectionStatus === 'connected' && 'Canlı'}
-            {connectionStatus === 'reconnecting' && 'Yeniden Bağlanıyor...'}
-            {connectionStatus === 'simulated' && 'Piyasa Motoru (Aktif)'}
+            {connectionStatus === 'connected' && t.bottomBar.live}
+            {connectionStatus === 'reconnecting' && `${t.common.loading}`}
+            {connectionStatus === 'simulated' && t.common.active}
           </span>
         </div>
       </div>

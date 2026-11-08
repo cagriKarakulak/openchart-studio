@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, Bell, Check, Volume2, Globe, Repeat } from 'lucide-react';
 import { PriceAlert } from '../../types';
 import { soundService, AlertSoundType } from '../../services/sound';
+import { useTranslation } from '../../i18n';
 
 interface AlertModalProps {
   isOpen: boolean;
@@ -20,6 +21,7 @@ export const AlertModal: React.FC<AlertModalProps> = ({
   onClose,
   onCreateAlert,
 }) => {
+  const { t } = useTranslation();
   const [targetPrice, setTargetPrice] = useState<number>(initialTargetPrice ?? (currentPrice || 100));
   const [condition, setCondition] = useState<'cross_up' | 'cross_down' | 'crossing'>('cross_up');
   const [note, setNote] = useState<string>('');
@@ -68,7 +70,7 @@ export const AlertModal: React.FC<AlertModalProps> = ({
         <div className="h-11 border-b border-tv-border px-4 flex items-center justify-between">
           <div className="flex items-center space-x-1.5 font-bold text-white text-sm">
             <Bell className="w-4 h-4 text-tv-blue" />
-            <span>Fiyat Alarmı Kur ({symbol})</span>
+            <span>{t.modals.alertTitle} ({symbol})</span>
           </div>
           <button onClick={onClose} className="p-1 rounded hover:bg-tv-hover text-tv-muted hover:text-white">
             <X className="w-4 h-4" />
@@ -77,27 +79,27 @@ export const AlertModal: React.FC<AlertModalProps> = ({
 
         <form onSubmit={handleSubmit} className="p-4 space-y-3 max-h-[500px] overflow-y-auto">
           <div>
-            <label className="text-tv-muted block mb-1">Mevcut Fiyat</label>
+            <label className="text-tv-muted block mb-1">{t.modals.currentPriceLabel}</label>
             <div className="font-mono text-base font-bold text-white">
               ${currentPrice.toLocaleString('en-US', { minimumFractionDigits: 2 })}
             </div>
           </div>
 
           <div>
-            <label className="text-tv-muted block mb-1">Koşul</label>
+            <label className="text-tv-muted block mb-1">{t.modals.condition}</label>
             <select
               value={condition}
               onChange={(e: any) => setCondition(e.target.value)}
               className="w-full bg-tv-bg border border-tv-border rounded px-2.5 py-1.5 text-white focus:outline-none focus:border-tv-blue"
             >
-              <option value="cross_up">Fiyat Hedefi Yukarı Kestiğinde (Cross Up)</option>
-              <option value="cross_down">Fiyat Hedefi Aşağı Kestiğinde (Cross Down)</option>
-              <option value="crossing">Fiyata Ulaştığında (Exact Hit)</option>
+              <option value="cross_up">{t.modals.crossingUp}</option>
+              <option value="cross_down">{t.modals.crossingDown}</option>
+              <option value="crossing">{t.modals.crossing}</option>
             </select>
           </div>
 
           <div>
-            <label className="text-tv-muted block mb-1">Hedef Fiyat ($)</label>
+            <label className="text-tv-muted block mb-1">{t.modals.targetPriceLabel}</label>
             <input
               type="number"
               step="any"
@@ -109,10 +111,10 @@ export const AlertModal: React.FC<AlertModalProps> = ({
           </div>
 
           <div>
-            <label className="text-tv-muted block mb-1">Alarm Notu / Mesajı</label>
+            <label className="text-tv-muted block mb-1">{t.modals.messageNote}</label>
             <input
               type="text"
-              placeholder="Örn: Direnç kırıldı, alım fırsatı!"
+              placeholder="..."
               value={note}
               onChange={(e) => setNote(e.target.value)}
               className="w-full bg-tv-bg border border-tv-border rounded px-2.5 py-1.5 text-white focus:outline-none focus:border-tv-blue"
@@ -124,15 +126,15 @@ export const AlertModal: React.FC<AlertModalProps> = ({
             <div className="flex items-center justify-between">
               <label className="text-white font-semibold flex items-center space-x-1.5">
                 <Volume2 className="w-3.5 h-3.5 text-tv-blue" />
-                <span>Bildirim Sesi</span>
+                <span>{t.modals.alertSoundLabel}</span>
               </label>
               <button
                 type="button"
                 onClick={handleTestSound}
                 className="text-[10px] text-tv-blue hover:text-white px-2 py-0.5 rounded bg-tv-bg border border-tv-border hover:border-tv-blue transition-colors flex items-center space-x-1"
-                title="Sesi Dinle"
+                title={t.modals.testSoundBtn}
               >
-                <span>Test Et ▷</span>
+                <span>{t.modals.testSoundBtn}</span>
               </button>
             </div>
             <select
@@ -140,10 +142,10 @@ export const AlertModal: React.FC<AlertModalProps> = ({
               onChange={(e: any) => setSound(e.target.value)}
               className="w-full bg-tv-bg border border-tv-border rounded px-2.5 py-1.5 text-white focus:outline-none focus:border-tv-blue"
             >
-              <option value="bell">Kristal Çan (Crystal Bell)</option>
-              <option value="chime">İkili Melodi (Harmonic Chime)</option>
-              <option value="siren">Acil Durum Sireni (Warning Siren)</option>
-              <option value="pop">Hafif Pop (Soft Bubble Pop)</option>
+              <option value="bell">Crystal Bell</option>
+              <option value="chime">Harmonic Chime</option>
+              <option value="siren">Warning Siren</option>
+              <option value="pop">Soft Bubble Pop</option>
             </select>
           </div>
 
@@ -151,17 +153,17 @@ export const AlertModal: React.FC<AlertModalProps> = ({
           <div className="bg-tv-card/60 p-2.5 rounded border border-tv-border space-y-1.5">
             <label className="text-white font-semibold flex items-center space-x-1.5">
               <Globe className="w-3.5 h-3.5 text-tv-blue" />
-              <span>Webhook Bildirimi (Opsiyonel)</span>
+              <span>{t.modals.webhookNotification}</span>
             </label>
             <input
               type="url"
-              placeholder="https://discord.com/api/webhooks/... veya bot URL'i"
+              placeholder={t.modals.webhookPlaceholder}
               value={webhookUrl}
               onChange={(e) => setWebhookUrl(e.target.value)}
               className="w-full bg-tv-bg border border-tv-border rounded px-2.5 py-1.5 text-white font-mono text-[11px] focus:outline-none focus:border-tv-blue"
             />
             <p className="text-[10px] text-tv-muted">
-              Alarm tetiklendiğinde hedef URL'e JSON formatında otomatik HTTP POST isteği gönderilir.
+              {t.modals.webhookDesc}
             </p>
           </div>
 
@@ -170,9 +172,9 @@ export const AlertModal: React.FC<AlertModalProps> = ({
             <div className="flex items-center space-x-1.5">
               <Repeat className="w-3.5 h-3.5 text-tv-blue" />
               <div>
-                <div className="text-white font-semibold">Yinelenen Alarm (Recurring)</div>
+                <div className="text-white font-semibold">{t.modals.recurringAlert}</div>
                 <div className="text-[10px] text-tv-muted">
-                  {recurring ? 'Koşul her sağlandığında tekrar tetiklenir' : 'Sadece ilk tetiklemede çalışır'}
+                  {recurring ? t.modals.recurringEveryTime : t.modals.recurringOnlyOnce}
                 </div>
               </div>
             </div>
@@ -190,14 +192,14 @@ export const AlertModal: React.FC<AlertModalProps> = ({
               onClick={onClose}
               className="px-3 py-1.5 rounded hover:bg-tv-hover text-tv-muted hover:text-white"
             >
-              İptal
+              {t.modals.cancelBtn}
             </button>
             <button
               type="submit"
               className="px-4 py-1.5 rounded bg-tv-blue text-white font-medium hover:bg-tv-blue/90 flex items-center space-x-1"
             >
               <Check className="w-3.5 h-3.5" />
-              <span>Alarmı Kur</span>
+              <span>{t.modals.createAlertButton}</span>
             </button>
           </div>
         </form>

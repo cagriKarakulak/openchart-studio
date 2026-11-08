@@ -29,6 +29,7 @@ import { runBacktest, StrategyConfig, BacktestReport, StrategyType } from '../se
 import { executePythonScript, extractPythonInputs, PythonInputDef } from '../services/pythonEngine';
 import { soundService } from '../services/sound';
 import { marketDataService } from '../services/marketData';
+import { useTranslation } from '../i18n';
 
 export type BottomTabType = 'screener' | 'paperTrading' | 'pineEditor' | 'strategyTester';
 
@@ -161,6 +162,7 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
   onAddParsedIndicators,
   onOpenBacktestModal,
 }) => {
+  const { t } = useTranslation();
   // Screener state
   const [screenerSearch, setScreenerSearch] = useState('');
   const [screenerFilter, setScreenerFilter] = useState<'all' | 'gainers' | 'losers' | 'oversold' | 'overbought'>('all');
@@ -566,7 +568,7 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
             }`}
           >
             <BarChart2 className="w-3.5 h-3.5" />
-            <span>Piyasa Tarayıcısı (Screener)</span>
+            <span>{t.bottomDock.screener}</span>
           </button>
 
           <button
@@ -576,7 +578,7 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
             }`}
           >
             <Wallet className="w-3.5 h-3.5" />
-            <span>Kağıt Üzerinde İşlem (Paper Trading)</span>
+            <span>{t.bottomDock.paperTrading}</span>
           </button>
 
           <button
@@ -586,7 +588,7 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
             }`}
           >
             <Terminal className="w-3.5 h-3.5 text-[#3776ab]" />
-            <span>Python Quant Editörü</span>
+            <span>{t.bottomDock.pythonEditor}</span>
           </button>
 
           <button
@@ -596,7 +598,7 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
             }`}
           >
             <Play className="w-3.5 h-3.5 text-tv-green" />
-            <span>Strateji Test Cihazı (Strategy Tester)</span>
+            <span>{t.bottomDock.strategyTester}</span>
           </button>
         </div>
 
@@ -632,7 +634,7 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
                   <Search className="w-3.5 h-3.5 text-tv-muted absolute left-2.5 top-2" />
                   <input
                     type="text"
-                    placeholder="Sembol ara (BTC, SOL, ETH...)"
+                    placeholder={t.bottomDock.screenerSearchPlaceholder}
                     value={screenerSearch}
                     onChange={(e) => setScreenerSearch(e.target.value)}
                     className="w-full bg-tv-bg border border-tv-border rounded pl-8 pr-3 py-1 text-xs text-white placeholder-tv-muted focus:outline-none focus:border-tv-blue"
@@ -641,11 +643,11 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
 
                 <div className="flex items-center space-x-1">
                   {([
-                    { id: 'all', label: 'Tümü' },
-                    { id: 'gainers', label: 'Yükselenler (+%1.5)' },
-                    { id: 'losers', label: 'Düşenler (-%1.0)' },
-                    { id: 'oversold', label: 'Aşırı Satış (RSI < 30)' },
-                    { id: 'overbought', label: 'Aşırı Alım (RSI > 70)' },
+                    { id: 'all', label: t.bottomDock.allFilter },
+                    { id: 'gainers', label: t.bottomDock.gainersFilter },
+                    { id: 'losers', label: t.bottomDock.losersFilter },
+                    { id: 'oversold', label: t.bottomDock.oversoldFilter },
+                    { id: 'overbought', label: t.bottomDock.overboughtFilter },
                   ] as const).map(f => (
                     <button
                       key={f.id}
@@ -661,7 +663,7 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
               </div>
 
               <div className="text-[11px] text-tv-muted font-mono">
-                {filteredScreener.length} Varlık Listelendi
+                {filteredScreener.length} {t.bottomDock.assetsListed}
               </div>
             </div>
 
@@ -669,20 +671,20 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
               <table className="w-full text-left text-xs">
                 <thead className="bg-tv-bg text-tv-muted sticky top-0 border-b border-tv-border text-[11px]">
                   <tr>
-                    <th className="py-1.5 px-3">Sembol</th>
-                    <th className="py-1.5 px-3 text-right">Son Fiyat</th>
-                    <th className="py-1.5 px-3 text-right">24s Değişim</th>
-                    <th className="py-1.5 px-3 text-right">24s Hacim</th>
-                    <th className="py-1.5 px-3 text-right">24s Yüksek</th>
-                    <th className="py-1.5 px-3 text-right">24s Düşük</th>
-                    <th className="py-1.5 px-3 text-center">Teknik Sinyal</th>
+                    <th className="py-1.5 px-3">{t.bottomDock.symbol}</th>
+                    <th className="py-1.5 px-3 text-right">{t.bottomDock.lastPriceCol}</th>
+                    <th className="py-1.5 px-3 text-right">{t.bottomDock.change24hCol}</th>
+                    <th className="py-1.5 px-3 text-right">{t.bottomDock.volume24hCol}</th>
+                    <th className="py-1.5 px-3 text-right">{t.bottomDock.high24hCol}</th>
+                    <th className="py-1.5 px-3 text-right">{t.bottomDock.low24hCol}</th>
+                    <th className="py-1.5 px-3 text-center">{t.bottomDock.technicalSignalCol}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-tv-border/40 font-mono text-[11px]">
                   {filteredScreener.map(item => {
                     const isGain = item.change24h >= 0;
-                    const signal = item.change24h > 4 ? 'GÜÇLÜ AL' : item.change24h > 1 ? 'AL' : item.change24h < -3 ? 'GÜÇLÜ SAT' : 'NÖTR';
-                    const sigColor = signal.includes('AL') ? 'text-tv-green bg-tv-green/10' : signal.includes('SAT') ? 'text-tv-red bg-tv-red/10' : 'text-tv-muted bg-tv-card';
+                    const signal = item.change24h > 4 ? t.rightSidebar.strongBuy : item.change24h > 1 ? t.rightSidebar.buySignal : item.change24h < -3 ? t.rightSidebar.strongSell : t.rightSidebar.neutralSignal;
+                    const sigColor = item.change24h > 1 ? 'text-tv-green bg-tv-green/10' : item.change24h < -1 ? 'text-tv-red bg-tv-red/10' : 'text-tv-muted bg-tv-card';
 
                     return (
                       <tr
@@ -736,12 +738,12 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
                 <div className="flex items-center justify-between border-b border-tv-border pb-1.5">
                   <div className="flex items-center space-x-1 font-bold text-white">
                     <Wallet className="w-3.5 h-3.5 text-tv-blue" />
-                    <span>Sanal İşlem Hesabı</span>
+                    <span>{t.bottomDock.paperAccountTitle}</span>
                   </div>
                   <button
                     onClick={handleResetPaper}
                     className="p-1 rounded hover:bg-tv-hover text-tv-muted hover:text-white"
-                    title="Hesabı Sıfırla"
+                    title={t.bottomDock.resetAccount}
                   >
                     <RotateCcw className="w-3.5 h-3.5" />
                   </button>
@@ -749,23 +751,23 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
 
                 <div className="space-y-1 font-mono text-[11px]">
                   <div className="flex justify-between text-tv-muted">
-                    <span>Nakit Bakiye:</span>
+                    <span>{t.bottomDock.cashBalance}:</span>
                     <strong className="text-white">${balance.toLocaleString('en-US', { minimumFractionDigits: 2 })}</strong>
                   </div>
                   <div className="flex justify-between text-tv-muted">
-                    <span>Açık PnL:</span>
+                    <span>{t.bottomDock.openPnl}:</span>
                     <strong className={totalUnrealizedPnl >= 0 ? 'text-tv-green' : 'text-tv-red'}>
                       {totalUnrealizedPnl >= 0 ? '+' : ''}${totalUnrealizedPnl.toFixed(2)}
                     </strong>
                   </div>
                   <div className="flex justify-between text-tv-muted border-t border-tv-border/50 pt-1">
-                    <span>Toplam Varlık:</span>
+                    <span>{t.bottomDock.totalEquity}:</span>
                     <strong className="text-tv-blue font-bold">${equity.toLocaleString('en-US', { minimumFractionDigits: 2 })}</strong>
                   </div>
                 </div>
 
                 <div className="border-t border-tv-border pt-2 space-y-2">
-                  <div className="text-[11px] font-bold text-white">Emir Girişi ({activeSymbol})</div>
+                  <div className="text-[11px] font-bold text-white">{t.bottomDock.orderEntry} ({activeSymbol})</div>
                   <div className="grid grid-cols-2 gap-1.5">
                     <button
                       onClick={() => setOrderSide('long')}
@@ -773,7 +775,7 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
                         orderSide === 'long' ? 'bg-tv-green text-white' : 'bg-tv-card text-tv-muted hover:text-white'
                       }`}
                     >
-                      ALIŞ (LONG)
+                      {t.bottomDock.buyLong}
                     </button>
                     <button
                       onClick={() => setOrderSide('short')}
@@ -781,12 +783,12 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
                         orderSide === 'short' ? 'bg-tv-red text-white' : 'bg-tv-card text-tv-muted hover:text-white'
                       }`}
                     >
-                      SATIŞ (SHORT)
+                      {t.bottomDock.sellShort}
                     </button>
                   </div>
 
                   <div>
-                    <label className="text-[10px] text-tv-muted block mb-0.5">Miktar (Lot / Adet):</label>
+                    <label className="text-[10px] text-tv-muted block mb-0.5">{t.bottomDock.qtyLabel}:</label>
                     <input
                       type="number"
                       step="0.01"
@@ -802,7 +804,7 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
                       orderSide === 'long' ? 'bg-tv-green hover:opacity-90' : 'bg-tv-red hover:opacity-90'
                     }`}
                   >
-                    {orderSide === 'long' ? 'Piyasa Al Emri Gönder' : 'Piyasa Sat Emri Gönder'}
+                    {orderSide === 'long' ? t.bottomDock.sendMarketBuy : t.bottomDock.sendMarketSell}
                   </button>
 
                   {tradeMessage && (
@@ -817,26 +819,26 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
             {/* Open Positions & Trade History Table */}
             <div className="flex-1 flex flex-col overflow-hidden border border-tv-border rounded bg-tv-bg">
               <div className="p-2 border-b border-tv-border font-bold text-xs text-white flex items-center justify-between">
-                <span>Açık Pozisyonlar ({positions.length})</span>
-                <span className="text-[10px] text-tv-muted font-normal">0.05% Taker Komisyonu Dahildir</span>
+                <span>{t.bottomDock.openPositions} ({positions.length})</span>
+                <span className="text-[10px] text-tv-muted font-normal">{t.bottomDock.takerFeeNotice}</span>
               </div>
 
               <div className="flex-1 overflow-y-auto">
                 {positions.length === 0 ? (
                   <div className="h-full flex items-center justify-center text-tv-muted text-xs">
-                    Henüz açık pozisyonunuz yok. Soldaki panelden işlem açabilirsiniz.
+                    {t.bottomDock.noOpenPositionsDesc}
                   </div>
                 ) : (
                   <table className="w-full text-left text-xs">
                     <thead className="bg-tv-surface text-tv-muted text-[10px] sticky top-0 border-b border-tv-border">
                       <tr>
-                        <th className="py-1 px-3">Sembol</th>
-                        <th className="py-1 px-3">Yön</th>
-                        <th className="py-1 px-3 text-right">Miktar</th>
-                        <th className="py-1 px-3 text-right">Giriş Fiyatı</th>
-                        <th className="py-1 px-3 text-right">Anlık Fiyat</th>
-                        <th className="py-1 px-3 text-right">Kâr / Zarar ($)</th>
-                        <th className="py-1 px-3 text-center">Eylem</th>
+                        <th className="py-1 px-3">{t.bottomDock.symbol}</th>
+                        <th className="py-1 px-3">{t.bottomDock.side}</th>
+                        <th className="py-1 px-3 text-right">{t.bottomDock.qty}</th>
+                        <th className="py-1 px-3 text-right">{t.bottomDock.entryPrice}</th>
+                        <th className="py-1 px-3 text-right">{t.bottomDock.currentPriceCol}</th>
+                        <th className="py-1 px-3 text-right">{t.bottomDock.pnlCol}</th>
+                        <th className="py-1 px-3 text-center">{t.bottomDock.actions}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-tv-border/30 font-mono text-[11px]">
@@ -869,7 +871,7 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
                                 onClick={() => handleClosePosition(pos.id)}
                                 className="px-2 py-0.5 rounded bg-tv-card hover:bg-tv-hover text-tv-red text-[10px] font-semibold"
                               >
-                                Kapat
+                                {t.bottomDock.closeBtn}
                               </button>
                             </td>
                           </tr>
@@ -895,7 +897,7 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
                 <div className="flex items-center space-x-2">
                   <div className="flex items-center space-x-1.5 font-bold text-white pr-2 border-r border-tv-border">
                     <FileCode className="w-3.5 h-3.5 text-[#3776ab]" />
-                    <span className="text-white font-bold">Python Quant Editörü</span>
+                    <span className="text-white font-bold">{t.bottomDock.pythonEditor}</span>
                     <span className="text-[9px] px-1 py-0.2 rounded bg-[#3776ab]/20 text-[#3776ab] font-mono font-bold">v3.11</span>
                   </div>
 
@@ -906,24 +908,23 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
                       className={`px-2.5 py-1 rounded flex items-center space-x-1 text-xs font-semibold transition-colors ${
                         pythonViewMode === 'editor' ? 'bg-tv-blue text-white shadow-sm' : 'text-tv-muted hover:text-white'
                       }`}
-                      title="Python Kaynak Kodu"
+                      title="Python"
                     >
                       <Code className="w-3.5 h-3.5" />
-                      <span>Kod Editörü</span>
+                      <span>{t.bottomDock.codeEditorBtn}</span>
                     </button>
                     <button
                       onClick={() => setPythonViewMode('inputs')}
                       className={`px-2.5 py-1 rounded flex items-center space-x-1 text-xs font-semibold transition-colors ${
                         pythonViewMode === 'inputs' ? 'bg-tv-blue text-white shadow-sm' : 'text-tv-muted hover:text-white'
                       }`}
-                      title="İndikatörün Parametrelerini Görsel Olarak Değiştirin"
                     >
                       <Sliders className="w-3.5 h-3.5" />
-                      <span>Girdiler / Ayarlar ({liveInputs.length})</span>
+                      <span>{t.bottomDock.inputsBtn} ({liveInputs.length})</span>
                     </button>
                   </div>
 
-                  <span className="text-[10px] text-tv-muted font-bold pl-1 border-l border-tv-border">Şablon:</span>
+                  <span className="text-[10px] text-tv-muted font-bold pl-1 border-l border-tv-border">{t.bottomDock.templateLabel}</span>
                   <select
                     value={selectedTemplate}
                     onChange={(e) => {
@@ -948,28 +949,25 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
                   <button
                     onClick={handleSavePythonCode}
                     className="px-2.5 py-1 rounded bg-tv-surface hover:bg-tv-hover border border-tv-border text-tv-text text-xs font-semibold flex items-center space-x-1 transition-colors"
-                    title="Python Betiğini Yerel Belleğe Kaydet"
                   >
                     <Save className="w-3.5 h-3.5 text-tv-blue" />
-                    <span>Kaydet</span>
+                    <span>{t.common.save}</span>
                   </button>
 
                   <button
                     onClick={handleTransferPythonToBacktest}
                     className="px-2.5 py-1 rounded bg-tv-surface hover:bg-tv-hover border border-tv-border text-tv-text text-xs font-semibold flex items-center space-x-1 transition-colors"
-                    title="Stratejiyi Test Cihazına Aktar ve Otomatik Çalıştır"
                   >
                     <BarChart2 className="w-3.5 h-3.5 text-tv-green" />
-                    <span>Stratejiyi Test Et</span>
+                    <span>{t.bottomDock.testStrategyBtn}</span>
                   </button>
 
                   <button
                     onClick={handleApplyPythonToChart}
                     className="px-3.5 py-1 rounded bg-tv-blue text-white text-xs font-semibold hover:bg-blue-600 flex items-center space-x-1.5 shadow-sm transition-colors"
-                    title="Python İndikatör & Sinyallerini Grafiğe Ekle / Çalıştır"
                   >
                     <Play className="w-3.5 h-3.5 fill-current" />
-                    <span>Grafiğe Ekle (Çalıştır)</span>
+                    <span>{t.bottomDock.addToChartBtn}</span>
                   </button>
                 </div>
               </div>
@@ -992,7 +990,7 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
                       onChange={(e) => setPythonCode(e.target.value)}
                       className="flex-1 bg-transparent p-2 font-mono text-xs text-white resize-none focus:outline-none leading-[20px] selection:bg-tv-blue selection:text-white overflow-auto whitespace-pre"
                       spellCheck={false}
-                      placeholder="# Python Quant betiğinizi buraya yazın..."
+                      placeholder="# Python Quant..."
                     />
                   </div>
                 ) : (
@@ -1000,10 +998,7 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
                   <div className="flex-1 bg-tv-bg border border-tv-border rounded p-3 overflow-y-auto space-y-3">
                     <div className="flex items-center justify-between border-b border-tv-border pb-2 text-xs">
                       <div>
-                        <span className="font-bold text-white text-sm">Python İndikatör / Strateji Girdileri</span>
-                        <p className="text-[11px] text-tv-muted">
-                          Bu panelden kod içerisindeki param() veya input() değişkenlerini görsel olarak kolayca değiştirebilirsiniz.
-                        </p>
+                        <span className="font-bold text-white text-sm">{t.bottomDock.pythonEditor}</span>
                       </div>
                       <button
                         onClick={() => {
@@ -1014,7 +1009,7 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
                         className="px-2.5 py-1 rounded bg-tv-surface hover:bg-tv-hover border border-tv-border text-tv-muted hover:text-white text-xs flex items-center space-x-1"
                       >
                         <RefreshCw className="w-3 h-3" />
-                        <span>Varsayılana Dön</span>
+                        <span>{t.modals.resetToDefaults}</span>
                       </button>
                     </div>
 
@@ -1102,14 +1097,14 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
                     <div className="flex items-center justify-between border-b border-tv-border pb-1.5">
                       <div className="flex items-center space-x-1.5 text-tv-muted font-bold text-xs">
                         <Terminal className="w-3.5 h-3.5 text-tv-blue" />
-                        <span>Python Konsolu</span>
+                        <span>{t.bottomDock.pythonConsoleTitle}</span>
                       </div>
                       <span className={`px-1.5 py-0.2 rounded text-[10px] font-bold ${
                         pythonStatus === 'success' ? 'bg-tv-green/15 text-tv-green border border-tv-green/30' :
                         pythonStatus === 'error' ? 'bg-tv-red/15 text-tv-red border border-tv-red/30' :
                         'bg-tv-card text-tv-muted'
                       }`}>
-                        {pythonStatus === 'success' ? 'BAŞARILI' : pythonStatus === 'error' ? 'HATA' : 'HAZIR'}
+                        {pythonStatus === 'success' ? t.bottomDock.successStatus : pythonStatus === 'error' ? t.bottomDock.errorStatus : t.bottomDock.readyStatus}
                       </span>
                     </div>
 
@@ -1149,17 +1144,17 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
             <div className="flex items-center justify-between bg-tv-bg p-2 rounded border border-tv-border">
               <div className="flex items-center space-x-3">
                 <div className="flex items-center space-x-1.5">
-                  <label className="text-[10px] text-tv-muted font-bold">Strateji:</label>
+                  <label className="text-[10px] text-tv-muted font-bold">{t.bottomDock.strategyLabel}</label>
                   <select
                     value={btStrategy}
                     onChange={(e) => setBtStrategy(e.target.value as any)}
                     className="bg-tv-surface border border-tv-border rounded px-2 py-1 text-xs text-white focus:outline-none focus:border-tv-blue"
                   >
-                    <option value="EMA_CROSS">EMA Kesişimi (Golden / Death Cross)</option>
-                    <option value="RSI_REVERSAL">RSI Dönüş Stratejisi (Aşırı Satış/Alım)</option>
-                    <option value="SUPERTREND_FOLLOW">Supertrend Trend Takip</option>
-                    <option value="MACD_CROSS">MACD Kesişimi (Sinyal Kesişimi)</option>
-                    <option value="BOLLINGER_REVERSAL">Bollinger Bantları Ortalama Dönüş</option>
+                    <option value="EMA_CROSS">EMA Golden/Death Cross (9/21)</option>
+                    <option value="RSI_REVERSAL">RSI Mean Reversion (14)</option>
+                    <option value="SUPERTREND_FOLLOW">Supertrend Trend Follow</option>
+                    <option value="MACD_CROSS">MACD Signal Cross (12/26/9)</option>
+                    <option value="BOLLINGER_REVERSAL">Bollinger Bands Mean Reversion</option>
                   </select>
                 </div>
 
@@ -1170,13 +1165,13 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
                     onChange={(e) => setBtAllowShort(e.target.checked)}
                     className="w-3.5 h-3.5 rounded border-tv-border text-tv-blue accent-tv-blue cursor-pointer"
                   />
-                  <span className="text-[10px] text-tv-muted font-medium">Short (Açığa Satış)</span>
+                  <span className="text-[10px] text-tv-muted font-medium">{t.bottomDock.allowShortLabel}</span>
                 </label>
 
                 {btStrategy === 'EMA_CROSS' && (
                   <div className="flex items-center space-x-2">
                     <div className="flex items-center space-x-1">
-                      <span className="text-[10px] text-tv-muted">Hızlı:</span>
+                      <span className="text-[10px] text-tv-muted">EMA 1:</span>
                       <input
                         type="number"
                         value={btFastEma}
@@ -1185,7 +1180,7 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
                       />
                     </div>
                     <div className="flex items-center space-x-1">
-                      <span className="text-[10px] text-tv-muted">Yavaş:</span>
+                      <span className="text-[10px] text-tv-muted">EMA 2:</span>
                       <input
                         type="number"
                         value={btSlowEma}
@@ -1199,7 +1194,7 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
                 {btStrategy === 'RSI_REVERSAL' && (
                   <div className="flex items-center space-x-2">
                     <div className="flex items-center space-x-1">
-                      <span className="text-[10px] text-tv-muted">Periyot:</span>
+                      <span className="text-[10px] text-tv-muted">Len:</span>
                       <input
                         type="number"
                         value={btRsiPeriod}
@@ -1208,7 +1203,7 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
                       />
                     </div>
                     <div className="flex items-center space-x-1">
-                      <span className="text-[10px] text-tv-muted">Satış &lt;:</span>
+                      <span className="text-[10px] text-tv-muted">&lt;:</span>
                       <input
                         type="number"
                         value={btRsiOversold}
@@ -1222,7 +1217,7 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
                 {btStrategy === 'SUPERTREND_FOLLOW' && (
                   <div className="flex items-center space-x-2">
                     <div className="flex items-center space-x-1">
-                      <span className="text-[10px] text-tv-muted">ATR Periyot:</span>
+                      <span className="text-[10px] text-tv-muted">ATR:</span>
                       <input
                         type="number"
                         value={btStPeriod}
@@ -1231,7 +1226,7 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
                       />
                     </div>
                     <div className="flex items-center space-x-1">
-                      <span className="text-[10px] text-tv-muted">Çarpan:</span>
+                      <span className="text-[10px] text-tv-muted">Mult:</span>
                       <input
                         type="number"
                         value={btStMult}
@@ -1243,7 +1238,7 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
                 )}
 
                 <div className="flex items-center space-x-1">
-                  <span className="text-[10px] text-tv-muted">Sermaye:</span>
+                  <span className="text-[10px] text-tv-muted">{t.bottomDock.capitalLabel}</span>
                   <input
                     type="number"
                     value={btCapital}
@@ -1259,7 +1254,7 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
                   className="px-3 py-1 rounded bg-tv-green text-white font-bold text-xs hover:bg-emerald-600 flex items-center space-x-1"
                 >
                   <Play className="w-3.5 h-3.5 fill-current" />
-                  <span>Testi Çalıştır</span>
+                  <span>{t.bottomDock.startBacktest}</span>
                 </button>
               </div>
             </div>
@@ -1268,56 +1263,56 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
             {btReport && (
               <div className="grid grid-cols-4 lg:grid-cols-8 gap-2">
                 <div className="bg-tv-bg border border-tv-border rounded p-1.5 text-center">
-                  <div className="text-[9px] text-tv-muted uppercase font-semibold">Net Kâr / Zarar</div>
+                  <div className="text-[9px] text-tv-muted uppercase font-semibold">{t.bottomDock.netProfit}</div>
                   <div className={`text-xs font-bold font-mono ${btReport.netProfitPercent >= 0 ? 'text-tv-green' : 'text-tv-red'}`}>
                     {btReport.netProfitPercent >= 0 ? '+' : ''}%{btReport.netProfitPercent} (${btReport.netProfitCash >= 0 ? '+' : ''}{btReport.netProfitCash})
                   </div>
                 </div>
 
                 <div className="bg-tv-bg border border-tv-border rounded p-1.5 text-center">
-                  <div className="text-[9px] text-tv-muted uppercase font-semibold">Kazanma Oranı</div>
+                  <div className="text-[9px] text-tv-muted uppercase font-semibold">{t.bottomDock.winRate}</div>
                   <div className="text-xs font-bold font-mono text-white">
                     %{btReport.winRate}
                   </div>
                 </div>
 
                 <div className="bg-tv-bg border border-tv-border rounded p-1.5 text-center">
-                  <div className="text-[9px] text-tv-muted uppercase font-semibold">Toplam İşlem</div>
+                  <div className="text-[9px] text-tv-muted uppercase font-semibold">{t.bottomDock.totalTrades}</div>
                   <div className="text-xs font-bold font-mono text-white">
                     {btReport.totalTrades}
                   </div>
                 </div>
 
                 <div className="bg-tv-bg border border-tv-border rounded p-1.5 text-center">
-                  <div className="text-[9px] text-tv-muted uppercase font-semibold">Kâr Faktörü</div>
+                  <div className="text-[9px] text-tv-muted uppercase font-semibold">{t.bottomDock.profitFactor}</div>
                   <div className="text-xs font-bold font-mono text-tv-blue">
                     {btReport.profitFactor}
                   </div>
                 </div>
 
                 <div className="bg-tv-bg border border-tv-border rounded p-1.5 text-center">
-                  <div className="text-[9px] text-tv-muted uppercase font-semibold">Max Drawdown</div>
+                  <div className="text-[9px] text-tv-muted uppercase font-semibold">{t.bottomDock.maxDrawdown}</div>
                   <div className="text-xs font-bold font-mono text-tv-red">
                     %{btReport.maxDrawdown}
                   </div>
                 </div>
 
                 <div className="bg-tv-bg border border-tv-border rounded p-1.5 text-center">
-                  <div className="text-[9px] text-tv-muted uppercase font-semibold">Sharpe Oranı</div>
+                  <div className="text-[9px] text-tv-muted uppercase font-semibold">{t.bottomDock.sharpeRatio}</div>
                   <div className="text-xs font-bold font-mono text-tv-yellow">
                     {btReport.sharpeRatio}
                   </div>
                 </div>
 
                 <div className="bg-tv-bg border border-tv-border rounded p-1.5 text-center">
-                  <div className="text-[9px] text-tv-muted uppercase font-semibold">Sortino Oranı</div>
+                  <div className="text-[9px] text-tv-muted uppercase font-semibold">{t.bottomDock.sortinoRatio}</div>
                   <div className="text-xs font-bold font-mono text-tv-blue">
                     {btReport.sortinoRatio}
                   </div>
                 </div>
 
                 <div className="bg-tv-bg border border-tv-border rounded p-1.5 text-center">
-                  <div className="text-[9px] text-tv-muted uppercase font-semibold">Buy & Hold</div>
+                  <div className="text-[9px] text-tv-muted uppercase font-semibold">{t.bottomDock.buyAndHold}</div>
                   <div className={`text-xs font-bold font-mono ${btReport.buyAndHoldPercent >= 0 ? 'text-tv-green' : 'text-tv-red'}`}>
                     {btReport.buyAndHoldPercent >= 0 ? '+' : ''}%{btReport.buyAndHoldPercent}
                   </div>
@@ -1331,11 +1326,11 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
                 <div className="flex items-center justify-between text-[10px]">
                   <span className="font-bold text-tv-muted uppercase tracking-wider flex items-center space-x-1.5">
                     <TrendingUp className="w-3.5 h-3.5 text-tv-blue" />
-                    <span>Sermaye Büyüme Eğrisi (Equity Curve)</span>
+                    <span>{t.bottomDock.equityCurve}</span>
                   </span>
                   <div className="flex items-center space-x-3 font-mono text-[11px]">
-                    <span className="text-tv-muted">Başlangıç: <span className="text-white">${btCapital.toLocaleString()}</span></span>
-                    <span className="text-tv-muted">Bitiş: <span className={btReport.netProfitCash >= 0 ? 'text-tv-green font-bold' : 'text-tv-red font-bold'}>${(btCapital + btReport.netProfitCash).toLocaleString()}</span></span>
+                    <span className="text-tv-muted">{t.bottomDock.startLabel} <span className="text-white">${btCapital.toLocaleString()}</span></span>
+                    <span className="text-tv-muted">{t.bottomDock.endLabel} <span className={btReport.netProfitCash >= 0 ? 'text-tv-green font-bold' : 'text-tv-red font-bold'}>${(btCapital + btReport.netProfitCash).toLocaleString()}</span></span>
                   </div>
                 </div>
                 {(() => {
@@ -1386,37 +1381,37 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
                 <table className="w-full text-left text-xs">
                   <thead className="bg-tv-surface text-tv-muted text-[10px] sticky top-0 border-b border-tv-border">
                     <tr>
-                      <th className="py-1 px-3">Giriş Zamanı</th>
-                      <th className="py-1 px-3 text-right">Giriş ($)</th>
-                      <th className="py-1 px-3">Çıkış Zamanı</th>
-                      <th className="py-1 px-3 text-right">Çıkış ($)</th>
-                      <th className="py-1 px-3 text-center">Yön</th>
-                      <th className="py-1 px-3 text-right">Net Getiri ($ / %)</th>
-                      <th className="py-1 px-3">Neden</th>
+                      <th className="py-1 px-3">{t.bottomDock.entryTimeCol}</th>
+                      <th className="py-1 px-3 text-right">{t.bottomDock.entryPrice} ($)</th>
+                      <th className="py-1 px-3">{t.bottomDock.exitTimeCol}</th>
+                      <th className="py-1 px-3 text-right">{t.bottomDock.markPrice} ($)</th>
+                      <th className="py-1 px-3 text-center">{t.bottomDock.side}</th>
+                      <th className="py-1 px-3 text-right">{t.bottomDock.netPnlCol}</th>
+                      <th className="py-1 px-3">{t.bottomDock.reasonCol}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-tv-border/30 font-mono text-[11px]">
-                    {btReport.trades.map((t, idx) => {
-                      const isProfit = t.pnlPercent >= 0;
+                    {btReport.trades.map((trItem, idx) => {
+                      const isProfit = trItem.pnlPercent >= 0;
                       return (
                         <tr key={idx} className="hover:bg-tv-surface/60">
                           <td className="py-1 px-3 text-tv-muted">
-                            {new Date(t.entryTime * 1000).toLocaleString('tr-TR', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                            {new Date(trItem.entryTime * 1000).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                           </td>
-                          <td className="py-1 px-3 text-right text-white">${t.entryPrice}</td>
+                          <td className="py-1 px-3 text-right text-white">${trItem.entryPrice}</td>
                           <td className="py-1 px-3 text-tv-muted">
-                            {new Date(t.exitTime * 1000).toLocaleString('tr-TR', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                            {new Date(trItem.exitTime * 1000).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                           </td>
-                          <td className="py-1 px-3 text-right text-white">${t.exitPrice}</td>
+                          <td className="py-1 px-3 text-right text-white">${trItem.exitPrice}</td>
                           <td className="py-1 px-3 text-center">
                             <span className="px-1.5 py-0.2 rounded text-[10px] font-bold bg-tv-green/10 text-tv-green">
-                              {t.type}
+                              {trItem.type}
                             </span>
                           </td>
                           <td className={`py-1 px-3 text-right font-bold ${isProfit ? 'text-tv-green' : 'text-tv-red'}`}>
-                            {isProfit ? '+' : ''}${t.pnlNet} ({isProfit ? '+' : ''}%{t.pnlPercent})
+                            {isProfit ? '+' : ''}${trItem.pnlNet} ({isProfit ? '+' : ''}%{trItem.pnlPercent})
                           </td>
-                          <td className="py-1 px-3 text-tv-muted text-[10px]">{t.reason}</td>
+                          <td className="py-1 px-3 text-tv-muted text-[10px]">{trItem.reason}</td>
                         </tr>
                       );
                     })}
@@ -1424,9 +1419,7 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
                 </table>
               ) : (
                 <div className="h-full flex items-center justify-center text-tv-muted text-xs">
-                  {candles && candles.length > 50
-                    ? 'Testi başlatmak için yukarıdaki "Testi Çalıştır" butonuna tıklayın.'
-                    : 'Strateji testi için yeterli mum verisi yükleniyor...'}
+                  {t.bottomDock.runTestPrompt}
                 </div>
               )}
             </div>

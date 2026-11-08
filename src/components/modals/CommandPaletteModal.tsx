@@ -22,12 +22,13 @@ import {
   Layers
 } from 'lucide-react';
 import { ChartType, DrawingToolType, LayoutType, Timeframe } from '../../types';
+import { useTranslation } from '../../i18n';
 
 export interface CommandItem {
   id: string;
   title: string;
   subtitle?: string;
-  category: 'Eylemler' | 'Semboller' | 'Zaman Dilimleri' | 'Grafik Tipleri' | 'Çizim Araçları' | 'Düzenler';
+  category: string;
   icon: React.ReactNode;
   shortcut?: string;
   action: () => void;
@@ -74,6 +75,7 @@ export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
   onUndo,
   onRedo,
 }) => {
+  const { t } = useTranslation();
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -90,427 +92,387 @@ export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
   if (!isOpen) return null;
 
   const commands: CommandItem[] = [
-    // --- Eylemler ---
+    // --- Actions ---
     {
       id: 'act_alert',
-      title: 'Fiyat Alarmı Ekle',
-      subtitle: 'Hedef seviyeye ulaşıldığında sesli uyarı kur',
-      category: 'Eylemler',
+      title: t.chart.addAlertAtPrice,
+      subtitle: t.modals.alertTitle,
+      category: t.common.action,
       icon: <Bell className="w-4 h-4 text-tv-yellow" />,
       shortcut: 'Alt + A',
       action: () => { onOpenAlerts(); onClose(); },
     },
     {
       id: 'act_indicators',
-      title: 'İndikatörler & Teknik Stratejiler',
-      subtitle: '91+ gelişmiş indikatör kütüphanesini aç',
-      category: 'Eylemler',
+      title: t.header.indicators,
+      subtitle: t.modals.indicatorsTitle,
+      category: t.common.action,
       icon: <Sliders className="w-4 h-4 text-tv-blue" />,
       shortcut: '/',
       action: () => { onOpenIndicators(); onClose(); },
     },
     {
       id: 'act_chart_settings',
-      title: 'Grafik Görsel Ayarları',
-      subtitle: 'Mum gövdesi, fitil renkleri, arka plan ve ızgara ayarları',
-      category: 'Eylemler',
+      title: t.header.chartSettings,
+      subtitle: t.modals.chartSettingsTitle,
+      category: t.common.action,
       icon: <Sliders className="w-4 h-4 text-[#787b86]" />,
       action: () => { onOpenChartSettings(); onClose(); },
     },
     {
       id: 'act_replay',
-      title: 'Bar Yeniden Oynatma (Replay Mode)',
-      subtitle: 'Geçmiş mumları adım adım simüle et',
-      category: 'Eylemler',
+      title: t.header.barReplay,
+      subtitle: t.replay.title,
+      category: t.common.action,
       icon: <Play className="w-4 h-4 text-tv-green" />,
       shortcut: 'Alt + G',
       action: () => { onToggleReplay(); onClose(); },
     },
     {
       id: 'act_undo',
-      title: 'Çizimi Geri Al (Undo)',
-      subtitle: 'Son çizilen nesneyi kaldır',
-      category: 'Eylemler',
+      title: 'Undo',
+      subtitle: 'Ctrl + Z',
+      category: t.common.action,
       icon: <RotateCcw className="w-4 h-4 text-tv-muted" />,
       shortcut: 'Ctrl + Z',
       action: () => { onUndo?.(); onClose(); },
     },
     {
       id: 'act_redo',
-      title: 'Çizimi İleri Al (Redo)',
-      subtitle: 'Geri alınan çizimi geri yükle',
-      category: 'Eylemler',
+      title: 'Redo',
+      subtitle: 'Ctrl + Y',
+      category: t.common.action,
       icon: <RotateCw className="w-4 h-4 text-tv-muted" />,
       shortcut: 'Ctrl + Y',
       action: () => { onRedo?.(); onClose(); },
     },
     {
       id: 'act_screenshot',
-      title: 'Grafik Ekran Görüntüsü Al (Screenshot)',
-      subtitle: 'Grafiği anında PNG olarak kaydet',
-      category: 'Eylemler',
+      title: t.header.screenshot,
+      subtitle: 'PNG',
+      category: t.common.action,
       icon: <Camera className="w-4 h-4 text-tv-blue" />,
       shortcut: 'Alt + S',
       action: () => { onTakeScreenshot(); onClose(); },
     },
     {
       id: 'act_export',
-      title: 'Verileri CSV Olarak Dışa Aktar',
-      subtitle: 'Tüm OHLCV bar verilerini Excel/CSV indir',
-      category: 'Eylemler',
+      title: t.header.exportCsv,
+      subtitle: 'CSV / Excel',
+      category: t.common.action,
       icon: <Download className="w-4 h-4 text-tv-green" />,
       action: () => { onExportData(); onClose(); },
     },
     {
       id: 'act_clear_drawings',
-      title: 'Tüm Çizimleri Kaldır',
-      subtitle: 'Grafikteki tüm çizimleri temizle',
-      category: 'Eylemler',
+      title: t.chart.removeAllDrawings,
+      subtitle: t.chart.removeAllDrawings,
+      category: t.common.action,
       icon: <Trash2 className="w-4 h-4 text-tv-red" />,
       shortcut: 'Alt + C',
       action: () => { onClearDrawings(); onClose(); },
     },
     {
       id: 'act_hotkeys',
-      title: 'Klavye Kısayolları Kılavuzu',
-      subtitle: 'Tüm hızlı kullanım tuşlarını görüntüle',
-      category: 'Eylemler',
+      title: t.header.hotkeys,
+      subtitle: t.modals.hotkeysTitle,
+      category: t.common.action,
       icon: <Keyboard className="w-4 h-4 text-[#ffd600]" />,
       shortcut: '?',
       action: () => { onOpenHotkeys(); onClose(); },
     },
     {
       id: 'act_backtest',
-      title: 'Strateji Testi & Quant Backtest',
-      subtitle: 'Gelişmiş strateji performansını simüle et',
-      category: 'Eylemler',
+      title: t.header.strategyBacktest,
+      subtitle: t.modals.backtestSimulatorTitle,
+      category: t.common.action,
       icon: <FileCode className="w-4 h-4 text-tv-blue" />,
       action: () => { onOpenBacktest(); onClose(); },
     },
 
-    // --- Semboller ---
+    // --- Symbols ---
     {
       id: 'sym_btc',
       title: 'BTCUSDT',
-      subtitle: 'Bitcoin / TetherUS (Binance Spot)',
-      category: 'Semboller',
+      subtitle: 'Bitcoin / TetherUS',
+      category: t.modals.symbolSearchTitle,
       icon: <TrendingUp className="w-4 h-4 text-[#f7931a]" />,
       action: () => { onSelectSymbol('BTCUSDT'); onClose(); },
     },
     {
       id: 'sym_eth',
       title: 'ETHUSDT',
-      subtitle: 'Ethereum / TetherUS (Binance Spot)',
-      category: 'Semboller',
+      subtitle: 'Ethereum / TetherUS',
+      category: t.modals.symbolSearchTitle,
       icon: <TrendingUp className="w-4 h-4 text-[#627eea]" />,
       action: () => { onSelectSymbol('ETHUSDT'); onClose(); },
     },
     {
       id: 'sym_sol',
       title: 'SOLUSDT',
-      subtitle: 'Solana / TetherUS (Binance Spot)',
-      category: 'Semboller',
+      subtitle: 'Solana / TetherUS',
+      category: t.modals.symbolSearchTitle,
       icon: <TrendingUp className="w-4 h-4 text-[#14f195]" />,
       action: () => { onSelectSymbol('SOLUSDT'); onClose(); },
     },
     {
       id: 'sym_bnb',
       title: 'BNBUSDT',
-      subtitle: 'BNB / TetherUS (Binance Spot)',
-      category: 'Semboller',
+      subtitle: 'BNB / TetherUS',
+      category: t.modals.symbolSearchTitle,
       icon: <TrendingUp className="w-4 h-4 text-[#f3ba2f]" />,
       action: () => { onSelectSymbol('BNBUSDT'); onClose(); },
     },
     {
-      id: 'sym_xrp',
-      title: 'XRPUSDT',
-      subtitle: 'Ripple / TetherUS (Binance Spot)',
-      category: 'Semboller',
-      icon: <TrendingUp className="w-4 h-4 text-[#23292f]" />,
-      action: () => { onSelectSymbol('XRPUSDT'); onClose(); },
-    },
-    {
       id: 'sym_gold',
       title: 'XAUUSD',
-      subtitle: 'Gold / US Dollar (Spot Altın)',
-      category: 'Semboller',
+      subtitle: 'Gold / US Dollar',
+      category: t.modals.symbolSearchTitle,
       icon: <TrendingUp className="w-4 h-4 text-[#ffd700]" />,
       action: () => { onSelectSymbol('XAUUSD'); onClose(); },
     },
     {
       id: 'sym_eur',
       title: 'EURUSD',
-      subtitle: 'Euro / US Dollar (Forex)',
-      category: 'Semboller',
+      subtitle: 'Euro / US Dollar',
+      category: t.modals.symbolSearchTitle,
       icon: <TrendingUp className="w-4 h-4 text-tv-blue" />,
       action: () => { onSelectSymbol('EURUSD'); onClose(); },
     },
 
-    // --- Zaman Dilimleri ---
+    // --- Timeframes ---
     {
       id: 'tf_1m',
-      title: '1m (1 Dakika)',
-      subtitle: 'Scalping ve mikroyapı analizi',
-      category: 'Zaman Dilimleri',
+      title: `1m (${t.header.timeframe1m})`,
+      category: t.header.timeframes,
       icon: <Clock className="w-4 h-4 text-tv-muted" />,
       action: () => { onSelectTimeframe('1m'); onClose(); },
     },
     {
       id: 'tf_5m',
-      title: '5m (5 Dakika)',
-      subtitle: 'Kısa vadeli gün içi alım satım',
-      category: 'Zaman Dilimleri',
+      title: `5m (${t.header.timeframe5m})`,
+      category: t.header.timeframes,
       icon: <Clock className="w-4 h-4 text-tv-muted" />,
       action: () => { onSelectTimeframe('5m'); onClose(); },
     },
     {
       id: 'tf_15m',
-      title: '15m (15 Dakika)',
-      subtitle: 'Klasik gün içi trend takibi',
-      category: 'Zaman Dilimleri',
+      title: `15m (${t.header.timeframe15m})`,
+      category: t.header.timeframes,
       icon: <Clock className="w-4 h-4 text-tv-blue" />,
       action: () => { onSelectTimeframe('15m'); onClose(); },
     },
     {
       id: 'tf_1h',
-      title: '1h (1 Saat)',
-      subtitle: 'Orta vadeli yapı ve destek/direnç',
-      category: 'Zaman Dilimleri',
+      title: `1h (${t.header.timeframe1h})`,
+      category: t.header.timeframes,
       icon: <Clock className="w-4 h-4 text-tv-blue" />,
       action: () => { onSelectTimeframe('1h'); onClose(); },
     },
     {
       id: 'tf_4h',
-      title: '4h (4 Saat)',
-      subtitle: 'Swing trading ana trend analizleri',
-      category: 'Zaman Dilimleri',
+      title: `4h (${t.header.timeframe4h})`,
+      category: t.header.timeframes,
       icon: <Clock className="w-4 h-4 text-tv-blue" />,
       action: () => { onSelectTimeframe('4h'); onClose(); },
     },
     {
       id: 'tf_1d',
-      title: '1D (Günlük)',
-      subtitle: 'Makro trend ve kurumsal seviyeler',
-      category: 'Zaman Dilimleri',
+      title: `1D (${t.header.timeframe1d})`,
+      category: t.header.timeframes,
       icon: <Clock className="w-4 h-4 text-tv-yellow" />,
       action: () => { onSelectTimeframe('1d'); onClose(); },
     },
 
-    // --- Grafik Tipleri & Bar Profilleri ---
+    // --- Chart Types ---
     {
       id: 'ct_volume_footprint',
-      title: 'Hacim Ayak İzi (Volume Footprint / Orderflow)',
-      subtitle: 'Bar içi Alış x Satış hacmi, Delta ve POC (Point of Control) profili',
-      category: 'Grafik Tipleri',
+      title: t.header.volumeFootprint,
+      category: t.header.chartTypes,
       icon: <Layers className="w-4 h-4 text-[#ff9800]" />,
       action: () => { onSelectChartType('volume-footprint'); onClose(); },
     },
     {
       id: 'ct_volume_candle',
-      title: 'Hacimli Mumlar (Volume Candles)',
-      subtitle: 'Hacim büyüklüğüne göre dinamik gövde kalınlığına sahip mumlar',
-      category: 'Grafik Tipleri',
+      title: t.header.volumeCandles,
+      category: t.header.chartTypes,
       icon: <TrendingUp className="w-4 h-4 text-tv-green" />,
       action: () => { onSelectChartType('volume-candle'); onClose(); },
     },
     {
       id: 'ct_candlestick',
-      title: 'Japon Mum Grafiği (Candlestick)',
-      subtitle: 'Geleneksel yeşil / kırmızı fiyat barları',
-      category: 'Grafik Tipleri',
+      title: t.header.candlestick,
+      category: t.header.chartTypes,
       icon: <TrendingUp className="w-4 h-4 text-tv-green" />,
       action: () => { onSelectChartType('candlestick'); onClose(); },
     },
     {
       id: 'ct_hollow',
-      title: 'İçi Boş Mumlar (Hollow Candles)',
-      subtitle: 'Önceki kapanışa göre şeffaf/dolu gövdeler',
-      category: 'Grafik Tipleri',
+      title: t.header.hollowCandles,
+      category: t.header.chartTypes,
       icon: <TrendingUp className="w-4 h-4 text-tv-blue" />,
       action: () => { onSelectChartType('hollow-candlestick'); onClose(); },
     },
     {
       id: 'ct_bar',
-      title: 'Çubuk Grafik (OHLC Bars)',
-      subtitle: 'Açılış, yüksek, düşük ve kapanış çubukları',
-      category: 'Grafik Tipleri',
+      title: t.header.bars,
+      category: t.header.chartTypes,
       icon: <TrendingUp className="w-4 h-4 text-tv-blue" />,
       action: () => { onSelectChartType('bar'); onClose(); },
     },
     {
       id: 'ct_baseline',
-      title: 'Taban Çizgisi (Baseline)',
-      subtitle: 'Referans seviyenin üstü yeşil altı kırmızı dolgulu',
-      category: 'Grafik Tipleri',
+      title: t.header.baseline,
+      category: t.header.chartTypes,
       icon: <TrendingUp className="w-4 h-4 text-tv-yellow" />,
       action: () => { onSelectChartType('baseline'); onClose(); },
     },
     {
       id: 'ct_heikin',
-      title: 'Heikin-Ashi',
-      subtitle: 'Gürültüden arındırılmış trend ortalaması mumları',
-      category: 'Grafik Tipleri',
+      title: t.header.heikinAshi,
+      category: t.header.chartTypes,
       icon: <TrendingUp className="w-4 h-4 text-tv-purple" />,
       action: () => { onSelectChartType('heikin-ashi'); onClose(); },
     },
     {
       id: 'ct_renko',
-      title: 'Renko Barları (Renko Bricks)',
-      subtitle: 'Zamana bakılmaksızın sabit fiyat adımına göre tuğlalar',
-      category: 'Grafik Tipleri',
+      title: t.header.renko,
+      category: t.header.chartTypes,
       icon: <LayoutGrid className="w-4 h-4 text-tv-purple" />,
       action: () => { onSelectChartType('renko'); onClose(); },
     },
     {
       id: 'ct_line_break',
-      title: 'Çizgi Sonu (Three Line Break)',
-      subtitle: 'Önceki 3 bloğun aşılmasıyla oluşan trend blokları',
-      category: 'Grafik Tipleri',
+      title: t.header.threeLineBreak,
+      category: t.header.chartTypes,
       icon: <TrendingUp className="w-4 h-4 text-tv-yellow" />,
       action: () => { onSelectChartType('line-break'); onClose(); },
     },
     {
       id: 'ct_line',
-      title: 'Çizgi Grafik (Line)',
-      subtitle: 'Sadece kapanış fiyatlarını bağlayan çizgi',
-      category: 'Grafik Tipleri',
+      title: t.header.line,
+      category: t.header.chartTypes,
       icon: <TrendingUp className="w-4 h-4 text-tv-blue" />,
       action: () => { onSelectChartType('line'); onClose(); },
     },
     {
       id: 'ct_area',
-      title: 'Alan Grafiği (Area)',
-      subtitle: 'Alt tarafı yarı saydam gradyan dolgulu çizgi',
-      category: 'Grafik Tipleri',
+      title: t.header.area,
+      category: t.header.chartTypes,
       icon: <TrendingUp className="w-4 h-4 text-tv-blue" />,
       action: () => { onSelectChartType('area'); onClose(); },
     },
     {
       id: 'ct_step_line',
-      title: 'Adım Çizgisi (Step Line)',
-      subtitle: 'Fiyat basamaklarını gösteren yatay-dikey basamak çizgisi',
-      category: 'Grafik Tipleri',
+      title: t.header.stepLine,
+      category: t.header.chartTypes,
       icon: <TrendingUp className="w-4 h-4 text-tv-blue" />,
       action: () => { onSelectChartType('step-line'); onClose(); },
     },
     {
       id: 'ct_line_markers',
-      title: 'Noktalı Çizgi (Line with Markers)',
-      subtitle: 'Kapanış noktalarında dairesel işaretçiler',
-      category: 'Grafik Tipleri',
+      title: t.header.lineWithMarkers,
+      category: t.header.chartTypes,
       icon: <TrendingUp className="w-4 h-4 text-tv-green" />,
       action: () => { onSelectChartType('line-with-markers'); onClose(); },
     },
     {
       id: 'ct_columns',
-      title: 'Sütunlar (Columns)',
-      subtitle: 'Kapanış seviyelerine kadar uzanan dikey renkli sütunlar',
-      category: 'Grafik Tipleri',
+      title: t.header.columns,
+      category: t.header.chartTypes,
       icon: <LayoutGrid className="w-4 h-4 text-tv-blue" />,
       action: () => { onSelectChartType('columns'); onClose(); },
     },
     {
       id: 'ct_high_low',
-      title: 'Yüksek - Düşük (High-Low)',
-      subtitle: 'Gövdesiz, sadece yüksek-düşük aralığını ve kapanış çentiğini gösteren barlar',
-      category: 'Grafik Tipleri',
+      title: t.header.highLow,
+      category: t.header.chartTypes,
       icon: <TrendingUp className="w-4 h-4 text-tv-blue" />,
       action: () => { onSelectChartType('high-low'); onClose(); },
     },
 
-    // --- Çizim Araçları ---
+    // --- Drawing Tools ---
     {
       id: 'dt_trendline',
-      title: 'Trend Çizgisi (Trend Line)',
-      subtitle: 'İki nokta arasında serbest yön çizgisi',
-      category: 'Çizim Araçları',
+      title: t.leftToolbar.trendLine,
+      category: t.modals.drawingToolsCat,
       icon: <PenTool className="w-4 h-4 text-tv-green" />,
       shortcut: 'Alt + T',
       action: () => { onSelectDrawingTool('trendLine'); onClose(); },
     },
     {
       id: 'dt_horz',
-      title: 'Yatay Çizgi (Horizontal Line)',
-      subtitle: 'Tek tıkla sonsuz uzayan destek/direnç çizgisi',
-      category: 'Çizim Araçları',
+      title: t.leftToolbar.horizontalLine,
+      category: t.modals.drawingToolsCat,
       icon: <PenTool className="w-4 h-4 text-tv-blue" />,
       shortcut: 'Alt + H',
       action: () => { onSelectDrawingTool('horizontalLine'); onClose(); },
     },
     {
       id: 'dt_vert',
-      title: 'Dikey Çizgi (Vertical Line)',
-      subtitle: 'Belirli bir zaman dilimi veya olayı işaretle',
-      category: 'Çizim Araçları',
+      title: t.leftToolbar.verticalLine,
+      category: t.modals.drawingToolsCat,
       icon: <PenTool className="w-4 h-4 text-tv-blue" />,
       shortcut: 'Alt + V',
       action: () => { onSelectDrawingTool('verticalLine'); onClose(); },
     },
     {
       id: 'dt_fib',
-      title: 'Fibonacci Düzeltmesi (Fib Retracement)',
-      subtitle: '0.236, 0.382, 0.5, 0.618, 0.786 altın oran seviyeleri',
-      category: 'Çizim Araçları',
+      title: t.leftToolbar.fibRetracement,
+      category: t.modals.drawingToolsCat,
       icon: <PenTool className="w-4 h-4 text-[#ffd600]" />,
       shortcut: 'Alt + F',
       action: () => { onSelectDrawingTool('fibonacci'); onClose(); },
     },
     {
       id: 'dt_measure',
-      title: 'Ölçüm / Cetvel (Measure Tool)',
-      subtitle: 'Bar sayısı, zaman, fiyat ve yüzde getiri hesabı',
-      category: 'Çizim Araçları',
+      title: t.leftToolbar.measureTool,
+      category: t.modals.drawingToolsCat,
       icon: <Compass className="w-4 h-4 text-tv-blue" />,
-      shortcut: 'Alt + R (veya Shift+Tık)',
+      shortcut: 'Alt + R',
       action: () => { onSelectDrawingTool('measure'); onClose(); },
     },
     {
       id: 'dt_long',
-      title: 'Uzun Pozisyon (Long Position)',
-      subtitle: 'Giriş, Zarar Durdur ve Kâr Al risk/kazanç oranı kutusu',
-      category: 'Çizim Araçları',
+      title: t.leftToolbar.longPosition,
+      category: t.modals.drawingToolsCat,
       icon: <PenTool className="w-4 h-4 text-tv-green" />,
       action: () => { onSelectDrawingTool('longPosition'); onClose(); },
     },
     {
       id: 'dt_short',
-      title: 'Kısa Pozisyon (Short Position)',
-      subtitle: 'Short risk/kazanç oranı ve hedef seviye kutusu',
-      category: 'Çizim Araçları',
+      title: t.leftToolbar.shortPosition,
+      category: t.modals.drawingToolsCat,
       icon: <PenTool className="w-4 h-4 text-tv-red" />,
       action: () => { onSelectDrawingTool('shortPosition'); onClose(); },
     },
 
-    // --- Düzenler ---
+    // --- Layouts ---
     {
       id: 'lay_1',
-      title: '1 Grafik (Tek Panel Tam Ekran)',
-      subtitle: 'Varsayılan tam ekran grafik',
-      category: 'Düzenler',
+      title: t.header.layout1x1,
+      category: t.header.layouts,
       icon: <LayoutGrid className="w-4 h-4 text-tv-blue" />,
       action: () => { onSelectLayout('1x1'); onClose(); },
     },
     {
       id: 'lay_2v',
-      title: '2 Grafik (Dikey İkili Split)',
-      subtitle: 'Yan yana 2 bağımsız grafik',
-      category: 'Düzenler',
+      title: t.header.layout1x2,
+      category: t.header.layouts,
       icon: <LayoutGrid className="w-4 h-4 text-tv-blue" />,
       action: () => { onSelectLayout('1x2'); onClose(); },
     },
     {
       id: 'lay_2h',
-      title: '2 Grafik (Yatay İkili Split)',
-      subtitle: 'Alt alta 2 bağımsız grafik',
-      category: 'Düzenler',
+      title: t.header.layout2x1,
+      category: t.header.layouts,
       icon: <LayoutGrid className="w-4 h-4 text-tv-blue" />,
       action: () => { onSelectLayout('2x1'); onClose(); },
     },
     {
       id: 'lay_4',
-      title: '4 Grafik (2x2 Grid Bölünmüş Ekran)',
-      subtitle: 'Aynı anda 4 farklı sembol veya zaman dilimi izleme',
-      category: 'Düzenler',
+      title: t.header.layout2x2,
+      category: t.header.layouts,
       icon: <LayoutGrid className="w-4 h-4 text-tv-blue" />,
       action: () => { onSelectLayout('2x2'); onClose(); },
     },
@@ -559,7 +521,7 @@ export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
           <input
             ref={inputRef}
             type="text"
-            placeholder="Sembol, indikatör, çizim aracı, zaman dilimi veya komut ara..."
+            placeholder={t.modals.commandPlaceholder}
             value={query}
             onChange={(e) => {
               setQuery(e.target.value);
@@ -580,7 +542,7 @@ export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
         >
           {filtered.length === 0 ? (
             <div className="text-center py-12 text-tv-muted">
-              Eşleşen komut veya sembol bulunamadı.
+              {t.common.none}
             </div>
           ) : (
             filtered.map((item, idx) => {
@@ -635,9 +597,9 @@ export const CommandPaletteModal: React.FC<CommandPaletteModalProps> = ({
         {/* Footer Navigation Tips */}
         <div className="h-9 border-t border-tv-border px-4 bg-tv-bg flex items-center justify-between text-[11px] text-tv-muted">
           <div className="flex items-center space-x-3">
-            <span><strong className="text-white">↑↓</strong> Gezin</span>
-            <span><strong className="text-white">Enter</strong> Seç</span>
-            <span><strong className="text-white">Esc</strong> Kapat</span>
+            <span><strong className="text-white">↑↓</strong> Navigate</span>
+            <span><strong className="text-white">Enter</strong> Select</span>
+            <span><strong className="text-white">Esc</strong> {t.common.close}</span>
           </div>
           <span>OpenChart Spotlight</span>
         </div>

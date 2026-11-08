@@ -3,7 +3,7 @@ import {
   Crosshair, 
   MousePointer, 
   CircleDot,
-  Eraser,
+  Eraser, 
   Minus, 
   ArrowUpRight, 
   Square, 
@@ -19,18 +19,16 @@ import {
   ChevronRight,
   Target,
   Compass,
-  Smile,
   Lock,
   Unlock,
   PenTool,
   Tag,
   ArrowUp,
   ArrowDown,
-  Activity,
-  Maximize2,
   BarChart2
 } from 'lucide-react';
 import { DrawingToolType } from '../types';
+import { useTranslation } from '../i18n';
 
 interface LeftToolbarProps {
   activeTool: DrawingToolType;
@@ -53,7 +51,6 @@ export const LeftToolbar: React.FC<LeftToolbarProps> = React.memo(({
   activeTool,
   magnetMode,
   onSelectTool,
-  onSelectMagnetMode,
   onToggleMagnet,
   onClearDrawings,
   onToggleHideDrawings,
@@ -65,6 +62,7 @@ export const LeftToolbar: React.FC<LeftToolbarProps> = React.memo(({
   showFavoritesBar = false,
   onToggleFavoritesBar,
 }) => {
+  const { t } = useTranslation();
   const [openFlyout, setOpenFlyout] = useState<string | null>(null);
 
   // Group membership checks
@@ -108,7 +106,7 @@ export const LeftToolbar: React.FC<LeftToolbarProps> = React.memo(({
           className={`w-8 h-8 rounded flex items-center justify-center transition-colors relative ${
             isCursorGroup ? 'bg-tv-blue text-white' : 'text-tv-muted hover:text-tv-text hover:bg-tv-hover'
           }`}
-          title="İmleç Araçları (Artı, Nokta, Ok, Silgi)"
+          title={t.leftToolbar.cursorTools}
         >
           {activeTool === 'dot' ? (
             <CircleDot className="w-4 h-4" />
@@ -134,21 +132,21 @@ export const LeftToolbar: React.FC<LeftToolbarProps> = React.memo(({
               className={`w-full px-3 py-1.5 flex items-center space-x-2.5 hover:bg-tv-hover ${activeTool === 'crosshair' ? 'text-tv-blue font-bold' : ''}`}
             >
               <Crosshair className="w-3.5 h-3.5" />
-              <span>Artı İmleç (Cross)</span>
+              <span>{t.leftToolbar.crosshair}</span>
             </button>
             <button
               onClick={() => { onSelectTool('dot'); setOpenFlyout(null); }}
               className={`w-full px-3 py-1.5 flex items-center space-x-2.5 hover:bg-tv-hover ${activeTool === 'dot' ? 'text-tv-blue font-bold' : ''}`}
             >
               <CircleDot className="w-3.5 h-3.5" />
-              <span>Nokta (Dot)</span>
+              <span>{t.leftToolbar.dot}</span>
             </button>
             <button
               onClick={() => { onSelectTool('cursor'); setOpenFlyout(null); }}
               className={`w-full px-3 py-1.5 flex items-center space-x-2.5 hover:bg-tv-hover ${activeTool === 'cursor' ? 'text-tv-blue font-bold' : ''}`}
             >
               <MousePointer className="w-3.5 h-3.5" />
-              <span>Ok İmleç (Arrow)</span>
+              <span>{t.leftToolbar.arrow}</span>
             </button>
             <div className="border-t border-tv-border/50 my-1" />
             <button
@@ -156,7 +154,7 @@ export const LeftToolbar: React.FC<LeftToolbarProps> = React.memo(({
               className={`w-full px-3 py-1.5 flex items-center space-x-2.5 hover:bg-tv-hover ${activeTool === 'eraser' ? 'text-tv-red font-bold' : ''}`}
             >
               <Eraser className="w-3.5 h-3.5 text-tv-red" />
-              <span>Silgi (Nesne Silici)</span>
+              <span>{t.leftToolbar.eraser}</span>
             </button>
           </div>
         )}
@@ -171,7 +169,7 @@ export const LeftToolbar: React.FC<LeftToolbarProps> = React.memo(({
           className={`w-8 h-8 rounded flex items-center justify-center transition-colors relative ${
             isLineGroup ? 'bg-tv-blue text-white' : 'text-tv-muted hover:text-tv-text hover:bg-tv-hover'
           }`}
-          title="Çizgi Araçları (Trend Çizgisi, Işın, Yatay Çizgi, Kanal...)"
+          title={t.leftToolbar.trendTools}
         >
           {activeTool === 'horizontalLine' ? (
             <Minus className="w-4 h-4" />
@@ -193,35 +191,21 @@ export const LeftToolbar: React.FC<LeftToolbarProps> = React.memo(({
               className={`w-full px-3 py-1.5 flex items-center space-x-2.5 hover:bg-tv-hover ${activeTool === 'trendLine' ? 'text-tv-blue font-bold' : ''}`}
             >
               <ArrowUpRight className="w-3.5 h-3.5" />
-              <span>Trend Çizgisi</span>
+              <span>{t.leftToolbar.trendLine}</span>
             </button>
             <button
               onClick={() => { onSelectTool('ray'); setOpenFlyout(null); }}
               className={`w-full px-3 py-1.5 flex items-center space-x-2.5 hover:bg-tv-hover ${activeTool === 'ray' ? 'text-tv-blue font-bold' : ''}`}
             >
               <ChevronRight className="w-3.5 h-3.5" />
-              <span>Işın (Ray)</span>
-            </button>
-            <button
-              onClick={() => { onSelectTool('infoLine'); setOpenFlyout(null); }}
-              className={`w-full px-3 py-1.5 flex items-center space-x-2.5 hover:bg-tv-hover ${activeTool === 'infoLine' ? 'text-tv-blue font-bold' : ''}`}
-            >
-              <span className="font-mono text-xs font-bold">[i]</span>
-              <span>Bilgi Çizgisi (Info Line)</span>
+              <span>{t.leftToolbar.ray}</span>
             </button>
             <button
               onClick={() => { onSelectTool('extendedLine'); setOpenFlyout(null); }}
               className={`w-full px-3 py-1.5 flex items-center space-x-2.5 hover:bg-tv-hover ${activeTool === 'extendedLine' ? 'text-tv-blue font-bold' : ''}`}
             >
               <span className="font-mono text-xs">←―→</span>
-              <span>Uzatılmış Çizgi</span>
-            </button>
-            <button
-              onClick={() => { onSelectTool('trendAngle'); setOpenFlyout(null); }}
-              className={`w-full px-3 py-1.5 flex items-center space-x-2.5 hover:bg-tv-hover ${activeTool === 'trendAngle' ? 'text-tv-blue font-bold' : ''}`}
-            >
-              <span className="font-mono text-xs">∠</span>
-              <span>Trend Açısı</span>
+              <span>{t.leftToolbar.extendedLine}</span>
             </button>
             <div className="border-t border-tv-border/50 my-1" />
             <button
@@ -229,28 +213,28 @@ export const LeftToolbar: React.FC<LeftToolbarProps> = React.memo(({
               className={`w-full px-3 py-1.5 flex items-center space-x-2.5 hover:bg-tv-hover ${activeTool === 'horizontalLine' ? 'text-tv-blue font-bold' : ''}`}
             >
               <Minus className="w-3.5 h-3.5" />
-              <span>Yatay Çizgi</span>
+              <span>{t.leftToolbar.horizontalLine}</span>
             </button>
             <button
               onClick={() => { onSelectTool('horizontalRay'); setOpenFlyout(null); }}
               className={`w-full px-3 py-1.5 flex items-center space-x-2.5 hover:bg-tv-hover ${activeTool === 'horizontalRay' ? 'text-tv-blue font-bold' : ''}`}
             >
               <span className="font-mono text-xs">--→</span>
-              <span>Yatay Işın</span>
+              <span>{t.leftToolbar.horizontalRay}</span>
             </button>
             <button
               onClick={() => { onSelectTool('verticalLine'); setOpenFlyout(null); }}
               className={`w-full px-3 py-1.5 flex items-center space-x-2.5 hover:bg-tv-hover ${activeTool === 'verticalLine' ? 'text-tv-blue font-bold' : ''}`}
             >
               <span className="font-mono text-xs">|</span>
-              <span>Dikey Çizgi</span>
+              <span>{t.leftToolbar.verticalLine}</span>
             </button>
             <button
               onClick={() => { onSelectTool('crossLine'); setOpenFlyout(null); }}
               className={`w-full px-3 py-1.5 flex items-center space-x-2.5 hover:bg-tv-hover ${activeTool === 'crossLine' ? 'text-tv-blue font-bold' : ''}`}
             >
               <span className="font-mono text-xs">+</span>
-              <span>Kesişim Çizgisi</span>
+              <span>{t.leftToolbar.crossLine}</span>
             </button>
             <div className="border-t border-tv-border/50 my-1" />
             <button
@@ -258,7 +242,7 @@ export const LeftToolbar: React.FC<LeftToolbarProps> = React.memo(({
               className={`w-full px-3 py-1.5 flex items-center space-x-2.5 hover:bg-tv-hover ${activeTool === 'parallelChannel' ? 'text-tv-blue font-bold' : ''}`}
             >
               <span className="font-mono text-xs">||</span>
-              <span>Paralel Kanal</span>
+              <span>{t.leftToolbar.parallelChannel}</span>
             </button>
           </div>
         )}
@@ -273,7 +257,7 @@ export const LeftToolbar: React.FC<LeftToolbarProps> = React.memo(({
           className={`w-8 h-8 rounded flex items-center justify-center transition-colors relative ${
             isFibGroup ? 'bg-tv-blue text-white' : 'text-tv-muted hover:text-tv-text hover:bg-tv-hover'
           }`}
-          title="Fibonacci & Gann Araçları (Düzeltme, Uzatma, Kanal, Fan)"
+          title={t.leftToolbar.fibonacciTools}
         >
           <Layers className="w-4 h-4" />
           <span 
@@ -291,35 +275,28 @@ export const LeftToolbar: React.FC<LeftToolbarProps> = React.memo(({
               className={`w-full px-3 py-1.5 flex items-center space-x-2.5 hover:bg-tv-hover ${activeTool === 'fibonacci' ? 'text-tv-blue font-bold' : ''}`}
             >
               <Layers className="w-3.5 h-3.5" />
-              <span>Fibonacci Düzeltmesi (%61.8)</span>
+              <span>{t.leftToolbar.fibRetracement}</span>
             </button>
             <button
               onClick={() => { onSelectTool('fibExtension'); setOpenFlyout(null); }}
               className={`w-full px-3 py-1.5 flex items-center space-x-2.5 hover:bg-tv-hover ${activeTool === 'fibExtension' ? 'text-tv-blue font-bold' : ''}`}
             >
               <ArrowUpRight className="w-3.5 h-3.5" />
-              <span>Trend Tabanlı Fib Uzatması</span>
+              <span>{t.leftToolbar.trendBasedFibExtension}</span>
             </button>
             <button
               onClick={() => { onSelectTool('fibChannel'); setOpenFlyout(null); }}
               className={`w-full px-3 py-1.5 flex items-center space-x-2.5 hover:bg-tv-hover ${activeTool === 'fibChannel' ? 'text-tv-blue font-bold' : ''}`}
             >
               <span className="font-mono text-xs">///</span>
-              <span>Fibonacci Kanalı</span>
+              <span>{t.leftToolbar.fibChannel}</span>
             </button>
             <button
               onClick={() => { onSelectTool('fibTimeZones'); setOpenFlyout(null); }}
               className={`w-full px-3 py-1.5 flex items-center space-x-2.5 hover:bg-tv-hover ${activeTool === 'fibTimeZones' ? 'text-tv-blue font-bold' : ''}`}
             >
               <span className="font-mono text-xs">|||</span>
-              <span>Fibonacci Zaman Bölgeleri</span>
-            </button>
-            <button
-              onClick={() => { onSelectTool('fibCircles'); setOpenFlyout(null); }}
-              className={`w-full px-3 py-1.5 flex items-center space-x-2.5 hover:bg-tv-hover ${activeTool === 'fibCircles' ? 'text-tv-blue font-bold' : ''}`}
-            >
-              <Circle className="w-3.5 h-3.5" />
-              <span>Fibonacci Çemberleri</span>
+              <span>{t.leftToolbar.fibTimeZones}</span>
             </button>
             <div className="border-t border-tv-border/50 my-1" />
             <button
@@ -327,14 +304,14 @@ export const LeftToolbar: React.FC<LeftToolbarProps> = React.memo(({
               className={`w-full px-3 py-1.5 flex items-center space-x-2.5 hover:bg-tv-hover ${activeTool === 'gannBox' ? 'text-tv-blue font-bold' : ''}`}
             >
               <Square className="w-3.5 h-3.5" />
-              <span>Gann Kutusu (Gann Box)</span>
+              <span>{t.leftToolbar.gannBox}</span>
             </button>
             <button
               onClick={() => { onSelectTool('gannFan'); setOpenFlyout(null); }}
               className={`w-full px-3 py-1.5 flex items-center space-x-2.5 hover:bg-tv-hover ${activeTool === 'gannFan' ? 'text-tv-blue font-bold' : ''}`}
             >
               <Compass className="w-3.5 h-3.5" />
-              <span>Gann Fanı (Gann Fan)</span>
+              <span>{t.leftToolbar.gannFan}</span>
             </button>
           </div>
         )}
@@ -349,7 +326,7 @@ export const LeftToolbar: React.FC<LeftToolbarProps> = React.memo(({
           className={`w-8 h-8 rounded flex items-center justify-center transition-colors relative ${
             isShapeGroup ? 'bg-tv-blue text-white' : 'text-tv-muted hover:text-tv-text hover:bg-tv-hover'
           }`}
-          title="Geometrik Şekiller (Kutu, Çember, Fırça, Çokgen...)"
+          title={t.leftToolbar.geometricShapes}
         >
           {activeTool === 'brush' ? (
             <Paintbrush className="w-4 h-4" />
@@ -373,21 +350,14 @@ export const LeftToolbar: React.FC<LeftToolbarProps> = React.memo(({
               className={`w-full px-3 py-1.5 flex items-center space-x-2.5 hover:bg-tv-hover ${activeTool === 'brush' ? 'text-tv-blue font-bold' : ''}`}
             >
               <Paintbrush className="w-3.5 h-3.5" />
-              <span>Fırça (Serbest Çizim)</span>
+              <span>{t.leftToolbar.brush}</span>
             </button>
             <button
               onClick={() => { onSelectTool('highlighter'); setOpenFlyout(null); }}
               className={`w-full px-3 py-1.5 flex items-center space-x-2.5 hover:bg-tv-hover ${activeTool === 'highlighter' ? 'text-tv-blue font-bold' : ''}`}
             >
               <PenTool className="w-3.5 h-3.5 text-yellow-400" />
-              <span>Vurgulayıcı (Highlighter)</span>
-            </button>
-            <button
-              onClick={() => { onSelectTool('arrow'); setOpenFlyout(null); }}
-              className={`w-full px-3 py-1.5 flex items-center space-x-2.5 hover:bg-tv-hover ${activeTool === 'arrow' ? 'text-tv-blue font-bold' : ''}`}
-            >
-              <ArrowUpRight className="w-3.5 h-3.5" />
-              <span>Ok İşareti (Arrow)</span>
+              <span>{t.leftToolbar.highlighter}</span>
             </button>
             <div className="border-t border-tv-border/50 my-1" />
             <button
@@ -395,35 +365,35 @@ export const LeftToolbar: React.FC<LeftToolbarProps> = React.memo(({
               className={`w-full px-3 py-1.5 flex items-center space-x-2.5 hover:bg-tv-hover ${activeTool === 'rectangle' ? 'text-tv-blue font-bold' : ''}`}
             >
               <Square className="w-3.5 h-3.5" />
-              <span>Kutu / Dikdörtgen</span>
+              <span>{t.leftToolbar.rectangle}</span>
             </button>
             <button
               onClick={() => { onSelectTool('circle'); setOpenFlyout(null); }}
               className={`w-full px-3 py-1.5 flex items-center space-x-2.5 hover:bg-tv-hover ${activeTool === 'circle' ? 'text-tv-blue font-bold' : ''}`}
             >
               <Circle className="w-3.5 h-3.5" />
-              <span>Çember / Daire</span>
+              <span>{t.leftToolbar.circle}</span>
             </button>
             <button
               onClick={() => { onSelectTool('ellipse'); setOpenFlyout(null); }}
               className={`w-full px-3 py-1.5 flex items-center space-x-2.5 hover:bg-tv-hover ${activeTool === 'ellipse' ? 'text-tv-blue font-bold' : ''}`}
             >
               <span className="font-mono text-xs">⬭</span>
-              <span>Elips</span>
+              <span>{t.leftToolbar.ellipse}</span>
             </button>
             <button
               onClick={() => { onSelectTool('triangle'); setOpenFlyout(null); }}
               className={`w-full px-3 py-1.5 flex items-center space-x-2.5 hover:bg-tv-hover ${activeTool === 'triangle' ? 'text-tv-blue font-bold' : ''}`}
             >
               <span className="font-mono text-xs">△</span>
-              <span>Üçgen</span>
+              <span>{t.leftToolbar.triangle}</span>
             </button>
             <button
               onClick={() => { onSelectTool('polyline'); setOpenFlyout(null); }}
               className={`w-full px-3 py-1.5 flex items-center space-x-2.5 hover:bg-tv-hover ${activeTool === 'polyline' ? 'text-tv-blue font-bold' : ''}`}
             >
               <span className="font-mono text-xs">⎎</span>
-              <span>Kırık Çizgi (Polyline)</span>
+              <span>{t.leftToolbar.polyline}</span>
             </button>
           </div>
         )}
@@ -438,7 +408,7 @@ export const LeftToolbar: React.FC<LeftToolbarProps> = React.memo(({
           className={`w-8 h-8 rounded flex items-center justify-center transition-colors relative ${
             isTextGroup ? 'bg-tv-blue text-white' : 'text-tv-muted hover:text-tv-text hover:bg-tv-hover'
           }`}
-          title="Metin ve Not Araçları (Yazı, Baloncuk, Fiyat Etiketi)"
+          title={t.leftToolbar.annotationTools}
         >
           <Type className="w-4 h-4" />
           <span 
@@ -456,28 +426,28 @@ export const LeftToolbar: React.FC<LeftToolbarProps> = React.memo(({
               className={`w-full px-3 py-1.5 flex items-center space-x-2.5 hover:bg-tv-hover ${activeTool === 'text' ? 'text-tv-blue font-bold' : ''}`}
             >
               <Type className="w-3.5 h-3.5" />
-              <span>Metin / Not</span>
+              <span>{t.leftToolbar.text}</span>
             </button>
             <button
               onClick={() => { onSelectTool('anchoredText'); setOpenFlyout(null); }}
               className={`w-full px-3 py-1.5 flex items-center space-x-2.5 hover:bg-tv-hover ${activeTool === 'anchoredText' ? 'text-tv-blue font-bold' : ''}`}
             >
               <span className="font-mono text-xs font-bold">[T]</span>
-              <span>Sabit Metin (Anchored)</span>
+              <span>{t.leftToolbar.anchoredText}</span>
             </button>
             <button
               onClick={() => { onSelectTool('callout'); setOpenFlyout(null); }}
               className={`w-full px-3 py-1.5 flex items-center space-x-2.5 hover:bg-tv-hover ${activeTool === 'callout' ? 'text-tv-blue font-bold' : ''}`}
             >
               <span className="font-mono text-xs">💬</span>
-              <span>Baloncuk (Callout)</span>
+              <span>{t.leftToolbar.callout}</span>
             </button>
             <button
               onClick={() => { onSelectTool('priceLabel'); setOpenFlyout(null); }}
               className={`w-full px-3 py-1.5 flex items-center space-x-2.5 hover:bg-tv-hover ${activeTool === 'priceLabel' ? 'text-tv-blue font-bold' : ''}`}
             >
               <Tag className="w-3.5 h-3.5 text-tv-blue" />
-              <span>Fiyat Etiketi</span>
+              <span>{t.leftToolbar.priceLabel}</span>
             </button>
             <div className="border-t border-tv-border/50 my-1" />
             <button
@@ -485,14 +455,14 @@ export const LeftToolbar: React.FC<LeftToolbarProps> = React.memo(({
               className={`w-full px-3 py-1.5 flex items-center space-x-2.5 hover:bg-tv-hover ${activeTool === 'arrowUp' ? 'text-tv-green font-bold' : ''}`}
             >
               <ArrowUp className="w-3.5 h-3.5 text-tv-green" />
-              <span>Yukarı Ok İpucu (Bullish)</span>
+              <span>{t.common.buy} ↑</span>
             </button>
             <button
               onClick={() => { onSelectTool('arrowDown'); setOpenFlyout(null); }}
               className={`w-full px-3 py-1.5 flex items-center space-x-2.5 hover:bg-tv-hover ${activeTool === 'arrowDown' ? 'text-tv-red font-bold' : ''}`}
             >
               <ArrowDown className="w-3.5 h-3.5 text-tv-red" />
-              <span>Aşağı Ok İpucu (Bearish)</span>
+              <span>{t.common.sell} ↓</span>
             </button>
           </div>
         )}
@@ -507,7 +477,7 @@ export const LeftToolbar: React.FC<LeftToolbarProps> = React.memo(({
           className={`w-8 h-8 rounded flex items-center justify-center transition-colors relative ${
             isPatternGroup ? 'bg-tv-blue text-white' : 'text-tv-muted hover:text-tv-text hover:bg-tv-hover'
           }`}
-          title="Formasyonlar & Dalgalar (Harmonik XABCD, OBO, Elliott Dalgaları)"
+          title={t.leftToolbar.patterns}
         >
           <Compass className="w-4 h-4" />
           <span 
@@ -525,21 +495,14 @@ export const LeftToolbar: React.FC<LeftToolbarProps> = React.memo(({
               className={`w-full px-3 py-1.5 flex items-center space-x-2.5 hover:bg-tv-hover ${activeTool === 'xabcdPattern' ? 'text-tv-blue font-bold' : ''}`}
             >
               <span className="font-mono text-xs font-bold text-tv-blue">XABCD</span>
-              <span>Harmonik Formasyon</span>
+              <span>{t.leftToolbar.xabcd}</span>
             </button>
             <button
               onClick={() => { onSelectTool('headAndShoulders'); setOpenFlyout(null); }}
               className={`w-full px-3 py-1.5 flex items-center space-x-2.5 hover:bg-tv-hover ${activeTool === 'headAndShoulders' ? 'text-tv-blue font-bold' : ''}`}
             >
-              <span className="font-mono text-xs font-bold text-orange-400">OBO</span>
-              <span>Omuz Baş Omuz (TOBO)</span>
-            </button>
-            <button
-              onClick={() => { onSelectTool('trianglePattern'); setOpenFlyout(null); }}
-              className={`w-full px-3 py-1.5 flex items-center space-x-2.5 hover:bg-tv-hover ${activeTool === 'trianglePattern' ? 'text-tv-blue font-bold' : ''}`}
-            >
-              <span className="font-mono text-xs">▷</span>
-              <span>Üçgen Formasyonu</span>
+              <span className="font-mono text-xs font-bold text-orange-400">H&S</span>
+              <span>{t.leftToolbar.headAndShoulders}</span>
             </button>
             <div className="border-t border-tv-border/50 my-1" />
             <button
@@ -547,14 +510,14 @@ export const LeftToolbar: React.FC<LeftToolbarProps> = React.memo(({
               className={`w-full px-3 py-1.5 flex items-center space-x-2.5 hover:bg-tv-hover ${activeTool === 'elliottImpulse' ? 'text-tv-green font-bold' : ''}`}
             >
               <span className="font-mono text-xs font-bold text-tv-green">1-5</span>
-              <span>Elliott İtki Dalgası</span>
+              <span>{t.leftToolbar.elliottImpulse}</span>
             </button>
             <button
               onClick={() => { onSelectTool('elliottCorrection'); setOpenFlyout(null); }}
               className={`w-full px-3 py-1.5 flex items-center space-x-2.5 hover:bg-tv-hover ${activeTool === 'elliottCorrection' ? 'text-tv-red font-bold' : ''}`}
             >
               <span className="font-mono text-xs font-bold text-tv-red">A-C</span>
-              <span>Elliott Düzeltme Dalgası</span>
+              <span>{t.leftToolbar.elliottCorrection}</span>
             </button>
           </div>
         )}
@@ -569,7 +532,7 @@ export const LeftToolbar: React.FC<LeftToolbarProps> = React.memo(({
           className={`w-8 h-8 rounded flex items-center justify-center transition-colors relative ${
             isPositionGroup ? 'bg-tv-blue text-white' : 'text-tv-muted hover:text-tv-text hover:bg-tv-hover'
           }`}
-          title="Pozisyon ve Ölçüm (Alış/Satış R/R, Tahmin, Aralık Cetveli)"
+          title={t.leftToolbar.predictionTools}
         >
           <Target className="w-4 h-4" />
           <span 
@@ -587,21 +550,21 @@ export const LeftToolbar: React.FC<LeftToolbarProps> = React.memo(({
               className={`w-full px-3 py-1.5 flex items-center space-x-2.5 hover:bg-tv-hover ${activeTool === 'longPosition' ? 'text-tv-green font-bold' : ''}`}
             >
               <div className="w-2.5 h-2.5 rounded-full bg-tv-green" />
-              <span>Alış Pozisyonu (Long R/R)</span>
+              <span>{t.leftToolbar.longPosition}</span>
             </button>
             <button
               onClick={() => { onSelectTool('shortPosition'); setOpenFlyout(null); }}
               className={`w-full px-3 py-1.5 flex items-center space-x-2.5 hover:bg-tv-hover ${activeTool === 'shortPosition' ? 'text-tv-red font-bold' : ''}`}
             >
               <div className="w-2.5 h-2.5 rounded-full bg-tv-red" />
-              <span>Satış Pozisyonu (Short R/R)</span>
+              <span>{t.leftToolbar.shortPosition}</span>
             </button>
             <button
               onClick={() => { onSelectTool('forecast'); setOpenFlyout(null); }}
               className={`w-full px-3 py-1.5 flex items-center space-x-2.5 hover:bg-tv-hover ${activeTool === 'forecast' ? 'text-tv-blue font-bold' : ''}`}
             >
               <span className="font-mono text-xs">🎯</span>
-              <span>Fiyat Tahmini (Forecast)</span>
+              <span>{t.leftToolbar.forecast}</span>
             </button>
             <div className="border-t border-tv-border/50 my-1" />
             <button
@@ -609,21 +572,21 @@ export const LeftToolbar: React.FC<LeftToolbarProps> = React.memo(({
               className={`w-full px-3 py-1.5 flex items-center space-x-2.5 hover:bg-tv-hover ${activeTool === 'dateRange' ? 'text-tv-blue font-bold' : ''}`}
             >
               <span className="font-mono text-xs">📅</span>
-              <span>Tarih Aralığı (Bar Sayısı)</span>
+              <span>{t.leftToolbar.dateRange}</span>
             </button>
             <button
               onClick={() => { onSelectTool('priceRange'); setOpenFlyout(null); }}
               className={`w-full px-3 py-1.5 flex items-center space-x-2.5 hover:bg-tv-hover ${activeTool === 'priceRange' ? 'text-tv-blue font-bold' : ''}`}
             >
               <span className="font-mono text-xs">💲</span>
-              <span>Fiyat Aralığı</span>
+              <span>{t.leftToolbar.priceRange}</span>
             </button>
             <button
               onClick={() => { onSelectTool('measure'); setOpenFlyout(null); }}
               className={`w-full px-3 py-1.5 flex items-center space-x-2.5 hover:bg-tv-hover ${activeTool === 'measure' ? 'text-tv-blue font-bold' : ''}`}
             >
               <Ruler className="w-3.5 h-3.5" />
-              <span>Kapsamlı Cetvel (Tarih & Fiyat)</span>
+              <span>{t.leftToolbar.measureTool}</span>
             </button>
             <div className="border-t border-tv-border/50 my-1" />
             <button
@@ -632,8 +595,7 @@ export const LeftToolbar: React.FC<LeftToolbarProps> = React.memo(({
             >
               <BarChart2 className="w-3.5 h-3.5 text-tv-yellow" />
               <div className="flex flex-col text-left">
-                <span className="font-semibold text-white">Sabit Aralık Hacim Profili</span>
-                <span className="text-[10px] text-tv-muted">FRVP (Seçilen Aralık)</span>
+                <span className="font-semibold text-white">{t.leftToolbar.fixedRangeVolumeProfile}</span>
               </div>
             </button>
           </div>
@@ -650,7 +612,7 @@ export const LeftToolbar: React.FC<LeftToolbarProps> = React.memo(({
             ? 'bg-tv-blue text-white'
             : 'text-tv-muted hover:text-tv-text hover:bg-tv-hover'
         }`}
-        title="Ölçüm Cetveli (Fiyat, % Değişim ve Bar Sayısı)"
+        title={t.leftToolbar.measureTool}
       >
         <Ruler className="w-4 h-4" />
       </button>
@@ -671,7 +633,7 @@ export const LeftToolbar: React.FC<LeftToolbarProps> = React.memo(({
                 ? 'bg-tv-blue text-white shadow-lg shadow-tv-blue/30'
                 : 'text-tv-muted hover:text-tv-text hover:bg-tv-hover'
             }`}
-            title={isMagnetActive ? 'Mıknatıs Modu: Açık (Mumlara Yapışıyor)' : 'Mıknatıs Modu: Kapalı'}
+            title={t.leftToolbar.magnetMode}
           >
             <Magnet className="w-4 h-4" />
           </button>
@@ -688,7 +650,7 @@ export const LeftToolbar: React.FC<LeftToolbarProps> = React.memo(({
             ? 'bg-tv-blue text-white'
             : 'text-tv-muted hover:text-tv-text hover:bg-tv-hover'
         }`}
-        title={stayInDrawingMode ? 'Çizim Modunda Kal: Açık (Sürekli Çizim)' : 'Çizim Modunda Kal: Kapalı'}
+        title={t.leftToolbar.stayInDrawingMode}
       >
         <PenTool className="w-4 h-4" />
       </button>
@@ -703,7 +665,7 @@ export const LeftToolbar: React.FC<LeftToolbarProps> = React.memo(({
             ? 'text-yellow-400 bg-yellow-400/10'
             : 'text-tv-muted hover:text-tv-text hover:bg-tv-hover'
         }`}
-        title={lockDrawings ? 'Tüm Çizimler Kilitli' : 'Tüm Çizimleri Kilitle'}
+        title={t.leftToolbar.lockAllDrawings}
       >
         {lockDrawings ? <Lock className="w-4 h-4" /> : <Unlock className="w-4 h-4" />}
       </button>
@@ -718,7 +680,7 @@ export const LeftToolbar: React.FC<LeftToolbarProps> = React.memo(({
             ? 'text-tv-red bg-tv-red/10'
             : 'text-tv-muted hover:text-tv-text hover:bg-tv-hover'
         }`}
-        title={areDrawingsHidden ? 'Tüm Çizimleri Göster' : 'Tüm Çizimleri Gizle'}
+        title={t.leftToolbar.hideAllDrawings}
       >
         {areDrawingsHidden ? <EyeOff className="w-4 h-4 text-tv-red" /> : <Eye className="w-4 h-4" />}
       </button>
@@ -729,7 +691,7 @@ export const LeftToolbar: React.FC<LeftToolbarProps> = React.memo(({
       <button
         onClick={onClearDrawings}
         className="w-8 h-8 rounded flex items-center justify-center text-tv-muted hover:text-tv-red hover:bg-tv-hover transition-colors"
-        title="Tüm Çizimleri Sil"
+        title={t.leftToolbar.removeAll}
       >
         <Trash2 className="w-4 h-4" />
       </button>
@@ -744,7 +706,7 @@ export const LeftToolbar: React.FC<LeftToolbarProps> = React.memo(({
             ? 'text-yellow-400 bg-yellow-400/15'
             : 'text-tv-muted hover:text-yellow-400 hover:bg-tv-hover'
         }`}
-        title={showFavoritesBar ? 'Favori Çizim Araçları Çubuğunu Gizle' : 'Favori Çizim Araçları Çubuğunu Göster'}
+        title="★ Favorites"
       >
         <span className="text-sm leading-none font-bold">★</span>
       </button>

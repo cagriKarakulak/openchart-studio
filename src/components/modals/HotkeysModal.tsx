@@ -1,61 +1,64 @@
 import React, { useState } from 'react';
-import { X, Keyboard, Command } from 'lucide-react';
+import { X, Keyboard } from 'lucide-react';
+import { useTranslation } from '../../i18n';
 
 interface HotkeysModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-interface ShortcutItem {
-  key: string;
-  desc: string;
-  category: 'Çizim Araçları' | 'Gezinme & Sembol' | 'Grafik & Paneller' | 'Düzenleme & Sistem';
-}
-
-const SHORTCUTS: ShortcutItem[] = [
-  // Çizim Araçları
-  { key: 'Alt + T', desc: 'Trend Çizgisi Çizim Aracını Seç', category: 'Çizim Araçları' },
-  { key: 'Alt + H', desc: 'Yatay Çizgi Aracını Seç (Destek/Direnç)', category: 'Çizim Araçları' },
-  { key: 'Alt + V', desc: 'Dikey Çizgi Aracını Seç (Zaman Belirteci)', category: 'Çizim Araçları' },
-  { key: 'Alt + F', desc: 'Fibonacci Düzeltmesi Aracını Seç', category: 'Çizim Araçları' },
-  { key: 'Alt + R', desc: 'Ölçüm / Cetvel Aracını Seç (Bar & Yüzde Getiri)', category: 'Çizim Araçları' },
-  { key: 'Shift + Tık', desc: 'Hızlı Ölçüm Cetveli (Shift basılıyken tıkla/sürükle)', category: 'Çizim Araçları' },
-  { key: 'Alt + M', desc: 'Mıknatıs Modunu Aç / Kapat (Snap to Candle OHLC)', category: 'Çizim Araçları' },
-
-  // Gezinme & Sembol
-  { key: 'Ctrl + K', desc: 'Evrensel Komut Paleti & Hızlı Arama (Spotlight)', category: 'Gezinme & Sembol' },
-  { key: 'Harf Tuşları (A-Z)', desc: 'Doğrudan Sembol Aramasını Aç (Örn: BTC, ETH yazın)', category: 'Gezinme & Sembol' },
-  { key: 'Sayı Tuşları (1-9)', desc: 'Hızlı Zaman Dilimi Değiştirme (Örn: 15 yazıp Enter)', category: 'Gezinme & Sembol' },
-  { key: 'Space', desc: 'İzleme Listesindeki Sonraki Sembole Geç', category: 'Gezinme & Sembol' },
-  { key: 'Shift + Space', desc: 'İzleme Listesindeki Önceki Sembole Geç', category: 'Gezinme & Sembol' },
-
-  // Grafik & Paneller
-  { key: 'Alt + A', desc: 'Fiyat Seviyesine Alarm Ekle', category: 'Grafik & Paneller' },
-  { key: '/', desc: 'İndikatörler & Stratejiler Modalını Aç', category: 'Grafik & Paneller' },
-  { key: 'Alt + W', desc: 'İzleme Listesi / Sağ Yan Paneli Aç/Kapa', category: 'Grafik & Paneller' },
-  { key: 'Alt + B', desc: 'Alt Paneli Aç/Kapa (Screener, Paper Trading, Python Quant)', category: 'Grafik & Paneller' },
-  { key: 'Alt + G', desc: 'Bar Yeniden Oynatma (Replay Mode) Aç/Kapa', category: 'Grafik & Paneller' },
-  { key: 'Alt + S', desc: 'Grafik Ekran Görüntüsü Al (PNG İndir)', category: 'Grafik & Paneller' },
-  { key: 'Alt + C', desc: 'Aktif Grafikteki Tüm Çizimleri Temizle', category: 'Grafik & Paneller' },
-
-  // Düzenleme & Sistem
-  { key: 'Ctrl + Z', desc: 'Son Yapılan Çizimi Geri Al (Undo)', category: 'Düzenleme & Sistem' },
-  { key: 'Ctrl + Y', desc: 'Geri Alınan Çizimi İleri Al (Redo)', category: 'Düzenleme & Sistem' },
-  { key: 'Ctrl + S', desc: 'Grafik Düzenini ve Çizimleri Manuel Kaydet', category: 'Düzenleme & Sistem' },
-  { key: 'Delete / Backspace', desc: 'Seçili Çizimi Grafikten Sil', category: 'Düzenleme & Sistem' },
-  { key: 'Esc', desc: 'Aktif Çizimden Çık ve Artı Göstergeye (Crosshair) Dön', category: 'Düzenleme & Sistem' },
-  { key: '?', desc: 'Bu Klavye Kısayolları Kılavuzunu Aç', category: 'Düzenleme & Sistem' },
-];
-
 export const HotkeysModal: React.FC<HotkeysModalProps> = ({ isOpen, onClose }) => {
-  const [selectedCategory, setSelectedCategory] = useState<string>('Tümü');
+  const { t } = useTranslation();
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
   if (!isOpen) return null;
 
-  const categories = ['Tümü', 'Çizim Araçları', 'Gezinme & Sembol', 'Grafik & Paneller', 'Düzenleme & Sistem'];
-  const filtered = selectedCategory === 'Tümü' 
-    ? SHORTCUTS 
-    : SHORTCUTS.filter(s => s.category === selectedCategory);
+  const categories = [
+    { id: 'all', label: t.modals.allCategory },
+    { id: 'drawing', label: t.modals.drawingToolsCat },
+    { id: 'nav', label: t.modals.navigationSymbolCat },
+    { id: 'chart', label: t.modals.chartPanelsCat },
+    { id: 'system', label: t.modals.editingSystemCat },
+  ];
+
+  const shortcuts = [
+    // Drawing Tools
+    { key: 'Alt + T', desc: t.leftToolbar.trendLine, categoryId: 'drawing', category: t.modals.drawingToolsCat },
+    { key: 'Alt + H', desc: t.leftToolbar.horizontalLine, categoryId: 'drawing', category: t.modals.drawingToolsCat },
+    { key: 'Alt + V', desc: t.leftToolbar.verticalLine, categoryId: 'drawing', category: t.modals.drawingToolsCat },
+    { key: 'Alt + F', desc: t.leftToolbar.fibRetracement, categoryId: 'drawing', category: t.modals.drawingToolsCat },
+    { key: 'Alt + R', desc: t.leftToolbar.measureTool, categoryId: 'drawing', category: t.modals.drawingToolsCat },
+    { key: 'Shift + Click', desc: `${t.leftToolbar.measureTool} (Shift + Drag)`, categoryId: 'drawing', category: t.modals.drawingToolsCat },
+    { key: 'Alt + M', desc: t.leftToolbar.magnetMode, categoryId: 'drawing', category: t.modals.drawingToolsCat },
+
+    // Navigation & Symbol
+    { key: 'Ctrl + K', desc: t.header.commandPalette, categoryId: 'nav', category: t.modals.navigationSymbolCat },
+    { key: 'A - Z', desc: t.header.symbolSearchPlaceholder, categoryId: 'nav', category: t.modals.navigationSymbolCat },
+    { key: '1 - 9', desc: t.header.timeframes, categoryId: 'nav', category: t.modals.navigationSymbolCat },
+    { key: 'Space', desc: `${t.header.watchlist} (Next)`, categoryId: 'nav', category: t.modals.navigationSymbolCat },
+    { key: 'Shift + Space', desc: `${t.header.watchlist} (Prev)`, categoryId: 'nav', category: t.modals.navigationSymbolCat },
+
+    // Chart & Panels
+    { key: 'Alt + A', desc: t.chart.addAlertAtPrice, categoryId: 'chart', category: t.modals.chartPanelsCat },
+    { key: '/', desc: t.header.indicators, categoryId: 'chart', category: t.modals.chartPanelsCat },
+    { key: 'Alt + W', desc: t.header.watchlist, categoryId: 'chart', category: t.modals.chartPanelsCat },
+    { key: 'Alt + B', desc: `${t.bottomBar.screenerTab} / ${t.bottomBar.paperTradingTab}`, categoryId: 'chart', category: t.modals.chartPanelsCat },
+    { key: 'Alt + G', desc: t.header.barReplay, categoryId: 'chart', category: t.modals.chartPanelsCat },
+    { key: 'Alt + S', desc: t.header.screenshot, categoryId: 'chart', category: t.modals.chartPanelsCat },
+    { key: 'Alt + C', desc: t.chart.removeAllDrawings, categoryId: 'chart', category: t.modals.chartPanelsCat },
+
+    // Editing & System
+    { key: 'Ctrl + Z', desc: 'Undo', categoryId: 'system', category: t.modals.editingSystemCat },
+    { key: 'Ctrl + Y', desc: 'Redo', categoryId: 'system', category: t.modals.editingSystemCat },
+    { key: 'Ctrl + S', desc: t.header.saveLayout, categoryId: 'system', category: t.modals.editingSystemCat },
+    { key: 'Delete / Backspace', desc: t.chart.deleteDrawing, categoryId: 'system', category: t.modals.editingSystemCat },
+    { key: 'Esc', desc: t.chart.closeSelection, categoryId: 'system', category: t.modals.editingSystemCat },
+    { key: '?', desc: t.modals.hotkeysTitle, categoryId: 'system', category: t.modals.editingSystemCat },
+  ];
+
+  const filtered = selectedCategory === 'all'
+    ? shortcuts
+    : shortcuts.filter(s => s.categoryId === selectedCategory);
 
   return (
     <div 
@@ -69,7 +72,7 @@ export const HotkeysModal: React.FC<HotkeysModalProps> = ({ isOpen, onClose }) =
         <div className="h-12 border-b border-tv-border px-4 flex items-center justify-between bg-tv-bg">
           <div className="flex items-center space-x-2.5 font-bold text-white text-sm">
             <Keyboard className="w-4 h-4 text-tv-blue" />
-            <span>OpenChart Klavye Kısayolları (Hotkeys)</span>
+            <span>{t.modals.hotkeysTitle}</span>
           </div>
           <button onClick={onClose} className="p-1 rounded hover:bg-tv-hover text-tv-muted hover:text-white">
             <X className="w-4 h-4" />
@@ -80,15 +83,15 @@ export const HotkeysModal: React.FC<HotkeysModalProps> = ({ isOpen, onClose }) =
         <div className="px-4 py-2 border-b border-tv-border flex items-center space-x-2 overflow-x-auto">
           {categories.map(cat => (
             <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
+              key={cat.id}
+              onClick={() => setSelectedCategory(cat.id)}
               className={`px-3 py-1 rounded-full text-[11px] whitespace-nowrap transition-colors ${
-                selectedCategory === cat 
+                selectedCategory === cat.id 
                   ? 'bg-tv-blue text-white font-semibold' 
                   : 'bg-tv-card text-tv-muted hover:text-white'
               }`}
             >
-              {cat}
+              {cat.label}
             </button>
           ))}
         </div>
@@ -108,9 +111,9 @@ export const HotkeysModal: React.FC<HotkeysModalProps> = ({ isOpen, onClose }) =
         </div>
 
         <div className="h-10 border-t border-tv-border px-4 bg-tv-bg flex items-center justify-between text-[11px] text-tv-muted">
-          <span>Hızlı analiz ve grafik kontrolü için klavye kısayollarını kullanabilirsiniz.</span>
+          <span>{t.modals.hotkeysGuideNotice}</span>
           <button onClick={onClose} className="text-tv-blue font-bold hover:underline">
-            Kapat
+            {t.common.close}
           </button>
         </div>
       </div>

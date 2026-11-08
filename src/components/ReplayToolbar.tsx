@@ -1,5 +1,6 @@
 import React from 'react';
 import { Play, Pause, SkipForward, RotateCcw, X, Scissors, FastForward } from 'lucide-react';
+import { useTranslation } from '../i18n';
 
 interface ReplayToolbarProps {
   isActive: boolean;
@@ -32,13 +33,15 @@ export const ReplayToolbar: React.FC<ReplayToolbarProps> = ({
   onToggleJumpMode,
   onJumpToRealtime,
 }) => {
+  const { t } = useTranslation();
+
   if (!isActive) return null;
 
   return (
     <div className="absolute top-14 left-1/2 -translate-x-1/2 z-40 bg-tv-surface/95 backdrop-blur-md border border-tv-blue rounded-lg shadow-2xl px-4 py-2 flex items-center space-x-3 text-xs select-none animate-fadeIn">
       <div className="flex items-center space-x-1.5 font-bold text-white border-r border-tv-border pr-3">
         <RotateCcw className="w-4 h-4 text-tv-blue animate-spin-reverse" />
-        <span>Bar Replay</span>
+        <span>{t.replay.title}</span>
       </div>
 
       {/* Jump to Bar (Cut mode) */}
@@ -47,10 +50,10 @@ export const ReplayToolbar: React.FC<ReplayToolbarProps> = ({
         className={`px-2.5 py-1 rounded flex items-center space-x-1.5 transition-colors font-semibold ${
           isJumpMode ? 'bg-tv-yellow text-black font-bold animate-pulse' : 'bg-tv-card hover:bg-tv-hover text-tv-text border border-tv-border'
         }`}
-        title="Bara Git: Grafikte herhangi bir muma tıklayarak simülasyonu o noktaya kesin"
+        title={t.replay.jumpToBar}
       >
         <Scissors className="w-3.5 h-3.5" />
-        <span>{isJumpMode ? 'Bir Muma Tıklayın' : 'Bara Git (Kes)'}</span>
+        <span>{t.replay.jumpToBar}</span>
       </button>
 
       {/* Play / Pause */}
@@ -59,7 +62,7 @@ export const ReplayToolbar: React.FC<ReplayToolbarProps> = ({
         className={`w-7 h-7 rounded-full flex items-center justify-center transition-colors ${
           isPlaying ? 'bg-tv-red text-white' : 'bg-tv-blue text-white'
         }`}
-        title={isPlaying ? 'Durdur' : 'Oynat'}
+        title={isPlaying ? t.replay.pause : t.replay.play}
       >
         {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5 fill-current ml-0.5" />}
       </button>
@@ -69,7 +72,7 @@ export const ReplayToolbar: React.FC<ReplayToolbarProps> = ({
         onClick={onStepForward}
         disabled={isPlaying || currentIdx >= totalCandles - 1}
         className="p-1.5 rounded hover:bg-tv-hover text-tv-text disabled:opacity-40"
-        title="1 Bar İleri Al"
+        title={t.replay.stepForward}
       >
         <SkipForward className="w-4 h-4" />
       </button>
@@ -99,10 +102,10 @@ export const ReplayToolbar: React.FC<ReplayToolbarProps> = ({
         <button
           onClick={onJumpToRealtime}
           className="p-1.5 rounded hover:bg-tv-hover text-tv-muted hover:text-tv-green flex items-center space-x-1"
-          title="Canlı Zamana Atla"
+          title={t.bottomBar.live}
         >
           <FastForward className="w-3.5 h-3.5" />
-          <span className="text-[10px]">Canlı</span>
+          <span className="text-[10px]">{t.bottomBar.live}</span>
         </button>
       )}
 
@@ -110,7 +113,7 @@ export const ReplayToolbar: React.FC<ReplayToolbarProps> = ({
       <button
         onClick={onReset}
         className="p-1 rounded hover:bg-tv-hover text-tv-muted hover:text-white"
-        title="Başa Sar"
+        title={t.common.reset}
       >
         <RotateCcw className="w-3.5 h-3.5" />
       </button>
@@ -119,11 +122,10 @@ export const ReplayToolbar: React.FC<ReplayToolbarProps> = ({
       <button
         onClick={onClose}
         className="p-1 rounded hover:bg-tv-hover text-tv-muted hover:text-tv-red"
-        title="Replay Modundan Çık"
+        title={t.replay.exitReplay}
       >
         <X className="w-4 h-4" />
       </button>
     </div>
   );
 };
-

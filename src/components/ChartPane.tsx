@@ -107,6 +107,7 @@ import {
   ShieldCheck,
   Target
 } from 'lucide-react';
+import { useTranslation } from '../i18n';
 
 interface ChartPaneProps {
   config: ChartPaneConfig;
@@ -167,6 +168,7 @@ export const ChartPane: React.FC<ChartPaneProps> = React.memo(({
   onDeleteAlert,
   onUpdateAlert,
 }) => {
+  const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -2489,16 +2491,16 @@ export const ChartPane: React.FC<ChartPaneProps> = React.memo(({
               const sign = isUp ? '+' : '';
               return (
                 <div className="flex items-center space-x-2 text-[11px] font-mono">
-                  <span>O <strong className="text-white">{currentHoverCandle.open.toFixed(2)}</strong></span>
-                  <span>H <strong className="text-white">{currentHoverCandle.high.toFixed(2)}</strong></span>
-                  <span>L <strong className="text-white">{currentHoverCandle.low.toFixed(2)}</strong></span>
-                  <span>C <strong className={colorClass}>{currentHoverCandle.close.toFixed(2)}</strong></span>
+                  <span>{t.chart.openAbbr} <strong className="text-white">{currentHoverCandle.open.toFixed(2)}</strong></span>
+                  <span>{t.chart.highAbbr} <strong className="text-white">{currentHoverCandle.high.toFixed(2)}</strong></span>
+                  <span>{t.chart.lowAbbr} <strong className="text-white">{currentHoverCandle.low.toFixed(2)}</strong></span>
+                  <span>{t.chart.closeAbbr} <strong className={colorClass}>{currentHoverCandle.close.toFixed(2)}</strong></span>
                   <span className={`${colorClass} font-semibold`}>
                     {sign}{diff.toFixed(2)} ({sign}{pct.toFixed(2)}%)
                   </span>
                   {currentHoverCandle.volume > 0 && (
                     <span className="text-tv-muted ml-1">
-                      Vol <strong className="text-white">{currentHoverCandle.volume.toLocaleString()}</strong>
+                      {t.chart.volumeAbbr} <strong className="text-white">{currentHoverCandle.volume.toLocaleString()}</strong>
                     </span>
                   )}
                 </div>
@@ -2508,7 +2510,7 @@ export const ChartPane: React.FC<ChartPaneProps> = React.memo(({
             {config.visualSettings?.showCountdown !== false && countdownText && (
               <div 
                 className="flex items-center space-x-1.5 text-[11px] font-mono text-tv-yellow bg-tv-card/90 px-2 py-0.5 rounded border border-tv-border/80 pointer-events-auto ml-1"
-                title="Bar kapanışına kalan süre"
+                title={t.chart.barCountdown}
               >
                 <Clock className="w-3 h-3 text-tv-yellow animate-pulse" />
                 <span>{countdownText}</span>
@@ -2521,11 +2523,11 @@ export const ChartPane: React.FC<ChartPaneProps> = React.memo(({
             {config.overlaySymbol && (
               <div className="flex items-center space-x-1.5 text-[11px] bg-tv-surface/85 backdrop-blur-sm px-2 py-0.5 rounded border border-orange-500/50 pointer-events-auto w-fit">
                 <div className="w-2 h-2 rounded-full bg-[#ff9800]" />
-                <span className="font-bold text-[#ff9800]">{config.overlaySymbol} (Karşılaştırma)</span>
+                <span className="font-bold text-[#ff9800]">{config.overlaySymbol}</span>
                 <button
                   onClick={() => onUpdatePaneConfig({ overlaySymbol: undefined })}
                   className="p-0.5 hover:text-tv-red text-tv-muted ml-1"
-                  title="Karşılaştırmayı Kaldır"
+                  title={t.chart.removeCompare}
                 >
                   <X className="w-2.5 h-2.5" />
                 </button>
@@ -2590,7 +2592,7 @@ export const ChartPane: React.FC<ChartPaneProps> = React.memo(({
         {isLoadingEarlier && (
           <div className="absolute top-2 left-1/2 -translate-x-1/2 z-30 bg-tv-surface/90 border border-tv-border text-tv-blue px-3 py-1 rounded shadow-lg text-[11px] flex items-center space-x-1.5 animate-pulse">
             <span className="w-2 h-2 rounded-full bg-tv-blue animate-ping" />
-            <span>Geçmiş barlar yükleniyor...</span>
+            <span>{t.chart.loadingHistorical}</span>
           </div>
         )}
 
@@ -2677,7 +2679,7 @@ export const ChartPane: React.FC<ChartPaneProps> = React.memo(({
                   });
                 }}
                 className={`p-1 rounded hover:bg-tv-hover ${selectedElement.locked ? 'text-tv-yellow' : 'text-tv-muted hover:text-white'}`}
-                title={selectedElement.locked ? 'Kilidi Aç' : 'Çizimi Kilitle'}
+                title={selectedElement.locked ? t.common.edit : t.leftToolbar.lockAllDrawings}
               >
                 {selectedElement.locked ? <Lock className="w-3.5 h-3.5" /> : <Unlock className="w-3.5 h-3.5" />}
               </button>
@@ -2696,7 +2698,7 @@ export const ChartPane: React.FC<ChartPaneProps> = React.memo(({
                   setSelectedDrawingId(cloned.id);
                 }}
                 className="p-1 rounded hover:bg-tv-hover text-tv-muted hover:text-white"
-                title="Çizimi Kopyala / Çoğalt"
+                title={t.chart.copyDrawing}
               >
                 <Copy className="w-3.5 h-3.5" />
               </button>
@@ -2712,7 +2714,7 @@ export const ChartPane: React.FC<ChartPaneProps> = React.memo(({
                   setHoveredDrawingId(null);
                 }}
                 className="p-1 rounded hover:bg-tv-hover text-tv-muted hover:text-tv-red"
-                title="Çizimi Sil (Delete / Backspace)"
+                title={t.chart.deleteDrawing}
               >
                 <Trash2 className="w-3.5 h-3.5" />
               </button>
@@ -2726,7 +2728,7 @@ export const ChartPane: React.FC<ChartPaneProps> = React.memo(({
                   setHoveredDrawingId(null);
                 }}
                 className="p-1 rounded hover:bg-tv-hover text-tv-muted hover:text-white"
-                title="Seçimi Bırak (Esc)"
+                title={t.chart.closeSelection}
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -2739,23 +2741,23 @@ export const ChartPane: React.FC<ChartPaneProps> = React.memo(({
           <button 
             onClick={() => setPriceScaleMode('normal')}
             className={`px-1.5 py-0.5 rounded transition-colors ${priceScaleMode === 'normal' ? 'bg-tv-blue text-white' : 'text-tv-muted hover:text-white'}`}
-            title="Otomatik Fiyat Skalası (Auto Scale)"
+            title={t.chart.resetScale}
           >
-            auto
+            {t.chart.auto}
           </button>
           <button 
             onClick={() => setPriceScaleMode(priceScaleMode === 'log' ? 'normal' : 'log')}
             className={`px-1.5 py-0.5 rounded transition-colors ${priceScaleMode === 'log' ? 'bg-tv-blue text-white' : 'text-tv-muted hover:text-white'}`}
-            title="Logaritmik Fiyat Skalası (Log Scale)"
+            title={t.chart.log}
           >
-            log
+            {t.chart.log}
           </button>
           <button 
             onClick={() => setPriceScaleMode(priceScaleMode === 'percent' ? 'normal' : 'percent')}
             className={`px-1.5 py-0.5 rounded transition-colors ${priceScaleMode === 'percent' ? 'bg-tv-blue text-white' : 'text-tv-muted hover:text-white'}`}
-            title="Yüzdesel Getiri Skalası (% Percentage Scale)"
+            title={t.chart.percent}
           >
-            %
+            {t.chart.percent}
           </button>
         </div>
 
@@ -2804,7 +2806,7 @@ export const ChartPane: React.FC<ChartPaneProps> = React.memo(({
             onClick={e => e.stopPropagation()}
           >
             <div className="px-3 py-1 font-semibold text-white border-b border-[#2a2e39]/60 flex items-center justify-between">
-              <span>Hızlı İşlem</span>
+              <span>{t.common.action}</span>
               <span className="font-mono text-tv-blue">${plusMenu.price.toLocaleString()}</span>
             </div>
             <button
@@ -2816,7 +2818,7 @@ export const ChartPane: React.FC<ChartPaneProps> = React.memo(({
               className="w-full text-left px-3 py-1.5 hover:bg-[#2a2e39] hover:text-white flex items-center space-x-2"
             >
               <Bell className="w-3.5 h-3.5 text-tv-yellow" />
-              <span>Alarm Ekle</span>
+              <span>{t.chart.addAlertAtPrice}</span>
             </button>
             <button
               onClick={() => {
@@ -2827,7 +2829,7 @@ export const ChartPane: React.FC<ChartPaneProps> = React.memo(({
               className="w-full text-left px-3 py-1.5 hover:bg-[#2a2e39] hover:text-white flex items-center space-x-2 text-tv-green"
             >
               <ShoppingCart className="w-3.5 h-3.5" />
-              <span>Limit Alış (Buy) Emri</span>
+              <span>{t.chart.quickOrderBuy}</span>
             </button>
             <button
               onClick={() => {
@@ -2838,7 +2840,7 @@ export const ChartPane: React.FC<ChartPaneProps> = React.memo(({
               className="w-full text-left px-3 py-1.5 hover:bg-[#2a2e39] hover:text-white flex items-center space-x-2 text-tv-red"
             >
               <ShoppingCart className="w-3.5 h-3.5" />
-              <span>Limit Satış (Sell) Emri</span>
+              <span>{t.chart.quickOrderSell}</span>
             </button>
           </div>
         )}
@@ -2900,7 +2902,7 @@ export const ChartPane: React.FC<ChartPaneProps> = React.memo(({
             className="w-full text-left px-3 py-1.5 hover:bg-[#2a2e39] hover:text-white flex items-center space-x-2 text-tv-green font-medium"
           >
             <ShoppingCart className="w-3.5 h-3.5" />
-            <span>${contextMenu.price.toLocaleString()} Seviyesinden Emir Ver...</span>
+            <span>${contextMenu.price.toLocaleString()} - {t.chart.quickOrderBuy}</span>
           </button>
 
           <button
@@ -2911,7 +2913,7 @@ export const ChartPane: React.FC<ChartPaneProps> = React.memo(({
             className="w-full text-left px-3 py-1.5 hover:bg-[#2a2e39] hover:text-white flex items-center space-x-2"
           >
             <Bell className="w-3.5 h-3.5 text-tv-yellow" />
-            <span>${contextMenu.price.toLocaleString()} Seviyesine Alarm Ekle</span>
+            <span>${contextMenu.price.toLocaleString()} - {t.chart.addAlertAtPrice}</span>
           </button>
 
           <div className="h-[1px] bg-[#2a2e39]/60 my-1" />
@@ -2931,7 +2933,7 @@ export const ChartPane: React.FC<ChartPaneProps> = React.memo(({
             className="w-full text-left px-3 py-1.5 hover:bg-[#2a2e39] hover:text-white flex items-center space-x-2"
           >
             <Minus className="w-3.5 h-3.5 text-tv-blue" />
-            <span>Yatay Çizgi Ekle</span>
+            <span>{t.chart.addHorizontalLine}</span>
           </button>
 
           <button
@@ -2942,7 +2944,7 @@ export const ChartPane: React.FC<ChartPaneProps> = React.memo(({
             className="w-full text-left px-3 py-1.5 hover:bg-[#2a2e39] hover:text-white flex items-center space-x-2"
           >
             <TrendingUp className="w-3.5 h-3.5 text-tv-green" />
-            <span>Trend Çizgisi Çiz</span>
+            <span>{t.chart.drawTrendLine}</span>
           </button>
 
           <button
@@ -2953,7 +2955,7 @@ export const ChartPane: React.FC<ChartPaneProps> = React.memo(({
             className="w-full text-left px-3 py-1.5 hover:bg-[#2a2e39] hover:text-white flex items-center space-x-2"
           >
             <Activity className="w-3.5 h-3.5 text-[#ffd600]" />
-            <span>Fibonacci Düzeltmesi Ekle</span>
+            <span>{t.chart.addFibonacci}</span>
           </button>
 
           <button
@@ -2964,7 +2966,7 @@ export const ChartPane: React.FC<ChartPaneProps> = React.memo(({
             className="w-full text-left px-3 py-1.5 hover:bg-[#2a2e39] hover:text-white flex items-center space-x-2"
           >
             <BarChart2 className="w-3.5 h-3.5 text-tv-yellow" />
-            <span>Sabit Aralık Hacim Profili (FRVP)</span>
+            <span>{t.chart.addFRVP}</span>
           </button>
 
           <div className="h-[1px] bg-[#2a2e39]/60 my-1" />
@@ -2979,7 +2981,7 @@ export const ChartPane: React.FC<ChartPaneProps> = React.memo(({
             className="w-full text-left px-3 py-1.5 hover:bg-[#2a2e39] hover:text-white flex items-center space-x-2"
           >
             <RotateCcw className="w-3.5 h-3.5 text-[#787b86]" />
-            <span>Ölçeği Sıfırla (Alt+R)</span>
+            <span>{t.chart.resetScale}</span>
           </button>
 
           <button
@@ -3009,7 +3011,7 @@ export const ChartPane: React.FC<ChartPaneProps> = React.memo(({
             }`}
           >
             <RotateCcw className="w-3.5 h-3.5" />
-            <span>Ölçeği Ters Çevir (Alt+I)</span>
+            <span>{t.chart.invertScale}</span>
           </button>
 
           <button
@@ -3020,7 +3022,7 @@ export const ChartPane: React.FC<ChartPaneProps> = React.memo(({
             className="w-full text-left px-3 py-1.5 hover:bg-[#2a2e39] hover:text-white flex items-center space-x-2"
           >
             <Maximize2 className="w-3.5 h-3.5 text-[#787b86]" />
-            <span>Grafiği Ekrana Sığdır (Fit)</span>
+            <span>{t.chart.fitContent}</span>
           </button>
 
           <button
@@ -3031,7 +3033,7 @@ export const ChartPane: React.FC<ChartPaneProps> = React.memo(({
             className="w-full text-left px-3 py-1.5 hover:bg-[#2a2e39] hover:text-white flex items-center space-x-2"
           >
             <Download className="w-3.5 h-3.5 text-[#787b86]" />
-            <span>Grafik Resmini İndir (PNG)</span>
+            <span>{t.chart.downloadPng}</span>
           </button>
 
           <button
@@ -3042,7 +3044,7 @@ export const ChartPane: React.FC<ChartPaneProps> = React.memo(({
             className="w-full text-left px-3 py-1.5 hover:bg-[#2a2e39] hover:text-white flex items-center space-x-2"
           >
             <Settings className="w-3.5 h-3.5 text-[#787b86]" />
-            <span>Grafik Görsel Ayarları...</span>
+            <span>{t.chart.chartVisualSettings}</span>
           </button>
 
           {(config.drawings.length > 0 || config.indicators.length > 0) && (
@@ -3058,7 +3060,7 @@ export const ChartPane: React.FC<ChartPaneProps> = React.memo(({
               className="w-full text-left px-3 py-1.5 hover:bg-tv-red/20 text-tv-red flex items-center space-x-2"
             >
               <Trash2 className="w-3.5 h-3.5" />
-              <span>Tüm Çizimleri Kaldır ({config.drawings.length})</span>
+              <span>{t.chart.removeAllDrawings} ({config.drawings.length})</span>
             </button>
           )}
 
@@ -3071,7 +3073,7 @@ export const ChartPane: React.FC<ChartPaneProps> = React.memo(({
               className="w-full text-left px-3 py-1.5 hover:bg-tv-red/20 text-tv-red flex items-center space-x-2"
             >
               <Trash2 className="w-3.5 h-3.5" />
-              <span>Tüm Göstergeleri Kaldır ({config.indicators.length})</span>
+              <span>{t.chart.removeAllIndicators} ({config.indicators.length})</span>
             </button>
           )}
         </div>

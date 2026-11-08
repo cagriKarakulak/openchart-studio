@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, ArrowUpRight, ArrowDownRight, ShieldCheck, Target, DollarSign, Percent } from 'lucide-react';
 import { paperTradingService } from '../../services/paperTradingService';
 import { soundService } from '../../services/sound';
+import { useTranslation } from '../../i18n';
 
 interface OrderModalProps {
   isOpen: boolean;
@@ -22,6 +23,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
   onClose,
   onOrderPlaced,
 }) => {
+  const { t } = useTranslation();
   const [side, setSide] = useState<'long' | 'short'>(initialSide);
   const [orderType, setOrderType] = useState<'market' | 'limit'>('limit');
   const [limitPrice, setLimitPrice] = useState<number>(initialPrice ?? currentPrice);
@@ -144,7 +146,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
             }`}
           >
             <ArrowUpRight className="w-4 h-4" />
-            <span>AL / LONG</span>
+            <span>{t.bottomDock.buyLong}</span>
           </button>
           <button
             type="button"
@@ -154,7 +156,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
             }`}
           >
             <ArrowDownRight className="w-4 h-4" />
-            <span>SAT / SHORT</span>
+            <span>{t.bottomDock.sellShort}</span>
           </button>
         </div>
 
@@ -168,7 +170,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
                 orderType === 'limit' ? 'bg-tv-card text-white font-bold' : 'text-tv-muted hover:text-white'
               }`}
             >
-              Limit Emir
+              {t.modals.orderTypeLimit}
             </button>
             <button
               type="button"
@@ -177,14 +179,14 @@ export const OrderModal: React.FC<OrderModalProps> = ({
                 orderType === 'market' ? 'bg-tv-card text-white font-bold' : 'text-tv-muted hover:text-white'
               }`}
             >
-              Piyasa (Market)
+              {t.modals.orderTypeMarket}
             </button>
           </div>
 
           {/* Limit Price Input */}
           {orderType === 'limit' && (
             <div>
-              <label className="text-tv-muted block mb-1">Limit Fiyat ($)</label>
+              <label className="text-tv-muted block mb-1">{t.modals.limitPrice}</label>
               <input
                 type="number"
                 step="any"
@@ -199,9 +201,9 @@ export const OrderModal: React.FC<OrderModalProps> = ({
           {/* Quantity Input */}
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label className="text-tv-muted">İşlem Miktarı (Adet)</label>
+              <label className="text-tv-muted">{t.modals.orderQtyLabel}</label>
               <span className="text-[10px] text-tv-muted font-mono">
-                Değer: ~${orderValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                {t.modals.estimatedValue} ~${orderValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
             </div>
             <input
@@ -226,7 +228,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
                 />
                 <span className="font-semibold text-tv-green flex items-center space-x-1">
                   <Target className="w-3.5 h-3.5" />
-                  <span>Kâr Al (Take Profit)</span>
+                  <span>{t.modals.takeProfit}</span>
                 </span>
               </label>
               {enableTp && estimatedTpPnl > 0 && (
@@ -243,7 +245,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
                 value={tpPrice}
                 onChange={e => setTpPrice(parseFloat(e.target.value) || 0)}
                 className="w-full bg-tv-bg border border-tv-green/40 rounded px-2 py-1 text-white font-mono text-xs focus:outline-none focus:border-tv-green"
-                placeholder="Hedef TP Fiyatı"
+                placeholder={t.modals.targetPriceLabel}
               />
             )}
           </div>
@@ -260,7 +262,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
                 />
                 <span className="font-semibold text-tv-red flex items-center space-x-1">
                   <ShieldCheck className="w-3.5 h-3.5" />
-                  <span>Zarar Durdur (Stop Loss)</span>
+                  <span>{t.modals.stopLoss}</span>
                 </span>
               </label>
               {enableSl && estimatedSlLoss > 0 && (
@@ -277,7 +279,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
                 value={slPrice}
                 onChange={e => setSlPrice(parseFloat(e.target.value) || 0)}
                 className="w-full bg-tv-bg border border-tv-red/40 rounded px-2 py-1 text-white font-mono text-xs focus:outline-none focus:border-tv-red"
-                placeholder="Durdurma SL Fiyatı"
+                placeholder={t.modals.stopLoss}
               />
             )}
           </div>
@@ -285,7 +287,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
           {/* Risk / Reward badge */}
           {enableTp && enableSl && estimatedSlLoss > 0 && estimatedTpPnl > 0 && (
             <div className="flex items-center justify-between px-2 py-1 bg-tv-card rounded text-[11px]">
-              <span className="text-tv-muted">Risk / Ödül (R:R):</span>
+              <span className="text-tv-muted">{t.modals.riskRewardLabel}</span>
               <span className="font-mono font-bold text-tv-blue">{riskRewardRatio}</span>
             </div>
           )}
@@ -303,7 +305,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
               side === 'long' ? 'bg-tv-green hover:opacity-90' : 'bg-tv-red hover:opacity-90'
             }`}
           >
-            {side === 'long' ? 'AL / LONG Pozisyonu Aç' : 'SAT / SHORT Pozisyonu Aç'}
+            {side === 'long' ? t.modals.openLongBtn : t.modals.openShortBtn}
           </button>
         </form>
       </div>
