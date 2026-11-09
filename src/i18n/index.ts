@@ -19,3 +19,4 @@ export const TRANSLATIONS: Record<SupportedLanguage, TranslationDictionary> = {
 
 export * from './types';
 export * from './LanguageContext';
+

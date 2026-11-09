@@ -301,7 +301,7 @@ export const Header: React.FC<HeaderProps> = React.memo(({
   };
 
   return (
-    <header className="h-12 bg-tv-surface border-b border-tv-border flex items-center justify-between px-3 select-none text-xs text-tv-text z-20 relative">
+    <header className="h-12 bg-tv-surface border-b border-tv-border flex items-center justify-between px-3 select-none text-xs text-tv-text z-40 relative">
       {/* Left side: Symbol, Timeframes, Chart Types, Indicators */}
       <div className="flex items-center space-x-1 sm:space-x-2">
 
@@ -401,10 +401,15 @@ export const Header: React.FC<HeaderProps> = React.memo(({
             </button>
 
             {showTfMenu && (
-              <div 
-                className="absolute top-8 left-0 w-64 bg-tv-surface border border-tv-border rounded-lg shadow-2xl z-50 text-xs flex flex-col max-h-[480px] overflow-hidden animate-in fade-in-50 zoom-in-95 duration-100"
-                onMouseLeave={() => setShowTfMenu(false)}
-              >
+              <>
+                <div 
+                  className="fixed inset-0 z-40" 
+                  onClick={() => setShowTfMenu(false)} 
+                />
+                <div 
+                  className="absolute top-8 left-0 w-64 bg-tv-surface border border-tv-border rounded-lg shadow-2xl z-50 text-xs flex flex-col max-h-[480px] overflow-hidden animate-in fade-in-50 zoom-in-95 duration-100"
+                  onMouseLeave={() => setShowTfMenu(false)}
+                >
                 {/* Scrollable list of categories */}
                 <div className="flex-1 overflow-y-auto divide-y divide-tv-border/40 py-1">
                   {categories.map(category => (
@@ -540,9 +545,10 @@ export const Header: React.FC<HeaderProps> = React.memo(({
                   </button>
                 </form>
               </div>
-            )}
-          </div>
+            </>
+          )}
         </div>
+      </div>
 
         <div className="h-4 w-[1px] bg-tv-border" />
 
@@ -572,10 +578,15 @@ export const Header: React.FC<HeaderProps> = React.memo(({
           </button>
 
           {showChartTypeMenu && (
-            <div 
-              className="absolute top-8 left-0 w-64 bg-tv-surface border border-tv-border rounded shadow-2xl py-1.5 z-50 text-xs max-h-[460px] overflow-y-auto"
-              onMouseLeave={() => setShowChartTypeMenu(false)}
-            >
+            <>
+              <div 
+                className="fixed inset-0 z-40" 
+                onClick={() => setShowChartTypeMenu(false)} 
+              />
+              <div 
+                className="absolute top-8 left-0 w-64 bg-tv-surface border border-tv-border rounded shadow-2xl py-1.5 z-50 text-xs max-h-[460px] overflow-y-auto"
+                onMouseLeave={() => setShowChartTypeMenu(false)}
+              >
               <div className="px-3 py-1 text-[10px] font-bold text-tv-muted uppercase tracking-wider bg-tv-bg/50">
                 {t.chart.orderFlowBidAsk}
               </div>
@@ -702,8 +713,9 @@ export const Header: React.FC<HeaderProps> = React.memo(({
                 <span>{t.header.threeLineBreak}</span>
               </button>
             </div>
-          )}
-        </div>
+          </>
+        )}
+      </div>
 
         <div className="h-4 w-[1px] bg-tv-border" />
 
@@ -737,48 +749,54 @@ export const Header: React.FC<HeaderProps> = React.memo(({
           </button>
 
           {showTemplatesMenu && (
-            <div 
-              className="absolute top-9 left-0 w-72 bg-tv-surface border border-tv-border rounded-lg shadow-2xl py-2 z-50 text-xs text-tv-text backdrop-blur-md"
-              onMouseLeave={() => setShowTemplatesMenu(false)}
-            >
-              <div className="px-3 py-1 text-[10px] font-bold text-tv-muted uppercase tracking-wider border-b border-tv-border/50">
-                {t.header.templates}
-              </div>
-              <div className="py-1 max-h-64 overflow-y-auto divide-y divide-tv-border/20">
-                {templates.map(tmpl => (
-                  <button
-                    key={tmpl.id}
-                    onClick={() => {
-                      onApplyIndicatorTemplate?.(tmpl);
-                      setShowTemplatesMenu(false);
-                    }}
-                    className="w-full px-3 py-2 text-left hover:bg-tv-hover flex flex-col group transition-colors"
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="font-semibold text-white group-hover:text-tv-blue">{tmpl.name}</span>
-                      {tmpl.isBuiltin && (
-                        <span className="text-[9px] bg-tv-card border border-tv-border/60 text-tv-muted px-1.5 rounded">Ready</span>
+            <>
+              <div 
+                className="fixed inset-0 z-40" 
+                onClick={() => setShowTemplatesMenu(false)} 
+              />
+              <div 
+                className="absolute top-9 left-0 w-72 bg-tv-surface border border-tv-border rounded-lg shadow-2xl py-2 z-50 text-xs text-tv-text backdrop-blur-md"
+                onMouseLeave={() => setShowTemplatesMenu(false)}
+              >
+                <div className="px-3 py-1 text-[10px] font-bold text-tv-muted uppercase tracking-wider border-b border-tv-border/50">
+                  {t.header.templates}
+                </div>
+                <div className="py-1 max-h-64 overflow-y-auto divide-y divide-tv-border/20">
+                  {templates.map(tmpl => (
+                    <button
+                      key={tmpl.id}
+                      onClick={() => {
+                        onApplyIndicatorTemplate?.(tmpl);
+                        setShowTemplatesMenu(false);
+                      }}
+                      className="w-full px-3 py-2 text-left hover:bg-tv-hover flex flex-col group transition-colors"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="font-semibold text-white group-hover:text-tv-blue">{tmpl.name}</span>
+                        {tmpl.isBuiltin && (
+                          <span className="text-[9px] bg-tv-card border border-tv-border/60 text-tv-muted px-1.5 rounded">Ready</span>
+                        )}
+                      </div>
+                      {tmpl.description && (
+                        <span className="text-[10px] text-tv-muted line-clamp-1 mt-0.5">{tmpl.description}</span>
                       )}
-                    </div>
-                    {tmpl.description && (
-                      <span className="text-[10px] text-tv-muted line-clamp-1 mt-0.5">{tmpl.description}</span>
-                    )}
+                    </button>
+                  ))}
+                </div>
+                <div className="border-t border-tv-border/50 pt-2 px-2">
+                  <button
+                    onClick={() => {
+                      setShowTemplatesMenu(false);
+                      onSaveCurrentAsTemplate?.();
+                    }}
+                    className="w-full px-2 py-1.5 rounded bg-tv-blue text-white text-center hover:bg-tv-blue-hover font-semibold transition-colors flex items-center justify-center space-x-1"
+                  >
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>{t.header.saveTemplate}</span>
                   </button>
-                ))}
+                </div>
               </div>
-              <div className="border-t border-tv-border/50 pt-2 px-2">
-                <button
-                  onClick={() => {
-                    setShowTemplatesMenu(false);
-                    onSaveCurrentAsTemplate?.();
-                  }}
-                  className="w-full px-2 py-1.5 rounded bg-tv-blue text-white text-center hover:bg-tv-blue-hover font-semibold transition-colors flex items-center justify-center space-x-1"
-                >
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>{t.header.saveTemplate}</span>
-                </button>
-              </div>
-            </div>
+            </>
           )}
         </div>
 
@@ -822,115 +840,121 @@ export const Header: React.FC<HeaderProps> = React.memo(({
           </button>
 
           {showLayoutMenu && (
-            <div 
-              className="absolute top-8 right-0 w-48 bg-tv-surface border border-tv-border rounded shadow-xl py-1.5 z-50 text-xs"
-              onMouseLeave={() => setShowLayoutMenu(false)}
-            >
-              <div className="px-3 py-1 text-[10px] text-tv-muted uppercase font-bold tracking-wider">
-                {t.header.layouts}
-              </div>
-              <button
-                onClick={() => { onLayoutChange('1x1'); setShowLayoutMenu(false); }}
-                className={`w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-tv-hover ${layout === '1x1' ? 'text-tv-blue font-bold' : ''}`}
+            <>
+              <div 
+                className="fixed inset-0 z-40" 
+                onClick={() => setShowLayoutMenu(false)} 
+              />
+              <div 
+                className="absolute top-8 right-0 w-48 bg-tv-surface border border-tv-border rounded shadow-xl py-1.5 z-50 text-xs"
+                onMouseLeave={() => setShowLayoutMenu(false)}
               >
-                <span>{t.header.layout1x1}</span>
-              </button>
-              <button
-                onClick={() => { onLayoutChange('1x2'); setShowLayoutMenu(false); }}
-                className={`w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-tv-hover ${layout === '1x2' ? 'text-tv-blue font-bold' : ''}`}
-              >
-                <span>{t.header.layout1x2}</span>
-              </button>
-              <button
-                onClick={() => { onLayoutChange('2x1'); setShowLayoutMenu(false); }}
-                className={`w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-tv-hover ${layout === '2x1' ? 'text-tv-blue font-bold' : ''}`}
-              >
-                <span>{t.header.layout2x1}</span>
-              </button>
-              <button
-                onClick={() => { onLayoutChange('2x2'); setShowLayoutMenu(false); }}
-                className={`w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-tv-hover ${layout === '2x2' ? 'text-tv-blue font-bold' : ''}`}
-              >
-                <span>{t.header.layout2x2}</span>
-              </button>
-              <button
-                onClick={() => { onLayoutChange('1x3'); setShowLayoutMenu(false); }}
-                className={`w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-tv-hover ${layout === '1x3' ? 'text-tv-blue font-bold' : ''}`}
-              >
-                <span>{t.header.layout1x3}</span>
-              </button>
-              <button
-                onClick={() => { onLayoutChange('3x1'); setShowLayoutMenu(false); }}
-                className={`w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-tv-hover ${layout === '3x1' ? 'text-tv-blue font-bold' : ''}`}
-              >
-                <span>{t.header.layout3x1}</span>
-              </button>
-              <button
-                onClick={() => { onLayoutChange('1left-2right'); setShowLayoutMenu(false); }}
-                className={`w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-tv-hover ${layout === '1left-2right' ? 'text-tv-blue font-bold' : ''}`}
-              >
-                <span>{t.header.layout1left2right}</span>
-              </button>
-              <button
-                onClick={() => { onLayoutChange('3x2'); setShowLayoutMenu(false); }}
-                className={`w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-tv-hover ${layout === '3x2' ? 'text-tv-blue font-bold' : ''}`}
-              >
-                <span>{t.header.layout3x2}</span>
-              </button>
+                <div className="px-3 py-1 text-[10px] text-tv-muted uppercase font-bold tracking-wider">
+                  {t.header.layouts}
+                </div>
+                <button
+                  onClick={() => { onLayoutChange('1x1'); setShowLayoutMenu(false); }}
+                  className={`w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-tv-hover ${layout === '1x1' ? 'text-tv-blue font-bold' : ''}`}
+                >
+                  <span>{t.header.layout1x1}</span>
+                </button>
+                <button
+                  onClick={() => { onLayoutChange('1x2'); setShowLayoutMenu(false); }}
+                  className={`w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-tv-hover ${layout === '1x2' ? 'text-tv-blue font-bold' : ''}`}
+                >
+                  <span>{t.header.layout1x2}</span>
+                </button>
+                <button
+                  onClick={() => { onLayoutChange('2x1'); setShowLayoutMenu(false); }}
+                  className={`w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-tv-hover ${layout === '2x1' ? 'text-tv-blue font-bold' : ''}`}
+                >
+                  <span>{t.header.layout2x1}</span>
+                </button>
+                <button
+                  onClick={() => { onLayoutChange('2x2'); setShowLayoutMenu(false); }}
+                  className={`w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-tv-hover ${layout === '2x2' ? 'text-tv-blue font-bold' : ''}`}
+                >
+                  <span>{t.header.layout2x2}</span>
+                </button>
+                <button
+                  onClick={() => { onLayoutChange('1x3'); setShowLayoutMenu(false); }}
+                  className={`w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-tv-hover ${layout === '1x3' ? 'text-tv-blue font-bold' : ''}`}
+                >
+                  <span>{t.header.layout1x3}</span>
+                </button>
+                <button
+                  onClick={() => { onLayoutChange('3x1'); setShowLayoutMenu(false); }}
+                  className={`w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-tv-hover ${layout === '3x1' ? 'text-tv-blue font-bold' : ''}`}
+                >
+                  <span>{t.header.layout3x1}</span>
+                </button>
+                <button
+                  onClick={() => { onLayoutChange('1left-2right'); setShowLayoutMenu(false); }}
+                  className={`w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-tv-hover ${layout === '1left-2right' ? 'text-tv-blue font-bold' : ''}`}
+                >
+                  <span>{t.header.layout1left2right}</span>
+                </button>
+                <button
+                  onClick={() => { onLayoutChange('3x2'); setShowLayoutMenu(false); }}
+                  className={`w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-tv-hover ${layout === '3x2' ? 'text-tv-blue font-bold' : ''}`}
+                >
+                  <span>{t.header.layout3x2}</span>
+                </button>
 
-              <div className="border-t border-tv-border my-1" />
-              <div className="px-3 py-1 text-[10px] text-tv-muted uppercase font-bold tracking-wider">
-                {t.header.syncAllCharts}
+                <div className="border-t border-tv-border my-1" />
+                <div className="px-3 py-1 text-[10px] text-tv-muted uppercase font-bold tracking-wider">
+                  {t.header.syncAllCharts}
+                </div>
+                <button
+                  onClick={(e) => { e.stopPropagation(); onToggleSyncSymbol?.(); }}
+                  className="w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-tv-hover cursor-pointer"
+                >
+                  <span>{t.header.syncSymbol}</span>
+                  <input 
+                    type="checkbox" 
+                    checked={Boolean(syncSymbol)} 
+                    readOnly 
+                    className="accent-tv-blue cursor-pointer" 
+                  />
+                </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); onToggleSyncTimeframe?.(); }}
+                  className="w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-tv-hover cursor-pointer"
+                >
+                  <span>{t.header.syncTimeframe}</span>
+                  <input 
+                    type="checkbox" 
+                    checked={Boolean(syncTimeframe)} 
+                    readOnly 
+                    className="accent-tv-blue cursor-pointer" 
+                  />
+                </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); onToggleSyncCrosshair?.(); }}
+                  className="w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-tv-hover cursor-pointer"
+                >
+                  <span>{t.header.syncCrosshair}</span>
+                  <input 
+                    type="checkbox" 
+                    checked={Boolean(syncCrosshair)} 
+                    readOnly 
+                    className="accent-tv-blue cursor-pointer" 
+                  />
+                </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); onToggleSyncTime?.(); }}
+                  className="w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-tv-hover cursor-pointer"
+                >
+                  <span>{t.header.syncTime}</span>
+                  <input 
+                    type="checkbox" 
+                    checked={Boolean(syncTime)} 
+                    readOnly 
+                    className="accent-tv-blue cursor-pointer" 
+                  />
+                </button>
               </div>
-              <button
-                onClick={(e) => { e.stopPropagation(); onToggleSyncSymbol?.(); }}
-                className="w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-tv-hover cursor-pointer"
-              >
-                <span>{t.header.syncSymbol}</span>
-                <input 
-                  type="checkbox" 
-                  checked={Boolean(syncSymbol)} 
-                  readOnly 
-                  className="accent-tv-blue cursor-pointer" 
-                />
-              </button>
-              <button
-                onClick={(e) => { e.stopPropagation(); onToggleSyncTimeframe?.(); }}
-                className="w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-tv-hover cursor-pointer"
-              >
-                <span>{t.header.syncTimeframe}</span>
-                <input 
-                  type="checkbox" 
-                  checked={Boolean(syncTimeframe)} 
-                  readOnly 
-                  className="accent-tv-blue cursor-pointer" 
-                />
-              </button>
-              <button
-                onClick={(e) => { e.stopPropagation(); onToggleSyncCrosshair?.(); }}
-                className="w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-tv-hover cursor-pointer"
-              >
-                <span>{t.header.syncCrosshair}</span>
-                <input 
-                  type="checkbox" 
-                  checked={Boolean(syncCrosshair)} 
-                  readOnly 
-                  className="accent-tv-blue cursor-pointer" 
-                />
-              </button>
-              <button
-                onClick={(e) => { e.stopPropagation(); onToggleSyncTime?.(); }}
-                className="w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-tv-hover cursor-pointer"
-              >
-                <span>{t.header.syncTime}</span>
-                <input 
-                  type="checkbox" 
-                  checked={Boolean(syncTime)} 
-                  readOnly 
-                  className="accent-tv-blue cursor-pointer" 
-                />
-              </button>
-            </div>
+            </>
           )}
         </div>
 
@@ -1036,35 +1060,41 @@ export const Header: React.FC<HeaderProps> = React.memo(({
           </button>
 
           {showLangMenu && (
-            <div 
-              className="absolute top-8 right-0 w-44 bg-tv-surface border border-tv-border rounded shadow-2xl py-1.5 z-50 text-xs animate-in fade-in-50 zoom-in-95 duration-100"
-              onMouseLeave={() => setShowLangMenu(false)}
-            >
-              <div className="px-3 py-1 text-[10px] text-tv-muted uppercase font-bold tracking-wider border-b border-tv-border/40 mb-1">
-                {t.header.language}
+            <>
+              <div 
+                className="fixed inset-0 z-40" 
+                onClick={() => setShowLangMenu(false)} 
+              />
+              <div 
+                className="absolute top-8 right-0 w-48 bg-tv-surface border border-tv-border rounded-lg shadow-2xl py-1.5 z-50 text-xs animate-in fade-in-50 zoom-in-95 duration-100"
+                onMouseLeave={() => setShowLangMenu(false)}
+              >
+                <div className="px-3 py-1 text-[10px] text-tv-muted uppercase font-bold tracking-wider border-b border-tv-border/40 mb-1">
+                  {t.header.language}
+                </div>
+                {languages.map((lang) => {
+                  const isSelected = lang.code === language;
+                  return (
+                    <button
+                      key={lang.code}
+                      onClick={() => {
+                        setLanguage(lang.code);
+                        setShowLangMenu(false);
+                      }}
+                      className={`w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-tv-hover transition-colors ${
+                        isSelected ? 'text-tv-blue font-bold bg-tv-blue/10' : 'text-tv-text'
+                      }`}
+                    >
+                      <div className="flex items-center space-x-2">
+                        <span className="text-base">{lang.flag}</span>
+                        <span className="text-xs">{lang.nativeName}</span>
+                      </div>
+                      {isSelected && <Check className="w-3.5 h-3.5 text-tv-blue" />}
+                    </button>
+                  );
+                })}
               </div>
-              {languages.map((lang) => {
-                const isSelected = lang.code === language;
-                return (
-                  <button
-                    key={lang.code}
-                    onClick={() => {
-                      setLanguage(lang.code);
-                      setShowLangMenu(false);
-                    }}
-                    className={`w-full px-3 py-1.5 text-left flex items-center justify-between hover:bg-tv-hover transition-colors ${
-                      isSelected ? 'text-tv-blue font-bold bg-tv-blue/10' : 'text-tv-text'
-                    }`}
-                  >
-                    <div className="flex items-center space-x-2">
-                      <span className="text-base">{lang.flag}</span>
-                      <span className="text-xs">{lang.nativeName}</span>
-                    </div>
-                    {isSelected && <Check className="w-3.5 h-3.5 text-tv-blue" />}
-                  </button>
-                );
-              })}
-            </div>
+            </>
           )}
         </div>
 
