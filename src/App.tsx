@@ -39,7 +39,6 @@ import { storageService, INITIAL_STATE, getDefaultPane } from './services/storag
 import { createDefaultIndicator } from './indicators/registry';
 import { marketDataService } from './services/marketData';
 import { soundService } from './services/sound';
-import { executePineScript } from './services/pineEngine';
 import { executePythonScript } from './services/pythonEngine';
 import { findCandleByTime } from './indicators/math';
 import { BellRing, X } from 'lucide-react';
@@ -60,7 +59,7 @@ export const App: React.FC = () => {
   const [stayInDrawingMode, setStayInDrawingMode] = useState(false);
   const [screenshotTrigger, setScreenshotTrigger] = useState(0);
 
-  // Bottom Dock State (Screener, Paper Trading, Pine Editor, Strategy Tester)
+  // Bottom Dock State (Screener, Paper Trading, Python Editor, Strategy Tester)
   const [isBottomDockOpen, setIsBottomDockOpen] = useState(false);
   const [bottomDockTab, setBottomDockTab] = useState<BottomTabType>('paperTrading');
 
@@ -618,11 +617,11 @@ export const App: React.FC = () => {
 
   const handleAddParsedIndicators = (indicators: IndicatorConfig[]) => {
     if (!activePane || indicators.length === 0) return;
-    const hasCustom = indicators.some(i => i.type === 'CustomPython' || i.type === 'CustomPine');
+    const hasCustom = indicators.some(i => i.type === 'CustomPython');
     let nextIndicators: IndicatorConfig[];
     if (hasCustom) {
       // Clean previous custom indicator to avoid duplicate accumulation and update immediately!
-      const withoutCustom = activePane.indicators.filter(i => i.type !== 'CustomPython' && i.type !== 'CustomPine');
+      const withoutCustom = activePane.indicators.filter(i => i.type !== 'CustomPython');
       nextIndicators = [...withoutCustom, ...indicators];
     } else {
       nextIndicators = [...activePane.indicators, ...indicators];
@@ -638,19 +637,6 @@ export const App: React.FC = () => {
     if (updated.type === 'CustomPython' && updated.pythonCode && activeCandlesData.length > 0) {
       try {
         const executed = executePythonScript(updated.pythonCode, activeCandlesData, updated.params);
-        if (executed.success) {
-          finalUpdated = {
-            ...updated,
-            customPlots: executed.plots,
-            customHlines: executed.hlines,
-            name: executed.title || updated.name,
-            pane: executed.isOverlay ? 'overlay' : 'subpane',
-          };
-        }
-      } catch (_) {}
-    } else if (updated.type === 'CustomPine' && updated.pineCode && activeCandlesData.length > 0) {
-      try {
-        const executed = executePineScript(updated.pineCode, activeCandlesData, updated.params);
         if (executed.success) {
           finalUpdated = {
             ...updated,
@@ -1191,7 +1177,7 @@ export const App: React.FC = () => {
             })}
           </div>
 
-          {/* Bottom Dock Panel (Screener, Paper Trading, Pine Editor, Strategy Tester) */}
+          {/* Bottom Dock Panel (Screener, Paper Trading, Python Editor, Strategy Tester) */}
           <BottomDock
             isOpen={isBottomDockOpen}
             activeTab={bottomDockTab}

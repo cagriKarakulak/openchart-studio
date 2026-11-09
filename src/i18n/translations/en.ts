@@ -406,7 +406,7 @@ export const en: TranslationDictionary = {
     live: 'Live',
     timezone: 'UTC',
     screenerTab: 'Screener',
-    pineEditorTab: 'Python Editor',
+    pythonEditorTab: 'Python Editor',
     strategyTesterTab: 'Strategy Tester',
     paperTradingTab: 'Paper Trading',
   },

@@ -11,7 +11,6 @@ import {
 } from 'lightweight-charts';
 import { CandleData, IndicatorConfig, Timeframe } from '../types';
 import { computeWithMtf } from '../services/multiTimeframeService';
-import { executePineScript } from '../services/pineEngine';
 import { executePythonScript } from '../services/pythonEngine';
 import { 
   calculateRSI, 
@@ -314,21 +313,12 @@ export const SubPane: React.FC<SubPaneProps> = React.memo(({
     };
 
     switch (indicator.type) {
-      case 'CustomPython':
-      case 'CustomPine': {
+      case 'CustomPython': {
         let plots = indicator.customPlots;
         let hlines = indicator.customHlines;
         if (indicator.pythonCode) {
           try {
             const executed = executePythonScript(indicator.pythonCode, candles, indicator.params);
-            if (executed.success && executed.plots.length > 0) {
-              plots = executed.plots;
-              hlines = executed.hlines;
-            }
-          } catch (_) {}
-        } else if (indicator.pineCode) {
-          try {
-            const executed = executePineScript(indicator.pineCode, candles, indicator.params);
             if (executed.success && executed.plots.length > 0) {
               plots = executed.plots;
               hlines = executed.hlines;

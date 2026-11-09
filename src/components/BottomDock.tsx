@@ -31,7 +31,7 @@ import { soundService } from '../services/sound';
 import { marketDataService } from '../services/marketData';
 import { useTranslation } from '../i18n';
 
-export type BottomTabType = 'screener' | 'paperTrading' | 'pineEditor' | 'strategyTester';
+export type BottomTabType = 'screener' | 'paperTrading' | 'pythonEditor' | 'strategyTester';
 
 interface Position {
   id: string;
@@ -582,9 +582,9 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
           </button>
 
           <button
-            onClick={() => onTabChange('pineEditor')}
+            onClick={() => onTabChange('pythonEditor')}
             className={`px-3 py-1.5 rounded flex items-center space-x-1.5 font-medium transition-colors ${
-              activeTab === 'pineEditor' ? 'bg-tv-surface text-tv-blue border border-tv-border font-bold' : 'text-tv-muted hover:text-white'
+              activeTab === 'pythonEditor' ? 'bg-tv-surface text-tv-blue border border-tv-border font-bold' : 'text-tv-muted hover:text-white'
             }`}
           >
             <Terminal className="w-3.5 h-3.5 text-[#3776ab]" />
@@ -888,7 +888,7 @@ export const BottomDock: React.FC<BottomDockProps> = React.memo(({
         {/* ======================================================== */}
         {/* TAB 3: PYTHON QUANT SCRIPT EDITOR                        */}
         {/* ======================================================== */}
-        {activeTab === 'pineEditor' && (() => {
+        {activeTab === 'pythonEditor' && (() => {
           const linesList = pythonCode.split('\n');
           return (
             <div className="h-full flex flex-col space-y-2">

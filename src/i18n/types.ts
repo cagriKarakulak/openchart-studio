@@ -424,7 +424,7 @@ export interface TranslationDictionary {
     live: string;
     timezone: string;
     screenerTab: string;
-    pineEditorTab: string;
+    pythonEditorTab: string;
     strategyTesterTab: string;
     paperTradingTab: string;
   };

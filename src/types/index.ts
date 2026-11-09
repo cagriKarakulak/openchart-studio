@@ -151,7 +151,6 @@ export type IndicatorType =
   | 'VolatilityCloseToClose'
   | 'RankCorrelationIndex'
   | 'SessionVolumeProfile'
-  | 'CustomPine'
   | 'CustomPython';
 
 export interface IndicatorStyleItem {
@@ -171,7 +170,6 @@ export interface IndicatorConfig {
   params: Record<string, number | string | boolean>;
   styles: Record<string, IndicatorStyleItem>;
   timeframe?: Timeframe | 'current' | string;
-  pineCode?: string;
   pythonCode?: string;
   customPlots?: any[];
   customHlines?: any[];

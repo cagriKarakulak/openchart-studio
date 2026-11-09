@@ -76,7 +76,6 @@ import {
   renderSessionVolumeProfile
 } from '../services/barProfileEngine';
 import { computeWithMtf } from '../services/multiTimeframeService';
-import { executePineScript } from '../services/pineEngine';
 import { executePythonScript } from '../services/pythonEngine';
 import { snapToNearestCandlePoint, MagnetSensitivity } from '../services/magnet';
 import { soundService } from '../services/sound';
@@ -1306,19 +1305,11 @@ export const ChartPane: React.FC<ChartPaneProps> = React.memo(({
       };
 
       switch (ind.type) {
-        case 'CustomPython':
-        case 'CustomPine': {
+        case 'CustomPython': {
           let plots = ind.customPlots;
           if (ind.pythonCode) {
             try {
               const executed = executePythonScript(ind.pythonCode, activeCandles, ind.params);
-              if (executed.success && executed.plots.length > 0) {
-                plots = executed.plots;
-              }
-            } catch (_) {}
-          } else if (ind.pineCode) {
-            try {
-              const executed = executePineScript(ind.pineCode, activeCandles, ind.params);
               if (executed.success && executed.plots.length > 0) {
                 plots = executed.plots;
               }

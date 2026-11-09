@@ -101,22 +101,22 @@ export const BottomBar: React.FC<BottomBarProps> = ({
         <button
           onClick={() => {
             if (onSelectDockTab) {
-              if (isDockOpen && activeDockTab === 'pineEditor') {
+              if (isDockOpen && activeDockTab === 'pythonEditor') {
                 onToggleDock?.();
               } else {
-                onSelectDockTab('pineEditor');
+                onSelectDockTab('pythonEditor');
               }
             }
           }}
           className={`flex items-center space-x-1 px-2 py-0.5 rounded text-[11px] transition-colors ${
-            isDockOpen && activeDockTab === 'pineEditor'
+            isDockOpen && activeDockTab === 'pythonEditor'
               ? 'text-tv-blue bg-tv-hover font-bold border border-tv-border'
               : 'hover:text-white hover:bg-tv-hover'
           }`}
           title={t.bottomDock.pythonEditor}
         >
           <Terminal className="w-3 h-3" />
-          <span>{t.bottomBar.pineEditorTab}</span>
+          <span>{t.bottomBar.pythonEditorTab}</span>
         </button>
 
         <button

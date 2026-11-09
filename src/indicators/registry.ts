@@ -945,19 +945,6 @@ export const INDICATOR_DEFINITIONS: IndicatorDefinition[] = [
     paramSchema: []
   },
   {
-    type: 'CustomPine',
-    name: 'Quant Script',
-    shortName: 'QUANT',
-    category: 'Trend',
-    pane: 'overlay',
-    description: 'Quant script editoru tarafindan olusturulan ozel gosterge ve cizim serileri.',
-    defaultParams: {},
-    defaultStyles: {
-      line: { color: '#2962ff', lineWidth: 2 }
-    },
-    paramSchema: []
-  },
-  {
     type: 'OBV',
     name: 'On Balance Volume (OBV)',
     shortName: 'OBV',

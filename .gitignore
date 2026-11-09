@@ -17,9 +17,7 @@ backup/
 exports/
 *.csv
 
-# 2. Private Strategies & Pine Script Codes
-*.pine
-*.pinescript
+# 2. Private Strategies & Custom Scripts
 *.ps
 *.strat
 strategies/custom/

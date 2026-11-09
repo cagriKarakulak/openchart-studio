@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { X, Check, Clock, Sliders, Palette, HelpCircle } from 'lucide-react';
 import { IndicatorConfig, Timeframe } from '../../types';
 import { INDICATOR_DEFINITIONS } from '../../indicators/registry';
-import { extractPineInputs, PineInputDef } from '../../services/pineInputs';
 import { extractPythonInputs, PythonInputDef } from '../../services/pythonEngine';
 import { useTranslation } from '../../i18n';
 
@@ -61,20 +60,17 @@ const IndicatorSettingsModalContent: React.FC<IndicatorSettingsModalContentProps
   const [styles, setStyles] = useState<Record<string, any>>({ ...indicator.styles });
   const [timeframe, setTimeframe] = useState<Timeframe | 'chart'>(indicator.timeframe || 'chart');
 
-  // Extract script inputs if CustomPine or CustomPython
+  // Extract script inputs if CustomPython
   const scriptInputs = useMemo(() => {
     if (indicator.type === 'CustomPython' && indicator.pythonCode) {
       return extractPythonInputs(indicator.pythonCode);
     }
-    if (indicator.type === 'CustomPine' && indicator.pineCode) {
-      return extractPineInputs(indicator.pineCode);
-    }
     return [];
-  }, [indicator.type, indicator.pineCode, indicator.pythonCode]);
+  }, [indicator.type, indicator.pythonCode]);
 
   // Group script inputs by category
   const groupedScriptInputs = useMemo(() => {
-    const groups: Record<string, (PineInputDef | PythonInputDef)[]> = {};
+    const groups: Record<string, PythonInputDef[]> = {};
     for (const inp of scriptInputs) {
       const g = inp.group || t.modals.chartSettingsTitle || 'Settings';
       if (!groups[g]) groups[g] = [];
@@ -87,7 +83,7 @@ const IndicatorSettingsModalContent: React.FC<IndicatorSettingsModalContentProps
     if (indicator) {
       // Initialize params with defaults from scriptInputs if not set
       const initial = { ...indicator.params };
-      if (indicator.type === 'CustomPine' || indicator.type === 'CustomPython') {
+      if (indicator.type === 'CustomPython') {
         scriptInputs.forEach(inp => {
           if (initial[inp.id] === undefined) {
             initial[inp.id] = inp.defval;
@@ -198,7 +194,7 @@ const IndicatorSettingsModalContent: React.FC<IndicatorSettingsModalContentProps
           <div className="flex items-center space-x-2">
             <span className="font-bold text-white text-sm">{indicator.name}</span>
             <span className="text-[10px] bg-tv-blue/20 text-tv-blue font-mono font-bold px-1.5 py-0.5 rounded">
-              {indicator.type === 'CustomPython' ? 'Python Quant' : indicator.type === 'CustomPine' ? 'Script' : indicator.type}
+              {indicator.type === 'CustomPython' ? 'Python Quant' : indicator.type}
             </span>
           </div>
           <button onClick={onClose} className="p-1 rounded hover:bg-tv-hover text-tv-muted hover:text-white transition-colors">
@@ -280,8 +276,8 @@ const IndicatorSettingsModalContent: React.FC<IndicatorSettingsModalContentProps
                 </div>
               )}
 
-              {/* Custom Script (Python / Pine) Inputs */}
-              {(indicator.type === 'CustomPython' || indicator.type === 'CustomPine') && scriptInputs.length > 0 && (
+              {/* Custom Script (Python) Inputs */}
+              {indicator.type === 'CustomPython' && scriptInputs.length > 0 && (
                 <div className="space-y-3">
                   {Object.entries(groupedScriptInputs).map(([groupName, inps]) => (
                     <div key={groupName} className="bg-tv-bg p-3 rounded border border-tv-border space-y-2.5">
@@ -474,7 +470,7 @@ const IndicatorSettingsModalContent: React.FC<IndicatorSettingsModalContentProps
         <div className="h-12 border-t border-tv-border px-4 bg-tv-bg flex items-center justify-between select-none">
           <button
             onClick={() => {
-              if (indicator.type === 'CustomPython' || indicator.type === 'CustomPine') {
+              if (indicator.type === 'CustomPython') {
                 const defaults: Record<string, any> = {};
                 scriptInputs.forEach(i => defaults[i.id] = i.defval);
                 setParams(defaults);

@@ -406,7 +406,7 @@ export const ru: TranslationDictionary = {
     live: 'В эфире',
     timezone: 'UTC',
     screenerTab: 'Скринер',
-    pineEditorTab: 'Python редактор',
+    pythonEditorTab: 'Python редактор',
     strategyTesterTab: 'Тестер стратегий',
     paperTradingTab: 'Демо-трейдинг',
   },

@@ -406,7 +406,7 @@ export const zh: TranslationDictionary = {
     live: '实时',
     timezone: 'UTC',
     screenerTab: '行情选币',
-    pineEditorTab: 'Python编辑器',
+    pythonEditorTab: 'Python编辑器',
     strategyTesterTab: '策略回测',
     paperTradingTab: '模拟交易',
   },
